@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function Countdown({ targetDate, variant = 'default' }) {
-  const { lang } = useLanguage();
+  const { lang, toDigits } = useLanguage();
   const [timeLeft, setTimeLeft] = useState({ days: '--', hours: '--', minutes: '--', seconds: '--' });
 
   useEffect(() => {
@@ -27,10 +27,10 @@ export default function Countdown({ targetDate, variant = 'default' }) {
   }, [targetDate]);
 
   const units = [
-    { val: timeLeft.days,    label: lang === 'bn' ? 'দিন'     : 'Days'  },
-    { val: timeLeft.hours,   label: lang === 'bn' ? 'ঘণ্টা'   : 'Hours' },
-    { val: timeLeft.minutes, label: lang === 'bn' ? 'মিনিট'   : 'Mins'  },
-    { val: timeLeft.seconds, label: lang === 'bn' ? 'সেকেন্ড' : 'Secs'  },
+    { val: toDigits(timeLeft.days),    label: lang === 'bn' ? 'দিন'     : 'Days'  },
+    { val: toDigits(timeLeft.hours),   label: lang === 'bn' ? 'ঘণ্টা'   : 'Hours' },
+    { val: toDigits(timeLeft.minutes), label: lang === 'bn' ? 'মিনিট'   : 'Mins'  },
+    { val: toDigits(timeLeft.seconds), label: lang === 'bn' ? 'সেকেন্ড' : 'Secs'  },
   ];
 
   if (variant === 'pill') {
