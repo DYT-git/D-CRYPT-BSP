@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 760" role="img" aria-labelledby="title desc">
+<title id="title">Original Sharadiya Durga illustration</title>
+<desc id="desc">A warm Bengali Sharadiya festival illustration created as original vector artwork for Bansdroni Sonali Park.</desc>
+<defs>
+ <radialGradient id="bg" cx="50%" cy="38%" r="65%"><stop offset="0" stop-color="#fff7df"/><stop offset=".58" stop-color="#f7d8a8"/><stop offset="1" stop-color="#b83a35"/></radialGradient>
+ <linearGradient id="sari" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9c2431"/><stop offset=".5" stop-color="#d75a43"/><stop offset="1" stop-color="#7d1e2a"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0a8"/><stop offset=".45" stop-color="#e8ae42"/><stop offset="1" stop-color="#9b5b1e"/></linearGradient>
+ <filter id="shadow"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-opacity=".2"/></filter>
+</defs>
+<circle cx="360" cy="370" r="335" fill="url(#bg)"/>
+<g opacity=".7" fill="none" stroke="#8e272f" stroke-width="3"><circle cx="360" cy="370" r="285"/><circle cx="360" cy="370" r="250"/><circle cx="360" cy="370" r="215"/></g>
+<!-- lotus halo -->
+<g fill="#fff3cf" stroke="#b86a35" stroke-width="3" opacity=".95">
+ <path d="M360 110c-35 35-40 70 0 98 40-28 35-63 0-98z"/><path d="M280 135c-7 45 12 73 58 78-2-43-21-67-58-78z"/><path d="M440 135c7 45-12 73-58 78 2-43 21-67 58-78z"/>
+ <path d="M220 190c10 46 40 64 82 53-13-39-39-57-82-53z"/><path d="M500 190c-10 46-40 64-82 53 13-39 39-57 82-53z"/>
+</g>
+<!-- face -->
+<g filter="url(#shadow)">
+ <path d="M360 190c-92 0-133 72-119 164 12 80 61 135 119 154 58-19 107-74 119-154 14-92-27-164-119-164z" fill="#f4bd88" stroke="#7b2930" stroke-width="5"/>
+ <path d="M245 272c20-72 67-109 115-109s95 37 115 109c-38-34-70-48-115-48s-77 14-115 48z" fill="#7d1f2d"/>
+ <path d="M298 306q25-20 50 0M372 306q25-20 50 0" fill="none" stroke="#5c2630" stroke-width="8" stroke-linecap="round"/>
+ <circle cx="323" cy="313" r="7" fill="#3d2026"/><circle cx="397" cy="313" r="7" fill="#3d2026"/>
+ <path d="M360 326q-12 23 0 33" fill="none" stroke="#8d4b3e" stroke-width="5" stroke-linecap="round"/>
+ <path d="M321 386q39 32 78 0" fill="none" stroke="#7d2931" stroke-width="7" stroke-linecap="round"/>
+ <circle cx="360" cy="276" r="12" fill="#b32635"/><circle cx="360" cy="276" r="5" fill="#ffd978"/>
+</g>
+<!-- crown -->
+<path d="M270 236l20-91 42 54 28-83 28 83 42-54 20 91z" fill="url(#gold)" stroke="#75461c" stroke-width="5"/>
+<circle cx="360" cy="146" r="12" fill="#b32635" stroke="#ffe89b" stroke-width="5"/>
+<!-- shoulders/sari -->
+<path d="M190 670c20-123 78-190 170-205 92 15 150 82 170 205z" fill="url(#sari)" stroke="#6e202b" stroke-width="6"/>
+<path d="M250 508q110 78 220 0" fill="none" stroke="#f6d477" stroke-width="12"/>
+<path d="M210 610q150 42 300 0" fill="none" stroke="#f6d477" stroke-width="7" opacity=".8"/>
+<!-- trident -->
+<g stroke="#7d4b20" stroke-width="8" fill="none" stroke-linecap="round"><path d="M560 655V250"/><path d="M560 300l-38-68"/><path d="M560 300l38-68"/><path d="M560 300v-86"/></g>
+<!-- dhak motif -->
+<g transform="translate(82 585) rotate(-8)"><ellipse cx="0" cy="0" rx="62" ry="28" fill="#e5ad56" stroke="#733d26" stroke-width="6"/><path d="M-62 0v55M62 0v55" stroke="#733d26" stroke-width="8"/><ellipse cy="55" rx="62" ry="28" fill="#d68c42" stroke="#733d26" stroke-width="6"/><path d="M-45 10L45 45M-45 45L45 10" stroke="#8b4c28" stroke-width="4"/></g>
+<!-- alpana dots -->
+<g fill="#fff2c5"><circle cx="100" cy="170" r="7"/><circle cx="125" cy="145" r="5"/><circle cx="620" cy="170" r="7"/><circle cx="595" cy="145" r="5"/><circle cx="92" cy="270" r="5"/><circle cx="628" cy="270" r="5"/></g>
+<text x="360" y="718" text-anchor="middle" font-family="Georgia, serif" font-size="28" font-weight="700" fill="#fff3d0" letter-spacing="3">শুভ শারদীয়া</text>
+</svg>

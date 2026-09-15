@@ -1,0 +1,243 @@
+{
+  "events": [
+    {
+      "id": 9,
+      "year": 2026,
+      "title": "মহাষষ্ঠী — বোধন ও উদ্বোধন",
+      "date": "2026-10-17",
+      "text": "দেবীর বোধন, আমন্ত্রণ, অধিবাস ও পুজো উদ্বোধন।"
+    },
+    {
+      "id": 10,
+      "year": 2026,
+      "title": "মহাসপ্তমী — নবপত্রিকা স্থাপন",
+      "date": "2026-10-18",
+      "text": "সকালে নবপত্রিকা স্নান, স্থাপন ও সপ্তমী বিহিত পূজা।"
+    },
+    {
+      "id": 11,
+      "year": 2026,
+      "title": "মহাষ্টমী — কুমারী পূজা ও সন্ধিপূজা",
+      "date": "2026-10-19",
+      "text": "অষ্টমী বিহিত পূজা, পুষ্পাঞ্জলি এবং বিশেষ সন্ধিপূজা।"
+    },
+    {
+      "id": 12,
+      "year": 2026,
+      "title": "মহানবমী — মহানবমী বিহিত পূজা",
+      "date": "2026-10-20",
+      "text": "নবমী পূজা, যজ্ঞ ও সন্ধ্যায় বিশেষ আরতি।"
+    },
+    {
+      "id": 13,
+      "year": 2026,
+      "title": "বিজয়া দশমী — প্রতিমা নিরঞ্জন",
+      "date": "2026-10-21",
+      "text": "দশমী বিহিত পূজা, দর্পণ বিসর্জন, সিঁদুর খেলা এবং প্রতিমা ভাসান।"
+    }
+  ],
+  "members": [
+    {
+      "id": 8,
+      "year": 2026,
+      "name": "Sample President",
+      "role": "সভাপতি",
+      "image": null
+    },
+    {
+      "id": 9,
+      "year": 2026,
+      "name": "Sample Secretary",
+      "role": "সম্পাদক",
+      "image": null
+    },
+    {
+      "id": 10,
+      "year": 2026,
+      "name": "Sample Treasurer",
+      "role": "কোষাধ্যক্ষ",
+      "image": null
+    },
+    {
+      "id": 11,
+      "year": 2026,
+      "name": "Sample Member 1",
+      "role": "সদস্য",
+      "image": null
+    },
+    {
+      "id": 12,
+      "year": 2026,
+      "name": "Sample Member 2",
+      "role": "সদস্য",
+      "image": null
+    },
+    {
+      "id": 14,
+      "year": 2026,
+      "name": "c",
+      "role": "c",
+      "image": "/uploads/committee-1789055019288-20057298.svg"
+    }
+  ],
+  "notices": [
+    {
+      "id": 5,
+      "year": 2026,
+      "title": "দুর্গাপূজা ২০২৬ — প্রোগ্রাম শীঘ্রই প্রকাশিত হবে",
+      "text": "এটি নমুনা নোটিশ। অফিসিয়াল সময়সূচি Admin থেকে যোগ করুন।",
+      "date": "2026-08-25",
+      "isUrgent": false
+    },
+    {
+      "id": 6,
+      "year": 2026,
+      "title": "স্বাগতম — Bansdroni Sonali Park",
+      "text": "দুর্গাপূজা ২০২৬, পাড়ার অনুষ্ঠান, সামাজিক কার্যক্রম ও গুরুত্বপূর্ণ খবর এক জায়গায়।",
+      "date": "2026-08-30",
+      "isUrgent": false
+    }
+  ],
+  "gallery": [
+    {
+      "id": 7,
+      "year": 2026,
+      "title": "২০২৬ মণ্ডপ সজ্জা",
+      "program": "Durga Puja",
+      "category": "Idol & Pandal",
+      "src": "/assets/gallery/sample-pandal.svg"
+    },
+    {
+      "id": 8,
+      "year": 2026,
+      "title": "২০২৬ দুর্গা প্রতিমা",
+      "program": "Durga Puja",
+      "category": "Idol & Pandal",
+      "src": "/assets/gallery/sample-durga-pratima.svg"
+    },
+    {
+      "id": 11,
+      "year": 2026,
+      "title": "রক্তদান শিবির",
+      "program": "Social Work",
+      "category": "General",
+      "src": "/assets/gallery/sample-pandal.svg"
+    },
+    {
+      "id": 13,
+      "year": 2026,
+      "title": "OLK",
+      "program": "Durga Puja",
+      "category": "Idol & Pandal",
+      "src": "/uploads/gallery-1789046907435-592270223.png"
+    }
+  ],
+  "finance": [
+    {
+      "id": 3,
+      "year": 2026,
+      "title": "Sample Durga Puja Budget 2026",
+      "url": "/docs/sample-puja-programme-2026.pdf"
+    },
+    {
+      "id": 4,
+      "year": 2026,
+      "title": "c",
+      "url": "/uploads/finance-1789074597242-431153847.pdf"
+    }
+  ],
+  "settings": [
+    {
+      "key": "popupEnabled",
+      "value": "true"
+    },
+    {
+      "key": "popupTitle",
+      "value": "PAY"
+    },
+    {
+      "key": "popupMessage",
+      "value": "HERE"
+    },
+    {
+      "key": "heroHeading",
+      "value": "শারদ প্রাতে মায়ের আগমন..."
+    },
+    {
+      "key": "heroSubHeading",
+      "value": "আনন্দ আর আলোয় সাজুক ভুবন।"
+    },
+    {
+      "key": "heroTagline",
+      "value": "🍁 শরতের নীল আকাশ আর শিউলির গন্ধে মেতেছে বাঁশদ্রোণী... সোনালী পার্কে মা আসছেন বছর ঘুরে! ৭৪তম বর্ষের মহা উৎসবে আপনাদের সাদর আমন্ত্রণ 🙏"
+    },
+    {
+      "key": "countdownDate",
+      "value": "2026-10-17T00:00:00+05:30"
+    },
+    {
+      "key": "countdownHeading",
+      "value": "মহাষ্টমী আসতে আর মাত্র"
+    },
+    {
+      "key": "currentYear",
+      "value": "74"
+    },
+    {
+      "key": "primaryColor",
+      "value": "#E11D48"
+    },
+    {
+      "key": "secondaryColor",
+      "value": "#F59E0B"
+    },
+    {
+      "key": "themeTitle",
+      "value": "\"অতীতের আয়নায় আগামী\""
+    },
+    {
+      "key": "themeSubtitle",
+      "value": "(Reflections of the Past)"
+    },
+    {
+      "key": "pandalArtist",
+      "value": "শিল্প নিকেতন"
+    },
+    {
+      "key": "idolArtist",
+      "value": "সনাতন রুদ্র পাল"
+    },
+    {
+      "key": "lightingArtist",
+      "value": "দাস ইলেকট্রিক"
+    },
+    {
+      "key": "totalCollection",
+      "value": "₹ 14,50,000"
+    },
+    {
+      "key": "totalExpense",
+      "value": "₹ 13,85,000"
+    },
+    {
+      "key": "majorExpenseTitle",
+      "value": "Pandal Construction"
+    },
+    {
+      "key": "majorExpenseAmount",
+      "value": "₹ 6,00,000"
+    }
+  ],
+  "admins": [
+    {
+      "id": 1,
+      "username": "admin",
+      "email": null,
+      "name": null,
+      "image": null,
+      "password": "password123",
+      "role": "superadmin",
+      "createdAt": "2026-09-14T15:39:52.000Z"
+    }
+  ]
+}

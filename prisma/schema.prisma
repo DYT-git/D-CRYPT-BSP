@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Event {
+  id    Int      @id @default(autoincrement())
+  year  Int
+  title String
+  date  String
+  text  String
+}
+
+model Member {
+  id    Int      @id @default(autoincrement())
+  year  Int
+  name  String
+  role  String
+  image String?  // Added for Committee photos
+}
+
+model Notice {
+  id       Int      @id @default(autoincrement())
+  year     Int
+  title    String
+  text     String
+  date     String
+  isUrgent Boolean  @default(false) // Added for top ticker
+}
+
+model Gallery {
+  id       Int      @id @default(autoincrement())
+  year     Int
+  title    String
+  program  String   @default("Durga Puja")
+  category String   @default("General")
+  src      String
+}
+
+model Finance {
+  id    Int      @id @default(autoincrement())
+  year  Int
+  title String
+  url   String
+}
+
+// ---- NEW ADMIN MODELS ----
+
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  username  String?  @unique
+  email     String?  @unique
+  name      String?
+  image     String?
+  password  String?  // Nullable for Google OAuth users
+  role      String   @default("admin") // superadmin, admin, editor
+  createdAt DateTime @default(now())
+}
+
+model SiteSetting {
+  key   String @id
+  value String
+}
