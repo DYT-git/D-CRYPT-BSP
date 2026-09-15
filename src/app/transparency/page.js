@@ -1,9 +1,10 @@
 'use client';
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { FileText, ExternalLink, TrendingUp, TrendingDown, Landmark, ShieldCheck } from 'lucide-react';
+import { FileText, ExternalLink, Download, TrendingUp, TrendingDown, Landmark, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import YearSelector from "@/components/YearSelector";
+import { triggerDownload } from "@/utils/download";
 
 export default function TransparencyPage() {
   const { data, settings, selectedYear } = useData();
@@ -133,9 +134,23 @@ export default function TransparencyPage() {
                     <span className="text-xs text-stone-400">সাল: {doc.year}</span>
                   </div>
                 </div>
-                <div className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon font-bold text-xs group-hover:bg-brand-maroon group-hover:text-white transition-all shrink-0 shadow-sm">
-                  <span>দেখুন</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon font-bold text-xs group-hover:bg-brand-maroon group-hover:text-white transition-all shadow-sm">
+                    <span>দেখুন</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </div>
+                  <button
+                    type="button"
+                    title="Download PDF"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      triggerDownload(doc.url, `${doc.title || 'audit-report'}.pdf`);
+                    }}
+                    className="p-1.5 sm:p-2 rounded-full bg-stone-100 hover:bg-brand-maroon hover:text-white text-stone-600 border border-stone-200 transition-all cursor-pointer shadow-2xs"
+                  >
+                    <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  </button>
                 </div>
               </Link>
             ))}

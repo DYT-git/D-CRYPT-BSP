@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Sun, Sunset, Moon } from 'lucide-react';
 import Countdown from "@/components/Countdown";
 import HeroParticles from "@/components/HeroParticles";
-import DigitalDiya from "@/components/DigitalDiya";
+import { triggerDownload } from "@/utils/download";
 import Link from "next/link";
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -273,8 +273,6 @@ export default function HomePage() {
                 <span className="text-xs group-hover:scale-110 transition-transform">📍</span>
                 <span>বাঁশদ্রোণী মেট্রো থেকে ৫ মিনিট</span>
               </a>
-
-              <DigitalDiya />
             </div>
           </div>
 
@@ -394,8 +392,6 @@ export default function HomePage() {
                 <span className="text-xs">📍</span>
                 <span>মেট্রো থেকে ৫ মিনিট</span>
               </a>
-
-              <DigitalDiya />
             </div>
           </div>
         </div>
@@ -862,15 +858,17 @@ export default function HomePage() {
                 {/* Frosted Vignette & Action Pill */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0B1224]/95 via-[#0B1224]/30 to-transparent opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
                   <p className="text-white font-bold text-sm truncate mb-3">{img.title || 'বাঁশদ্রোণী সোনালী পার্ক'}</p>
-                  <a
-                    href={img.src}
-                    download={img.src.split('/').pop()}
-                    className="inline-flex items-center justify-center gap-2 bg-black/50 hover:bg-brand-maroon text-white backdrop-blur-md border border-white/20 px-4 py-2 rounded-full font-bold transition-all duration-200 w-max text-xs shadow-md"
-                    onClick={(e) => e.stopPropagation()}
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center gap-2 bg-black/50 hover:bg-brand-maroon text-white backdrop-blur-md border border-white/20 px-4 py-2 rounded-full font-bold transition-all duration-200 w-max text-xs shadow-md cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      triggerDownload(img.src, `${img.title || 'durga-puja-moment'}.jpg`);
+                    }}
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                     ডাউনলোড
-                  </a>
+                  </button>
                 </div>
               </div>
             ))}
@@ -888,10 +886,14 @@ export default function HomePage() {
             <img src={selectedImage.src} alt={selectedImage.title} className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" onClick={(e) => e.stopPropagation()} />
             <div className="mt-4 text-center" onClick={(e) => e.stopPropagation()}>
               <h3 className="text-white text-2xl font-bold">{selectedImage.title}</h3>
-              <a href={selectedImage.src} download={selectedImage.src.split('/').pop()} className="mt-4 inline-flex items-center gap-2 bg-brand-maroon text-white px-6 py-2 rounded-full font-bold hover:bg-white hover:text-brand-maroon transition-colors">
+              <button
+                type="button"
+                onClick={() => triggerDownload(selectedImage.src, `${selectedImage.title || 'durga-puja-moment'}.jpg`)}
+                className="mt-4 inline-flex items-center gap-2 bg-brand-maroon text-white px-6 py-2 rounded-full font-bold hover:bg-white hover:text-brand-maroon transition-colors cursor-pointer"
+              >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                 Download Full Size
-              </a>
+              </button>
             </div>
           </div>
         </div>

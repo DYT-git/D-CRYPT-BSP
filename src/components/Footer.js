@@ -101,7 +101,7 @@ export default function Footer() {
         <p>© {new Date().getFullYear()} Bansdroni Sonali Park. {b('সর্বস্বত্ব সংরক্ষিত।', 'All rights reserved.')}</p>
         <p className="flex items-center gap-1.5 font-mono text-[11px]">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-          <span>{b('রেজিস্টার্ড সোসাইটি • পশ্চিমবঙ্গ সরকার', 'Registered Society • Govt. of West Bengal')}</span>
+          <span>{b('রেজিস্টার্ড সোসাইটি', 'Registered Community Society')}</span>
         </p>
       </div>
     </footer>

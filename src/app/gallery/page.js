@@ -4,6 +4,7 @@ import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
 import YearSelector from "@/components/YearSelector";
 import { Download, X, ZoomIn, Image as ImageIcon } from 'lucide-react';
+import { triggerDownload } from "@/utils/download";
 
 const PROGRAMS = [
   { key: 'Durga Puja',       labelBn: 'শারদীয়া দুর্গাপূজা', labelEn: 'Durga Puja' },
@@ -128,15 +129,17 @@ export default function GalleryPage() {
                 {/* Dark Vignette Overlay & Action Pill */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5">
                   <div className="flex justify-end">
-                    <a
-                      href={item.src}
-                      download={item.src.split('/').pop()}
-                      className="bg-black/50 hover:bg-brand-maroon text-white p-2.5 rounded-full backdrop-blur-md border border-white/20 transition-all shadow-md"
+                    <button
+                      type="button"
+                      className="bg-black/50 hover:bg-brand-maroon text-white p-2.5 rounded-full backdrop-blur-md border border-white/20 transition-all shadow-md cursor-pointer"
                       title="Download"
-                      onClick={e => e.stopPropagation()}
+                      onClick={e => {
+                        e.stopPropagation();
+                        triggerDownload(item.src, `${item.title || 'gallery-photo'}.jpg`);
+                      }}
                     >
                       <Download className="w-4 h-4" />
-                    </a>
+                    </button>
                   </div>
                   <div>
                     <span className="text-white/90 text-[10px] uppercase tracking-widest font-bold px-2.5 py-0.5 rounded-full bg-black/50 border border-white/15 mb-2 inline-block">
@@ -184,13 +187,13 @@ export default function GalleryPage() {
                 <span className="text-rose-200 text-[10px] uppercase tracking-widest font-bold block">{selectedImage.category}</span>
                 <h3 className="text-white font-bold text-lg truncate mt-0.5">{selectedImage.title}</h3>
               </div>
-              <a
-                href={selectedImage.src}
-                download={selectedImage.src.split('/').pop()}
-                className="flex items-center gap-2 bg-brand-maroon hover:bg-stone-900 text-white px-5 py-2.5 rounded-full font-bold transition-all text-sm border border-white/20 shrink-0 shadow-md"
+              <button
+                type="button"
+                onClick={() => triggerDownload(selectedImage.src, `${selectedImage.title || 'gallery-photo'}.jpg`)}
+                className="flex items-center gap-2 bg-brand-maroon hover:bg-stone-900 text-white px-5 py-2.5 rounded-full font-bold transition-all text-sm border border-white/20 shrink-0 shadow-md cursor-pointer"
               >
                 <Download className="w-4 h-4" /> ডাউনলোড
-              </a>
+              </button>
             </div>
             <span className="text-white/50 text-xs">{lightboxIdx + 1} / {filteredGallery.length}</span>
           </div>

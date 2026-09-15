@@ -13,9 +13,11 @@ import {
   FileCheck,
   X,
   Eye,
-  RefreshCw
+  RefreshCw,
+  Download
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import { triggerDownload } from '@/utils/download';
 
 const TITLE_PRESETS = [
   { bn: 'বার্ষিক অডিট রিপোর্ট ২০২৫-২৬', en: 'Annual Audit Report 2025-26' },
@@ -540,14 +542,22 @@ export default function FinanceManagerPage() {
                 <FileText className="w-4 h-4 text-brand-maroon" />
                 <span className="font-bold text-stone-900 text-xs sm:text-sm">{b('PDF ডকুমেন্ট প্রিভিউ', 'PDF Document Preview')}</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <button
+                  type="button"
+                  onClick={() => triggerDownload(previewPdfUrl, 'finance-audit.pdf')}
+                  className="text-xs font-semibold text-brand-maroon hover:bg-rose-50 px-2.5 py-1 rounded-lg border border-brand-maroon/20 flex items-center gap-1 cursor-pointer"
+                  title="Download PDF"
+                >
+                  <Download className="w-3.5 h-3.5" /> <span className="hidden sm:inline">{b('ডাউনলোড', 'Download')}</span>
+                </button>
                 <a
                   href={previewPdfUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs font-semibold text-brand-maroon hover:underline flex items-center gap-1 mr-2"
+                  className="text-xs font-semibold text-stone-600 hover:text-brand-maroon hover:underline flex items-center gap-1 px-1.5 py-1"
                 >
-                  <ExternalLink className="w-3.5 h-3.5" /> {b('সম্পূর্ণ স্ক্রিনে খুলুন', 'Full Screen')}
+                  <ExternalLink className="w-3.5 h-3.5" /> <span className="hidden sm:inline">{b('সম্পূর্ণ স্ক্রিন', 'Full Screen')}</span>
                 </a>
                 <button
                   onClick={() => setPreviewPdfUrl(null)}
@@ -559,8 +569,8 @@ export default function FinanceManagerPage() {
             </div>
             <div className="flex-1 bg-stone-100 p-2">
               <iframe
-                src={previewPdfUrl}
-                className="w-full h-full rounded-xl border border-stone-300"
+                src={previewPdfUrl?.startsWith('http') ? `https://docs.google.com/viewer?url=${encodeURIComponent(previewPdfUrl)}&embedded=true` : previewPdfUrl}
+                className="w-full h-full rounded-xl border border-stone-300 bg-white"
                 title="PDF Preview"
               />
             </div>
