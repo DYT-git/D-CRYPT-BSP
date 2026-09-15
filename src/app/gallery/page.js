@@ -22,7 +22,7 @@ const CATEGORIES = [
 
 export default function GalleryPage() {
   const { data, selectedYear } = useData();
-  const { lang, b } = useLanguage();
+  const { lang, b, t, toDigits } = useLanguage();
   const [activeProgram,  setActiveProgram]  = useState('Durga Puja');
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedImage,  setSelectedImage]  = useState(null);
@@ -54,7 +54,7 @@ export default function GalleryPage() {
       <header className="max-w-3xl mx-auto text-center mt-10 sm:mt-12 mb-10 sm:mb-12 px-4">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon text-xs font-bold uppercase tracking-widest mb-3 shadow-sm">
           <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon animate-pulse" />
-          Memories & Archives • {selectedYear}
+          {b('স্মৃতি ও ঐতিহ্য', 'Memories & Archives')} • {toDigits(selectedYear, lang)}
         </div>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-4 tracking-tight leading-tight">
           {b('স্মৃতির', 'Moments &')} <span className="text-brand-maroon">{b('গ্যালারি', 'Photo Gallery')}</span>
@@ -132,7 +132,7 @@ export default function GalleryPage() {
                     <button
                       type="button"
                       className="bg-black/50 hover:bg-brand-maroon text-white p-2.5 rounded-full backdrop-blur-md border border-white/20 transition-all shadow-md cursor-pointer"
-                      title="Download"
+                      title={b('ছবি ডাউনলোড করুন', 'Download Photo')}
                       onClick={e => {
                         e.stopPropagation();
                         triggerDownload(item.src, `${item.title || 'gallery-photo'}.jpg`);
@@ -143,7 +143,7 @@ export default function GalleryPage() {
                   </div>
                   <div>
                     <span className="text-white/90 text-[10px] uppercase tracking-widest font-bold px-2.5 py-0.5 rounded-full bg-black/50 border border-white/15 mb-2 inline-block">
-                      {item.category}
+                      {t(item.category)}
                     </span>
                     <h3 className="text-white font-serif font-bold text-lg leading-tight mt-1">{item.title}</h3>
                   </div>
@@ -163,8 +163,12 @@ export default function GalleryPage() {
             <div className="w-16 h-16 rounded-2xl bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-500">
               <ImageIcon className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-serif text-stone-600">এই বিভাগে কোনো ছবি আপলোড করা হয়নি।</h3>
-            <p className="text-stone-400 text-sm">শীঘ্রই নতুন ছবি যোগ করা হবে।</p>
+            <h3 className="text-xl font-serif text-stone-600">
+              {b('এই বিভাগে কোনো ছবি আপলোড করা হয়নি।', 'No photos uploaded in this category yet.')}
+            </h3>
+            <p className="text-stone-400 text-sm">
+              {b('শীঘ্রই নতুন ছবি যোগ করা হবে।', 'New photographs will be added soon.')}
+            </p>
           </div>
         )}
       </div>
@@ -184,7 +188,9 @@ export default function GalleryPage() {
             <img src={selectedImage.src} alt={selectedImage.title} className="max-h-[75vh] max-w-full object-contain rounded-2xl shadow-2xl border border-white/10" />
             <div className="flex items-center justify-between w-full bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-6 py-3.5 gap-4">
               <div className="min-w-0">
-                <span className="text-rose-200 text-[10px] uppercase tracking-widest font-bold block">{selectedImage.category}</span>
+                <span className="text-rose-200 text-[10px] uppercase tracking-widest font-bold block">
+                  {t(selectedImage.category)}
+                </span>
                 <h3 className="text-white font-bold text-lg truncate mt-0.5">{selectedImage.title}</h3>
               </div>
               <button
@@ -192,10 +198,10 @@ export default function GalleryPage() {
                 onClick={() => triggerDownload(selectedImage.src, `${selectedImage.title || 'gallery-photo'}.jpg`)}
                 className="flex items-center gap-2 bg-brand-maroon hover:bg-stone-900 text-white px-5 py-2.5 rounded-full font-bold transition-all text-sm border border-white/20 shrink-0 shadow-md cursor-pointer"
               >
-                <Download className="w-4 h-4" /> ডাউনলোড
+                <Download className="w-4 h-4" /> {b('ডাউনলোড', 'Download')}
               </button>
             </div>
-            <span className="text-white/50 text-xs">{lightboxIdx + 1} / {filteredGallery.length}</span>
+            <span className="text-white/50 text-xs">{toDigits(lightboxIdx + 1, lang)} / {toDigits(filteredGallery.length, lang)}</span>
           </div>
           {filteredGallery.length > 1 && (
             <button onClick={e => { e.stopPropagation(); navigate(1); }} className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-3.5 border border-white/20 transition z-50">

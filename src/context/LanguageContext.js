@@ -86,7 +86,16 @@ const dictBn = {
   "Bhog & Arati": "ভোগ ও বিশেষ আরতি",
   "Pandal Artist": "মণ্ডপ শিল্পী",
   "Idol Sculptor": "প্রতিমা শিল্পী",
-  "Lighting & Illumination": "আলোকসজ্জা"
+  "Lighting & Illumination": "আলোকসজ্জা",
+  "Pandal Construction & Decor": "মণ্ডপ নির্মাণ ও সজ্জা",
+  "Pandal Construction": "মণ্ডপ নির্মাণ",
+  "Idol & Sculpting": "প্রতিমা নির্মাণ",
+  "Lighting & Electrical": "আলোকসজ্জা ও বিদ্যুৎ",
+  "Bhog & Hospitality": "ভোগ ও আপ্যায়ন",
+  "Cultural Programs": "সাংস্কৃতিক অনুষ্ঠান",
+  "Publicity & Media": "প্রচার ও মিডিয়া",
+  "Audit Report": "অডিট রিপোর্ট",
+  "Audited Statement": "নিরীক্ষিত আর্থিক বিবরণী"
 };
 
 const dictEn = {
@@ -164,7 +173,16 @@ const dictEn = {
   "ভোগ ও বিশেষ আরতি": "Bhog & Special Arati",
   "মণ্ডপ শিল্পী": "Pandal Artist",
   "প্রতিমা শিল্পী": "Idol Sculptor",
-  "আলোকসজ্জা": "Lighting & Illumination"
+  "আলোকসজ্জা": "Lighting & Illumination",
+  "মণ্ডপ নির্মাণ ও সজ্জা": "Pandal Construction & Decor",
+  "মণ্ডপ নির্মাণ": "Pandal Construction",
+  "প্রতিমা নির্মাণ": "Idol & Sculpting",
+  "আলোকসজ্জা ও বিদ্যুৎ": "Lighting & Electrical",
+  "ভোগ ও আপ্যায়ন": "Bhog & Hospitality",
+  "সাংস্কৃতিক অনুষ্ঠান": "Cultural Programs",
+  "প্রচার ও মিডিয়া": "Publicity & Media",
+  "অডিট রিপোর্ট": "Audit Report",
+  "নিরীক্ষিত আর্থিক বিবরণী": "Audited Statement"
 };
 
 const LanguageContext = createContext();

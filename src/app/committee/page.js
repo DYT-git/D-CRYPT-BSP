@@ -6,7 +6,7 @@ import YearSelector from "@/components/YearSelector";
 
 export default function CommitteePage() {
   const { data, selectedYear } = useData();
-  const { lang, b } = useLanguage();
+  const { lang, b, t, toDigits } = useLanguage();
   const members = data.members.filter(m => m.year === selectedYear);
 
   return (
@@ -19,7 +19,7 @@ export default function CommitteePage() {
       <header className="max-w-3xl mx-auto text-center mt-10 sm:mt-12 mb-16 px-4">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon text-xs font-bold uppercase tracking-widest mb-3 shadow-sm">
           <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon animate-pulse" />
-          Leadership & Governance • {selectedYear}
+          {b('নেতৃত্ব ও পরিচালনা', 'Leadership & Governance')} • {toDigits(selectedYear)}
         </div>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-4 tracking-tight leading-tight">
           {b('আমাদের পরিচালনা', 'Executive')} <span className="text-brand-maroon">{b('কমিটি', 'Committee')}</span>
@@ -39,15 +39,15 @@ export default function CommitteePage() {
             <div className="mb-16 sm:mb-20">
               <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
                 <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 text-[11px] font-bold uppercase tracking-wider mb-2">
-                  <ShieldCheck className="w-3.5 h-3.5 text-brand-maroon" /> Core Office Bearers
+                  <ShieldCheck className="w-3.5 h-3.5 text-brand-maroon" /> {b('মূল পদাধিকারী', 'Core Office Bearers')}
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
-                  শীর্ষ কার্যনির্বাহী <span className="text-brand-maroon">নেতৃত্ব</span>
+                  {b('শীর্ষ কার্যনির্বাহী', 'Executive')} <span className="text-brand-maroon">{b('নেতৃত্ব', 'Leadership')}</span>
                 </h2>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-5 sm:gap-8 max-w-3xl mx-auto">
-                {members.filter(m => ['সভাপতি', 'সম্পাদক', 'President', 'Secretary'].includes(m.role)).map((member, i) => (
+                {members.filter(m => ['সভাপতি', 'সম্পাদক', 'সাধারণ সম্পাদক', 'President', 'Secretary', 'General Secretary'].includes(m.role)).map((member, i) => (
                   <div
                     key={i}
                     className="group relative bg-white rounded-3xl p-5 sm:p-8 text-center shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden border border-stone-200/80 hover:border-brand-maroon/30"
@@ -68,7 +68,7 @@ export default function CommitteePage() {
                       {member.name}
                     </h3>
                     <div className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon font-bold text-xs uppercase tracking-widest shadow-sm">
-                      {member.role}
+                      {t(member.role)}
                     </div>
                   </div>
                 ))}
@@ -79,21 +79,22 @@ export default function CommitteePage() {
             <div>
               <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
                 <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-stone-100 border border-stone-200 text-stone-700 text-[11px] font-bold uppercase tracking-wider mb-2">
-                  ✦ Committee Members
+                  ✦ {b('কমিটি সদস্যবৃন্দ', 'Committee Members')}
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
-                  কমিটির অন্যান্য <span className="text-brand-maroon">সদস্যবৃন্দ</span>
+                  {b('কমিটির অন্যান্য', 'Other Esteemed')} <span className="text-brand-maroon">{b('সদস্যবৃন্দ', 'Members')}</span>
                 </h2>
-                <p className="text-stone-500 text-xs sm:text-sm mt-1">বিভিন্ন উপ-কমিটি ও সেবামূলক কাজের দায়িত্বপ্রাপ্ত কর্মকর্তাবৃন্দ</p>
+                <p className="text-stone-500 text-xs sm:text-sm mt-1">
+                  {b('বিভিন্ন উপ-কমিটি ও সেবামূলক কাজের দায়িত্বপ্রাপ্ত কর্মকর্তাবৃন্দ', 'Sub-committee coordinators and dedicated community welfare executives')}
+                </p>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
-                {members.filter(m => !['সভাপতি', 'সম্পাদক', 'President', 'Secretary'].includes(m.role)).map((member, i) => (
+                {members.filter(m => !['সভাপতি', 'সম্পাদক', 'সাধারণ সম্পাদক', 'President', 'Secretary', 'General Secretary'].includes(m.role)).map((member, i) => (
                   <div
                     key={i}
                     className="group relative bg-white rounded-2xl p-3.5 sm:p-5 text-center shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-stone-200/80 hover:border-brand-maroon/30 flex flex-col items-center justify-between"
                   >
-                    {/* Top Subtle Accent */}
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                     <div className="w-full flex flex-col items-center">
@@ -110,24 +111,27 @@ export default function CommitteePage() {
                     </div>
 
                     <span className="text-[11px] sm:text-xs text-stone-500 font-semibold px-2 sm:px-2.5 py-0.5 rounded-full bg-stone-100 border border-stone-200/60 mt-2">
-                      {member.role}
+                      {t(member.role)}
                     </span>
                   </div>
                 ))}
               </div>
 
-              {members.filter(m => !['সভাপতি', 'সম্পাদক', 'President', 'Secretary'].includes(m.role)).length === 0 && (
-                <div className="text-center text-stone-400 italic py-8">সাধারণ সদস্যদের তালিকা আপডেট করা হচ্ছে।</div>
+              {members.filter(m => !['সভাপতি', 'সম্পাদক', 'সাধারণ সম্পাদক', 'President', 'Secretary', 'General Secretary'].includes(m.role)).length === 0 && (
+                <div className="text-center text-stone-400 italic py-8">
+                  {b('সাধারণ সদস্যদের তালিকা শীঘ্রই আপডেট করা হবে।', 'General member list will be updated shortly.')}
+                </div>
               )}
             </div>
           </>
         ) : (
           <div className="text-center py-20 bg-white/80 rounded-3xl border border-dashed border-stone-300 text-stone-500">
-            <h3 className="text-2xl font-serif">এই বছরের কমিটির তথ্য এখনও প্রকাশ করা হয়নি।</h3>
+            <h3 className="text-2xl font-serif">
+              {b('এই বছরের কমিটির তথ্য এখনও প্রকাশ করা হয়নি।', 'Committee list for this year has not been published yet.')}
+            </h3>
           </div>
         )}
       </div>
     </main>
   );
 }
-

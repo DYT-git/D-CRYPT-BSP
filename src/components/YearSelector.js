@@ -1,8 +1,10 @@
 'use client';
 import { useData, YEARS } from '@/context/DataContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function YearSelector() {
   const { selectedYear, setSelectedYear, data } = useData();
+  const { lang, b, toDigits } = useLanguage();
 
   // Check if a year has any data uploaded by admin
   const hasData = (y) => {
@@ -17,7 +19,9 @@ export default function YearSelector() {
 
   return (
     <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-stone-200/80 shadow-sm w-max mx-auto mb-8">
-      <span className="text-gray-500 font-bold tracking-widest uppercase text-xs">Viewing Archive:</span>
+      <span className="text-gray-500 font-bold tracking-widest uppercase text-xs">
+        {b('আর্কাইভ বর্ষ:', 'Viewing Archive:')}
+      </span>
       <select 
         value={selectedYear}
         onChange={(e) => setSelectedYear(Number(e.target.value))}
@@ -27,7 +31,7 @@ export default function YearSelector() {
           const available = hasData(y);
           return (
             <option key={y} value={y} disabled={!available}>
-              {y} {!available ? '🔒' : ''}
+              {toDigits(y, lang)} {!available ? '🔒' : ''}
             </option>
           );
         })}

@@ -8,7 +8,7 @@ import { triggerDownload } from "@/utils/download";
 
 export default function TransparencyPage() {
   const { data, settings, selectedYear } = useData();
-  const { lang, b } = useLanguage();
+  const { lang, b, t, toDigits } = useLanguage();
   const finances = data.finances.filter(f => f.year === selectedYear);
 
   return (
@@ -21,7 +21,7 @@ export default function TransparencyPage() {
       <header className="max-w-3xl mx-auto text-center mt-10 sm:mt-12 mb-12 sm:mb-16 px-4">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon text-xs font-bold uppercase tracking-widest mb-3 shadow-sm">
           <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon animate-pulse" />
-          Financial Integrity • {selectedYear}
+          {b('আর্থিক সততা ও স্বচ্ছতা', 'Financial Integrity')} • {toDigits(selectedYear, lang)}
         </div>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-4 tracking-tight leading-tight">
           {b('আর্থিক স্বচ্ছতা ও', 'Financial Transparency &')} <span className="text-brand-maroon">{b('হিসাব-নিকাশ', 'Audit Reports')}</span>
@@ -38,10 +38,10 @@ export default function TransparencyPage() {
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
           <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 text-[11px] font-bold uppercase tracking-wider mb-2">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Budget & Accounts Overview
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> {b('বাজেট ও হিসাব বিবরণী', 'Budget & Accounts Overview')}
           </div>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
-            {selectedYear} বর্ষের আর্থিক <span className="text-emerald-700">বিবরণী</span>
+            {toDigits(selectedYear, lang)} {b('বর্ষের আর্থিক', 'Financial')} <span className="text-emerald-700">{b('বিবরণী', 'Statement')}</span>
           </h2>
         </div>
 
@@ -54,12 +54,14 @@ export default function TransparencyPage() {
               <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8" />
             </div>
             <span className="text-[11px] sm:text-xs font-bold text-emerald-700 uppercase tracking-widest block mb-1 sm:mb-2">
-              মোট সংগৃহীত তহবিল
+              {b('মোট সংগৃহীত তহবিল', 'Total Collection')}
             </span>
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-stone-900 tracking-tight leading-none mb-1.5 sm:mb-2">
-              {settings.totalCollection || '₹ 14,50,000'}
+              {toDigits(settings.totalCollection || (lang === 'bn' ? '₹ ১৪,৫০,০০০' : '₹ 14,50,000'), lang)}
             </h3>
-            <p className="text-xs text-stone-500 font-medium">চাঁদা, বিজ্ঞাপন ও শুভানুধ্যায়ীদের অনুদান</p>
+            <p className="text-xs text-stone-500 font-medium">
+              {b('চাঁদা, বিজ্ঞাপন ও শুভানুধ্যায়ীদের অনুদান', 'Subscriptions, advertisements, and donations')}
+            </p>
           </div>
 
           {/* Metric 2: Total Expense */}
@@ -70,12 +72,14 @@ export default function TransparencyPage() {
               <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />
             </div>
             <span className="text-[11px] sm:text-xs font-bold text-rose-700 uppercase tracking-widest block mb-1 sm:mb-2">
-              মোট সামগ্রিক খরচ
+              {b('মোট সামগ্রিক খরচ', 'Total Expenditure')}
             </span>
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-rose-600 tracking-tight leading-none mb-1.5 sm:mb-2">
-              {settings.totalExpense || '₹ 13,85,000'}
+              {toDigits(settings.totalExpense || (lang === 'bn' ? '₹ ১৩,৮৫,০০০' : '₹ 13,85,000'), lang)}
             </h3>
-            <p className="text-xs text-stone-500 font-medium">মণ্ডপ, প্রতিমা, আলো ও আপ্যায়ন</p>
+            <p className="text-xs text-stone-500 font-medium">
+              {b('মণ্ডপ, প্রতিমা, আলো ও আপ্যায়ন', 'Pandal, idol, illumination, and hospitality')}
+            </p>
           </div>
 
           {/* Metric 3: Major Expense */}
@@ -86,12 +90,14 @@ export default function TransparencyPage() {
               <Landmark className="w-6 h-6 sm:w-8 sm:h-8" />
             </div>
             <span className="text-[11px] sm:text-xs font-bold text-brand-maroon uppercase tracking-widest block mb-1 sm:mb-2">
-              প্রধান ব্যয়ের খাত
+              {b('প্রধান ব্যয়ের খাত', 'Major Expense Area')}
             </span>
             <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-stone-900 leading-tight mb-1">
-              {settings.majorExpenseTitle || 'মণ্ডপ নির্মাণ ও সজ্জা'}
+              {t(settings.majorExpenseTitle || 'মণ্ডপ নির্মাণ ও সজ্জা')}
             </h3>
-            <p className="text-xs sm:text-sm font-semibold text-brand-maroon">{settings.majorExpenseAmount || '₹ ৬,০০,০০০'}</p>
+            <p className="text-xs sm:text-sm font-semibold text-brand-maroon">
+              {toDigits(settings.majorExpenseAmount || (lang === 'bn' ? '₹ ৬,০০,০০০' : '₹ 6,00,000'), lang)}
+            </p>
           </div>
         </div>
       </section>
@@ -100,12 +106,14 @@ export default function TransparencyPage() {
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
           <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon text-[11px] font-bold uppercase tracking-wider mb-2">
-            ✦ Verified Audit Documents
+            ✦ {b('যাচাইকৃত অডিট নথি', 'Verified Audit Documents')}
           </div>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
-            অডিট ও আর্থিক রিপোর্ট <span className="text-brand-maroon">ডাউনলোড</span>
+            {b('অডিট ও আর্থিক রিপোর্ট', 'Audited Statements & Financial')} <span className="text-brand-maroon">{b('ডাউনলোড', 'Reports')}</span>
           </h2>
-          <p className="text-stone-500 text-xs sm:text-sm mt-1">পূর্ণাঙ্গ হিসাব দেখতে নিচের যেকোনো ডকুমেন্টে ক্লিক করুন</p>
+          <p className="text-stone-500 text-xs sm:text-sm mt-1">
+            {b('পূর্ণাঙ্গ হিসাব দেখতে নিচের যেকোনো ডকুমেন্টে ক্লিক করুন', 'Click on any document below to inspect audited accounts or download verified statements.')}
+          </p>
         </div>
 
         {finances.length > 0 ? (
@@ -125,23 +133,23 @@ export default function TransparencyPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm sm:text-base md:text-xl font-serif font-bold text-stone-900 group-hover:text-brand-maroon transition-colors truncate">
-                    {doc.title}
+                    {t(doc.title)}
                   </h3>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-stone-100 text-stone-500 border border-stone-200">
-                      পিডিএফ নথি
+                      {b('পিডিএফ নথি', 'PDF Document')}
                     </span>
-                    <span className="text-xs text-stone-400">সাল: {doc.year}</span>
+                    <span className="text-xs text-stone-400">{b('সাল:', 'Year:')} {toDigits(doc.year, lang)}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <div className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon font-bold text-xs group-hover:bg-brand-maroon group-hover:text-white transition-all shadow-sm">
-                    <span>দেখুন</span>
+                    <span>{b('দেখুন', 'View')}</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </div>
                   <button
                     type="button"
-                    title="Download PDF"
+                    title={b('পিডিএফ ডাউনলোড করুন', 'Download PDF')}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -157,8 +165,8 @@ export default function TransparencyPage() {
           </div>
         ) : (
           <div className="text-center py-20 bg-white/80 rounded-3xl border border-dashed border-stone-300 text-stone-500">
-            <h3 className="text-xl font-serif">এই বছরের কোনো আর্থিক রিপোর্ট এখনও আপলোড করা হয়নি।</h3>
-            <p className="text-stone-400 text-sm mt-1">অডিট সম্পন্ন হওয়ার পর নথিপত্র প্রকাশ করা হবে।</p>
+            <h3 className="text-xl font-serif">{b('এই বছরের কোনো আর্থিক রিপোর্ট এখনও আপলোড করা হয়নি।', 'No financial reports uploaded for this year yet.')}</h3>
+            <p className="text-stone-400 text-sm mt-1">{b('অডিট সম্পন্ন হওয়ার পর নথিপত্র প্রকাশ করা হবে।', 'Documents will be published after the audit is finalized.')}</p>
           </div>
         )}
       </section>
