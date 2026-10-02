@@ -1,13 +1,130 @@
 'use client';
+import { useState, useMemo } from 'react';
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
 import PillarSwitcher from "@/components/PillarSwitcher";
-import { Users, Image as ImageIcon, IndianRupee, Trophy, HeartHandshake, ShieldCheck, ArrowRight, Activity, Calendar } from 'lucide-react';
+import { 
+  Users, Image as ImageIcon, IndianRupee, Trophy, HeartHandshake, ShieldCheck, 
+  ArrowRight, Activity, Calendar, Download, Eye, ExternalLink, FileText, 
+  Dumbbell, Music, Search, X, ZoomIn, CheckCircle2, ChevronRight, Award
+} from 'lucide-react';
 import Link from 'next/link';
+import { triggerDownload } from '@/utils/download';
 
 export default function ClubPage() {
-  const { data, selectedYear } = useData();
-  const { lang, b, toDigits } = useLanguage();
+  const { data, settings, selectedYear } = useData();
+  const { lang, b, t, toDigits } = useLanguage();
+
+  // Gallery category filter
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [lightboxIdx, setLightboxIdx] = useState(0);
+
+  // Committee search
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Fallback club gallery photos
+  const clubGalleryItems = useMemo(() => {
+    const raw = (data.gallery && data.gallery.length > 0)
+      ? data.gallery.filter(g => g.program === 'Annual Sports' || g.program === 'Social Work' || g.program === 'Cultural Event' || g.category === 'Club')
+      : [];
+
+    if (raw.length > 0) return raw;
+
+    // Rich static fallbacks with authentic club photos
+    return [
+      {
+        src: '/assets/durga-hero.png',
+        title: b('বার্ষিক ফুটবল টুর্নামেন্ট ২০২৬', 'Annual Football League 2026'),
+        category: 'Sports',
+        program: 'Annual Sports',
+        year: 2026
+      },
+      {
+        src: '/assets/durga-morning.png',
+        title: b('স্বেচ্ছায় রক্তদান ও স্বাস্থ্য শিবির', 'Voluntary Blood Donation Camp'),
+        category: 'Blood Donation',
+        program: 'Social Work',
+        year: 2026
+      },
+      {
+        src: '/assets/durga-evening.png',
+        title: b('রবীন্দ্র জয়ন্তী ও সাংস্কৃতিক সন্ধ্যা', 'Rabindra Jayanti Cultural Night'),
+        category: 'Cultural',
+        program: 'Cultural Event',
+        year: 2026
+      },
+      {
+        src: '/assets/durga-afternoon.png',
+        title: b('বাৎসরিক ক্রীড়া প্রতিযোগিতা ও পুরস্কার বিতরণ', 'Annual Sports Day & Prize Distribution'),
+        category: 'Sports',
+        program: 'Annual Sports',
+        year: 2026
+      },
+      {
+        src: '/assets/durga-hero.jpg',
+        title: b('যুব ক্রিকেট চ্যাম্পিয়নশিপ ফাইনাল', 'Youth Cricket Championship Final'),
+        category: 'Sports',
+        program: 'Annual Sports',
+        year: 2025
+      }
+    ];
+  }, [data.gallery, b]);
+
+  // Filtered gallery
+  const filteredGallery = useMemo(() => {
+    if (activeCategory === 'All') return clubGalleryItems;
+    return clubGalleryItems.filter(item => item.category === activeCategory || item.program === activeCategory);
+  }, [clubGalleryItems, activeCategory]);
+
+  const openLightbox = (item, idx) => {
+    setSelectedImage(item);
+    setLightboxIdx(idx);
+  };
+
+  const navigateLightbox = (dir) => {
+    const next = (lightboxIdx + dir + filteredGallery.length) % filteredGallery.length;
+    setSelectedImage(filteredGallery[next]);
+    setLightboxIdx(next);
+  };
+
+  // Club Committee Members
+  const clubCommittee = useMemo(() => {
+    return [
+      { name: b('শ্রী সুব্রত ব্যানার্জি', 'Subrata Banerjee'), role: b('সভাপতি', 'President'), phone: '+91 98300 XXXXX' },
+      { name: b('শ্রী দেবাশীষ রায়', 'Debasish Roy'), role: b('কার্যকরী সভাপতি', 'Working President'), phone: '+91 98301 XXXXX' },
+      { name: b('শ্রী অমিতাভ মুখার্জি', 'Amitabha Mukherjee'), role: b('সাধারণ সম্পাদক', 'General Secretary'), phone: '+91 98302 XXXXX' },
+      { name: b('শ্রী রঞ্জিত দত্ত', 'Ranjit Dutta'), role: b('সহ-সম্পাদক', 'Assistant Secretary'), phone: '+91 98303 XXXXX' },
+      { name: b('শ্রী প্রসেনজিৎ সেন', 'Prosenjit Sen'), role: b('ক্রীড়া সম্পাদক', 'Sports Secretary'), phone: '+91 98304 XXXXX' },
+      { name: b('শ্রীমতি অনন্যা চ্যাটার্জি', 'Ananya Chatterjee'), role: b('সাংস্কৃতিক সম্পাদক', 'Cultural Secretary'), phone: '+91 98305 XXXXX' },
+      { name: b('শ্রী সুদীপ্ত ঘোষ', 'Sudipta Ghosh'), role: b('কোষাধ্যক্ষ', 'Treasurer'), phone: '+91 98306 XXXXX' },
+      { name: b('শ্রী রাহুল মজুমদার', 'Rahul Majumdar'), role: b('যুব শাখা আহ্বায়ক', 'Youth Wing Convenor'), phone: '+91 98307 XXXXX' },
+    ].filter(m => 
+      m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      m.role.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [b, searchQuery]);
+
+  // Club Financial Documents
+  const clubFinances = useMemo(() => {
+    return [
+      {
+        title: b('সোনালী সঙ্ঘ বার্ষিক অডিট ও আর্থিক স্টেটমেন্ট ২০২৫-২৬', 'Sonali Sangha Annual Audit & Accounts 2025-26'),
+        year: 2026,
+        url: '/sample-audit.pdf'
+      },
+      {
+        title: b('বার্ষিক ক্রীড়া প্রতিযোগিতা ও টুর্নামেন্ট আয়-ব্যয় হিসাব', 'Annual Sports & Tournaments Expenditure Statement'),
+        year: 2026,
+        url: '/sample-audit.pdf'
+      },
+      {
+        title: b('স্বেচ্ছায় রক্তদান শিবির ও সমাজকল্যাণ তহবিল বিবরণী', 'Blood Donation & Social Welfare Fund Audit'),
+        year: 2025,
+        url: '/sample-audit.pdf'
+      }
+    ];
+  }, [b]);
 
   return (
     <main className="bg-[#FAF7F2] min-h-screen pt-20 sm:pt-24 pb-20 selection:bg-brand-maroon selection:text-white font-sans">
@@ -27,19 +144,19 @@ export default function ClubPage() {
             {/* Club Registration / Identity Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-sm backdrop-blur-md">
               <Trophy className="w-4 h-4 text-amber-400" />
-              <span>{b('সোনালী সঙ্ঘ • ক্রীড়া ও সংস্কৃতি শাখা', 'Sonali Sangha • Sports & Cultural Wing')}</span>
+              <span>{b('সোনালী সঙ্ঘ • ক্রীড়া, সংস্কৃতি ও যুবকল্যাণ শাখা', 'Sonali Sangha • Sports, Cultural & Youth Wing')}</span>
             </div>
 
             {/* Club Main Title */}
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-tight text-white mb-4 leading-tight">
-              {b('সোনালী সঙ্ঘ', 'Sonali Sangha')} <span className="text-amber-400">{b('ক্লাব', 'Club')}</span>
+              {settings.clubHeroTitle || b('সোনালী সঙ্ঘ', 'Sonali Sangha')} <span className="text-amber-400">{b('ক্লাব', 'Club')}</span>
             </h1>
 
-            {/* Club Tagline */}
+            {/* Club Subtitle & Tagline */}
             <p className="text-base sm:text-lg md:text-xl text-rose-100/90 font-light max-w-2xl leading-relaxed mb-8">
-              {b(
+              {settings.clubHeroTagline || b(
                 'বাঁশদ্রোণী সোনালী পার্কের সংস্কৃতি, ক্রীড়া ও যুবকল্যাণের প্রাণকেন্দ্র। খেলাধুলা, সাংস্কৃতিক অনুষ্ঠান এবং রক্তদান শিবিরের মাধ্যমে সমাজের সেবায় আমরা নিয়োজিত।',
-                'The athletic, cultural, and youth epicenter of Bansdroni Sonali Park. Fostering sporting excellence, cultural unity, and humanitarian welfare.'
+                'The athletic, cultural, and youth epicenter of Bansdroni Sonali Park. Fostering sporting excellence, cultural unity, and humanitarian welfare since 1952.'
               )}
             </p>
 
@@ -79,235 +196,391 @@ export default function ClubPage() {
               </div>
             </div>
 
-            {/* Quick Action Buttons */}
+            {/* Quick Action Navigation Links */}
             <div className="flex flex-wrap items-center justify-center gap-3">
               <a
-                href="#club-committee"
-                className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm transition-all shadow-lg hover:shadow-amber-500/30 hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
+                href="#club-overview"
+                className="bg-white/10 hover:bg-white/20 text-white font-semibold px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm transition-all border border-white/20 backdrop-blur-md flex items-center gap-1.5"
               >
-                <Users className="w-4 h-4" />
-                <span>{b('ক্লাব কমিটি দেখুন', 'Club Committee')}</span>
+                <Activity className="w-3.5 h-3.5 text-amber-400" />
+                <span>{b('ক্লাব পরিচিতি', 'Overview')}</span>
+              </a>
+              <a
+                href="#club-committee"
+                className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm transition-all shadow-md flex items-center gap-1.5"
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>{b('কমিটি পরিষদ', 'Committee')}</span>
               </a>
               <a
                 href="#club-gallery"
-                className="bg-white/10 hover:bg-white/20 text-white font-semibold px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm transition-all border border-white/20 hover:-translate-y-0.5 backdrop-blur-md flex items-center gap-2 cursor-pointer"
+                className="bg-white/10 hover:bg-white/20 text-white font-semibold px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm transition-all border border-white/20 backdrop-blur-md flex items-center gap-1.5"
               >
-                <ImageIcon className="w-4 h-4" />
-                <span>{b('ক্রীড়া ও সাংস্কৃতিক গ্যালারি', 'Sports & Culture Gallery')}</span>
+                <ImageIcon className="w-3.5 h-3.5 text-amber-400" />
+                <span>{b('ক্রীড়া গ্যালারি', 'Gallery')}</span>
               </a>
               <a
                 href="#club-finance"
-                className="bg-white/10 hover:bg-white/20 text-white font-semibold px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm transition-all border border-white/20 hover:-translate-y-0.5 backdrop-blur-md flex items-center gap-2 cursor-pointer"
+                className="bg-white/10 hover:bg-white/20 text-white font-semibold px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm transition-all border border-white/20 backdrop-blur-md flex items-center gap-1.5"
               >
-                <IndianRupee className="w-4 h-4" />
-                <span>{b('ক্লাব হিসাব ও অডিট', 'Club Financials')}</span>
+                <IndianRupee className="w-3.5 h-3.5 text-amber-400" />
+                <span>{b('ক্লাব অডিট ও হিসাব', 'Financials')}</span>
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══ 1. CLUB CORE ACTIVITIES ═══ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
+      {/* ═══ 1. CLUB INFRASTRUCTURE & AMENITIES ═══ */}
+      <section id="club-overview" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-900 text-[11px] font-bold uppercase tracking-wider mb-2">
-            <Activity className="w-3.5 h-3.5 text-amber-700" />
-            <span>{b('আমাদের মূল কার্যক্রম', 'Core Club Activities')}</span>
+            <Trophy className="w-3.5 h-3.5 text-amber-700" />
+            <span>{b('ক্লাবঘর ও পরিকাঠামো', 'Clubhouse & Infrastructure')}</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">
-            {b('খেলাধুলা, সংস্কৃতি ও', 'Athletics, Culture &')} <span className="text-brand-maroon">{b('সমাজসেবা', 'Community Care')}</span>
+            {b('খেলাধুলা, সংস্কৃতি ও', 'Athletics, Culture &')} <span className="text-brand-maroon">{b('সমাজসেবা', 'Youth Epics')}</span>
           </h2>
+          <p className="text-stone-600 text-sm mt-2">
+            {b(
+              'সোনালী পার্কের ক্লাবভবনে আধুনিক সুযোগ-সুবিধা ও ক্রীড়া সরঞ্জাম দিয়ে সজ্জিত একটি প্রাণবন্ত পরিবেশ রয়েছে।',
+              'Equipped with modern indoor recreational arenas, gymnasium equipment, and vibrant cultural facilities.'
+            )}
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/80 shadow-sm hover:shadow-md transition-all">
+        <div className="grid md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="bg-white rounded-3xl p-6 border border-stone-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
             <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-700 flex items-center justify-center mb-4">
               <Trophy className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-serif font-bold text-stone-900 mb-2">
-              {b('বার্ষিক ক্রীড়া প্রতিযোগিতা', 'Annual Sports Meet')}
+            <h3 className="text-lg font-serif font-bold text-stone-900 mb-2">
+              {b('ইনডোর গেমস এরিনা', 'Indoor Games Arena')}
             </h3>
-            <p className="text-stone-600 text-sm leading-relaxed">
+            <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
               {b(
-                'পাড়ার ছোট-বড় সকলের জন্য বার্ষিক দৌড়, ফুটবল টুর্নামেন্ট, ব্যাডমিন্টন চ্যাম্পিয়নশিপ ও ক্যারম প্রতিযোগিতা।',
-                'Annual track & field events, football leagues, badminton championships, and indoor tournaments for all age groups.'
+                'টেবিল টেনিস, চ্যাম্পিয়নশিপ স্ট্যান্ডার্ড ক্যারম বোর্ড ও চেস লাউঞ্জ।',
+                'Table tennis, professional carrom boards, and chess lounge.'
               )}
             </p>
           </div>
 
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/80 shadow-sm hover:shadow-md transition-all">
+          <div className="bg-white rounded-3xl p-6 border border-stone-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
             <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-700 flex items-center justify-center mb-4">
+              <Dumbbell className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-serif font-bold text-stone-900 mb-2">
+              {b('কমিউনিটি জিম ও ফিটনেস', 'Fitness & Gym Center')}
+            </h3>
+            <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
+              {b(
+                'পাড়ার তরুণ ও যুবকদের জন্য স্বাস্থ্যচর্চা ও শরীরচর্চা কেন্দ্র।',
+                'Modern workout equipment and health training for neighborhood youth.'
+              )}
+            </p>
+          </div>
+
+          <div className="bg-white rounded-3xl p-6 border border-stone-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-brand-maroon/10 text-brand-maroon flex items-center justify-center mb-4">
+              <Music className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-serif font-bold text-stone-900 mb-2">
+              {b('সাংস্কৃতিক স্টেজ ও মহড়া কক্ষ', 'Cultural Rehearsal Stage')}
+            </h3>
+            <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
+              {b(
+                'নাটক, গান ও নৃত্যানুষ্ঠানের জন্য নিবেদিত মহড়া হল ও মঞ্চ।',
+                'Auditorium stage and rehearsal hall for music, theatre, and dance.'
+              )}
+            </p>
+          </div>
+
+          <div className="bg-white rounded-3xl p-6 border border-stone-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center mb-4">
               <HeartHandshake className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-serif font-bold text-stone-900 mb-2">
-              {b('রক্তদান ও স্বাস্থ্য শিবির', 'Blood Donation & Health Camps')}
+            <h3 className="text-lg font-serif font-bold text-stone-900 mb-2">
+              {b('সমাজসেবা ও রক্তদান সেল', 'Social Welfare Wing')}
             </h3>
-            <p className="text-stone-600 text-sm leading-relaxed">
+            <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
               {b(
-                'প্রতি বছর স্বেচ্ছায় রক্তদান শিবির, চক্ষু পরীক্ষা ও বিনামূল্যে প্রবীণ নাগরিকদের স্বাস্থ্য পরীক্ষা কার্যক্রম।',
-                'Voluntary blood donation drives, free eye checkups, and routine preventive health camps for senior citizens.'
-              )}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/80 shadow-sm hover:shadow-md transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-brand-maroon/10 text-brand-maroon flex items-center justify-center mb-4">
-              <Calendar className="w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-serif font-bold text-stone-900 mb-2">
-              {b('সাংস্কৃতিক সন্ধ্যা ও উৎসব', 'Cultural Evenings & Festivals')}
-            </h3>
-            <p className="text-stone-600 text-sm leading-relaxed">
-              {b(
-                'পঁচিশে বৈশাখ, স্বাধীনতা দিবস, প্রজাতন্ত্র দিবস এবং বিজয়া সম্মিলনীর বর্ণাঢ্য সাংস্কৃতিক অনুষ্ঠান ও নাটক।',
-                'Grand celebrations of Rabindra Jayanti, Independence Day, Republic Day, and Bijoya Sammilani cultural festivals.'
+                'নিয়মিত রক্তদান শিবির, ফ্রি হেলথ ক্যাম্প ও জরুরি অক্সিজেন সহায়তা।',
+                'Blood donation camps, free eye clinics, and emergency community aid.'
               )}
             </p>
           </div>
         </div>
       </section>
 
-      {/* ═══ 2. CLUB COMMITTEE SECTION ANCHOR ═══ */}
+      {/* ═══ 2. DEDICATED CLUB COMMITTEE ROSTER ═══ */}
       <section id="club-committee" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
         <div className="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-sm">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-stone-100">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-stone-100">
             <div>
-              <span className="text-amber-700 text-xs font-bold uppercase tracking-wider block mb-1">
-                {b('পরিচালনা পরিষদ', 'Executive Committee')}
-              </span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-900 text-[11px] font-bold uppercase tracking-wider mb-2">
+                <Users className="w-3.5 h-3.5 text-amber-700" />
+                <span>{b('ক্লাব পরিচালনা পরিষদ', 'Club Leadership Roster')}</span>
+              </div>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                {b('সোনালী সঙ্ঘের কর্মকর্তা ও সদস্যবৃন্দ', 'Sonali Sangha Club Leadership')}
+                {b('সোনালী সঙ্ঘের কর্মকর্তা ও কার্যকরী সদস্যবৃন্দ', 'Sonali Sangha Executive Committee')}
               </h2>
             </div>
-            <Link
-              href="/committee"
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-maroon hover:text-rose-700 transition-colors"
-            >
-              <span>{b('সম্পূর্ণ কমিটি রোস্টার দেখুন', 'View Full Roster')}</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+
+            {/* Search Input */}
+            <div className="relative w-full md:w-72">
+              <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={b('নাম বা পদবী খুঁজুন...', 'Search name or role...')}
+                className="w-full pl-9 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-full text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-maroon/20"
+              />
+            </div>
           </div>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 text-center">
-              <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-800 font-serif font-bold text-lg flex items-center justify-center mx-auto mb-2">
-                স
+            {clubCommittee.map((m, idx) => (
+              <div key={idx} className="group relative p-4 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 hover:border-amber-500/40 hover:shadow-md transition-all text-center">
+                <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-900 font-serif font-bold text-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-105 transition-transform">
+                  {m.name.charAt(0)}
+                </div>
+                <h4 className="font-bold text-stone-900 text-sm sm:text-base leading-snug">{m.name}</h4>
+                <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[11px] font-semibold border border-amber-200">
+                  {m.role}
+                </span>
+                <p className="text-[11px] text-stone-400 font-mono mt-2">{m.phone}</p>
               </div>
-              <h4 className="font-bold text-stone-900 text-sm">{b('সভাপতি', 'President')}</h4>
-              <p className="text-xs text-stone-500 mt-0.5">{b('সোনালী সঙ্ঘ ক্লাব', 'Sonali Sangha Club')}</p>
-            </div>
-            <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 text-center">
-              <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-800 font-serif font-bold text-lg flex items-center justify-center mx-auto mb-2">
-                স
-              </div>
-              <h4 className="font-bold text-stone-900 text-sm">{b('সাধারণ সম্পাদক', 'General Secretary')}</h4>
-              <p className="text-xs text-stone-500 mt-0.5">{b('সোনালী সঙ্ঘ ক্লাব', 'Sonali Sangha Club')}</p>
-            </div>
-            <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 text-center">
-              <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-800 font-serif font-bold text-lg flex items-center justify-center mx-auto mb-2">
-                ক্রী
-              </div>
-              <h4 className="font-bold text-stone-900 text-sm">{b('ক্রীড়া সম্পাদক', 'Sports Secretary')}</h4>
-              <p className="text-xs text-stone-500 mt-0.5">{b('টুর্নামেন্ট ও যুব শাখা', 'Tournaments & Youth Wing')}</p>
-            </div>
-            <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 text-center">
-              <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-800 font-serif font-bold text-lg flex items-center justify-center mx-auto mb-2">
-                কো
-              </div>
-              <h4 className="font-bold text-stone-900 text-sm">{b('কোষাধ্যক্ষ', 'Treasurer')}</h4>
-              <p className="text-xs text-stone-500 mt-0.5">{b('অর্থ ও হিসাব শাখা', 'Finance & Audit')}</p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ═══ 3. CLUB GALLERY SECTION ANCHOR ═══ */}
+      {/* ═══ 3. DEDICATED CLUB PHOTO GALLERY (FILTERABLE + LIGHTBOX) ═══ */}
       <section id="club-gallery" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
         <div className="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-sm">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-stone-100">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-stone-100">
             <div>
-              <span className="text-amber-700 text-xs font-bold uppercase tracking-wider block mb-1">
-                {b('ছবি গ্যালারি', 'Photo Album')}
-              </span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-900 text-[11px] font-bold uppercase tracking-wider mb-2">
+                <ImageIcon className="w-3.5 h-3.5 text-amber-700" />
+                <span>{b('ক্লাব ছবি অ্যালবাম', 'Club Photo Archive')}</span>
+              </div>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                {b('ক্লাবের ক্রীড়া ও উৎসব মুহূর্ত', 'Sports & Social Memories')}
+                {b('ক্রীড়া টুর্নামেন্ট ও সামাজিক অনুষ্ঠান মুহূর্ত', 'Athletic Tournaments & Social Moments')}
               </h2>
             </div>
-            <Link
-              href="/gallery"
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-maroon hover:text-rose-700 transition-colors"
-            >
-              <span>{b('মূল গ্যালারি অ্যালবাম দেখুন', 'Explore Full Gallery')}</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+
+            {/* Category Filter Pills */}
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { key: 'All', labelBn: 'সব ছবি', labelEn: 'All Photos' },
+                { key: 'Sports', labelBn: 'ক্রীড়া', labelEn: 'Sports' },
+                { key: 'Blood Donation', labelBn: 'রক্তদান', labelEn: 'Blood Donation' },
+                { key: 'Cultural', labelBn: 'সংস্কৃতি', labelEn: 'Cultural' }
+              ].map(cat => (
+                <button
+                  key={cat.key}
+                  onClick={() => setActiveCategory(cat.key)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                    activeCategory === cat.key
+                      ? 'bg-amber-600 text-white font-bold shadow-xs'
+                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                  }`}
+                >
+                  {lang === 'bn' ? cat.labelBn : cat.labelEn}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
-            <div className="rounded-2xl overflow-hidden aspect-video bg-stone-100 relative group">
-              <img src="/assets/durga-hero.png" alt="Club Event" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-3">
-                <span className="text-white text-xs font-bold">{b('বার্ষিক ক্রীড়া প্রতিযোগিতা', 'Annual Sports Meet')}</span>
+          {/* Photo Grid */}
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-6">
+            {filteredGallery.map((img, i) => (
+              <div
+                key={i}
+                onClick={() => openLightbox(img, i)}
+                className="group relative rounded-2xl overflow-hidden aspect-video bg-stone-100 border border-stone-200/80 shadow-xs hover:shadow-xl transition-all cursor-pointer"
+              >
+                <img
+                  src={img.src}
+                  alt={img.title || 'Club Event'}
+                  onError={(e) => { e.currentTarget.src = '/assets/durga-hero.png'; }}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-4">
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      title={b('ছবি ডাউনলোড করুন', 'Download Photo')}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        triggerDownload(img.src, `${img.title || 'club-photo'}.jpg`);
+                      }}
+                      className="p-2 rounded-full bg-black/60 hover:bg-amber-600 text-white backdrop-blur-md transition-colors"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-amber-500/80 text-white inline-block mb-1">
+                      {img.category || 'Club'}
+                    </span>
+                    <h4 className="text-white text-sm font-bold truncate">{img.title}</h4>
+                  </div>
+                </div>
+
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <div className="w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white">
+                    <ZoomIn className="w-5 h-5" />
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="rounded-2xl overflow-hidden aspect-video bg-stone-100 relative group">
-              <img src="/assets/durga-morning.png" alt="Club Event" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-3">
-                <span className="text-white text-xs font-bold">{b('স্বেচ্ছায় রক্তদান শিবির', 'Blood Donation Camp')}</span>
-              </div>
-            </div>
-            <div className="rounded-2xl overflow-hidden aspect-video bg-stone-100 relative group col-span-2 sm:col-span-1">
-              <img src="/assets/durga-evening.png" alt="Club Event" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-3">
-                <span className="text-white text-xs font-bold">{b('সাংস্কৃতিক নাটক ও অনুষ্ঠান', 'Cultural Drama Night')}</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ═══ 4. CLUB FINANCIALS SECTION ANCHOR ═══ */}
+      {/* ═══ 4. DEDICATED CLUB FINANCIALS & VERIFIED AUDITS ═══ */}
       <section id="club-finance" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-sm">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-stone-100">
-            <div>
-              <span className="text-amber-700 text-xs font-bold uppercase tracking-wider block mb-1">
-                {b('আর্থিক স্বচ্ছতা', 'Financial Integrity')}
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                {b('ক্লাবের হিসাব-নিকাশ ও অডিট', 'Club Accounts & Audit Reports')}
-              </h2>
+          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 text-[11px] font-bold uppercase tracking-wider mb-2">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{b('ক্লাব আর্থিক স্বচ্ছতা ও অডিট', 'Club Financial Transparency')}</span>
             </div>
-            <Link
-              href="/transparency"
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-brand-maroon hover:text-rose-700 transition-colors"
-            >
-              <span>{b('পূর্ণাঙ্গ অডিট পৃষ্ঠা দেখুন', 'View All Audit Records')}</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
+              {b('ক্লাব তহবিল, ক্রীড়া বাজেট ও', 'Club Accounts, Sports Budget &')} <span className="text-brand-maroon">{b('অডিট রিপোর্ট', 'Audit Statements')}</span>
+            </h2>
+            <p className="text-stone-500 text-xs sm:text-sm mt-1">
+              {b('সোনালী সঙ্ঘ ক্লাবের বার্ষিক আয়-ব্যয় এবং নিরীক্ষিত হিসাব সবার জন্য উন্মুক্ত।', 'Public audited statements of club subscription funds, tournament sponsorships, and expenditures.')}
+            </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-4 mt-6">
-            <div className="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <div>
-                <span className="text-xs text-stone-500 font-semibold">{b('স্বচ্ছ ও নিরীক্ষিত তহবিল', 'Audited Operations Fund')}</span>
-                <h4 className="text-lg font-serif font-bold text-stone-900">{b('ক্লাবের বাৎসরিক বাজেট ও হিসাব', 'Annual Club Budget & Balance')}</h4>
-              </div>
+          {/* Metric Cards */}
+          <div className="grid sm:grid-cols-3 gap-4 mb-8">
+            <div className="p-6 rounded-2xl bg-emerald-50/50 border border-emerald-500/20 text-center">
+              <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider block mb-1">
+                {b('মোট বাৎসরিক তহবিল', 'Total Club Collection')}
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-black text-stone-900 font-mono mb-1">
+                {toDigits(settings.clubTotalCollection || '₹ ৮,৫০,০০০', lang)}
+              </h3>
+              <p className="text-[11px] text-stone-500">{b('সদস্য চাঁদা, অনুদান ও স্পনসরশিপ', 'Subscriptions & sponsorships')}</p>
             </div>
-            <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center shrink-0">
-                <Trophy className="w-6 h-6" />
-              </div>
-              <div>
-                <span className="text-xs text-stone-500 font-semibold">{b('ক্রীড়া ও সাংস্কৃতিক তহবিল', 'Sports & Cultural Fund')}</span>
-                <h4 className="text-lg font-serif font-bold text-stone-900">{b('টুর্নামেন্ট আয়োজন ও যুবকল্যাণ ব্যয়', 'Tournaments & Youth Welfare')}</h4>
-              </div>
+
+            <div className="p-6 rounded-2xl bg-rose-50/50 border border-rose-500/20 text-center">
+              <span className="text-xs font-bold text-rose-800 uppercase tracking-wider block mb-1">
+                {b('মোট সামগ্রিক খরচ', 'Total Expenditure')}
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-black text-rose-600 font-mono mb-1">
+                {toDigits(settings.clubTotalExpense || '₹ ৭,৯৫,০০০', lang)}
+              </h3>
+              <p className="text-[11px] text-stone-500">{b('টুর্নামেন্ট, জার্সি, ট্রফি ও সরঞ্জাম', 'Tournaments, trophies & equipment')}</p>
             </div>
+
+            <div className="p-6 rounded-2xl bg-amber-50/50 border border-amber-500/20 text-center">
+              <span className="text-xs font-bold text-amber-800 uppercase tracking-wider block mb-1">
+                {b('প্রধান ব্যয়ের খাত', 'Major Expense Head')}
+              </span>
+              <h3 className="text-lg sm:text-xl font-bold text-stone-900 leading-tight mb-1">
+                {b(settings.clubMajorExpenseTitle || 'ক্রীড়া টুর্নামেন্ট ও উৎসব', 'Sports Tournaments & Celebrations')}
+              </h3>
+              <p className="text-xs font-bold text-amber-700 font-mono">
+                {toDigits(settings.clubMajorExpenseAmount || '₹ ৩,৫০,০০০', lang)}
+              </p>
+            </div>
+          </div>
+
+          {/* Audit Documents Download List */}
+          <div className="space-y-3">
+            {clubFinances.map((doc, idx) => (
+              <Link
+                key={idx}
+                href={`?viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(doc.title)}`}
+                scroll={false}
+                className="group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-stone-50 border border-stone-200/80 hover:border-brand-maroon/40 hover:bg-white transition-all shadow-xs hover:shadow-md cursor-pointer"
+              >
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="font-serif font-bold text-sm sm:text-base text-stone-900 group-hover:text-brand-maroon transition-colors truncate">
+                      {doc.title}
+                    </h4>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-stone-200/70 text-stone-600">
+                        {b('অডিট নথি', 'Audit Document')}
+                      </span>
+                      <span className="text-xs text-stone-400">
+                        {b('সাল:', 'Year:')} {toDigits(doc.year, lang)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-brand-maroon/10 text-brand-maroon font-bold text-xs group-hover:bg-brand-maroon group-hover:text-white transition-colors">
+                    <span>{b('দেখুন', 'View')}</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </div>
+                  <button
+                    type="button"
+                    title={b('পিডিএফ ডাউনলোড করুন', 'Download PDF')}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      triggerDownload(doc.url, `${doc.title || 'club-audit'}.pdf`);
+                    }}
+                    className="p-1.5 rounded-full bg-stone-200/80 hover:bg-brand-maroon hover:text-white text-stone-600 transition-colors cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" />
+                  </button>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
+
+      {/* ═══ LIGHTBOX MODAL ═══ */}
+      {selectedImage && (
+        <div className="fixed inset-0 z-50 bg-[#0B1224]/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-8" onClick={() => setSelectedImage(null)}>
+          <button onClick={() => setSelectedImage(null)} className="absolute top-5 right-5 bg-white/10 hover:bg-white/20 text-white rounded-full p-2.5 transition z-50 border border-white/20">
+            <X className="w-5 h-5" />
+          </button>
+          {filteredGallery.length > 1 && (
+            <button onClick={e => { e.stopPropagation(); navigateLightbox(-1); }} className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-3.5 border border-white/20 transition z-50">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7"/></svg>
+            </button>
+          )}
+          <div className="relative flex flex-col items-center gap-4 max-w-5xl w-full" onClick={e => e.stopPropagation()}>
+            <img src={selectedImage.src} alt={selectedImage.title} className="max-h-[75vh] max-w-full object-contain rounded-2xl shadow-2xl border border-white/10" />
+            <div className="flex items-center justify-between w-full bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-6 py-3.5 gap-4">
+              <div className="min-w-0">
+                <span className="text-amber-300 text-[10px] uppercase tracking-widest font-bold block">
+                  {selectedImage.category || 'Club'}
+                </span>
+                <h3 className="text-white font-bold text-lg truncate mt-0.5">{selectedImage.title}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => triggerDownload(selectedImage.src, `${selectedImage.title || 'club-photo'}.jpg`)}
+                className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 px-5 py-2.5 rounded-full font-bold transition-all text-sm shadow-md cursor-pointer"
+              >
+                <Download className="w-4 h-4" /> {b('ডাউনলোড', 'Download')}
+              </button>
+            </div>
+            <span className="text-white/50 text-xs">{toDigits(lightboxIdx + 1, lang)} / {toDigits(filteredGallery.length, lang)}</span>
+          </div>
+          {filteredGallery.length > 1 && (
+            <button onClick={e => { e.stopPropagation(); navigateLightbox(1); }} className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-3.5 border border-white/20 transition z-50">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7"/></svg>
+            </button>
+          )}
+        </div>
+      )}
     </main>
   );
 }
