@@ -95,7 +95,20 @@ const dictBn = {
   "Cultural Programs": "সাংস্কৃতিক অনুষ্ঠান",
   "Publicity & Media": "প্রচার ও মিডিয়া",
   "Audit Report": "অডিট রিপোর্ট",
-  "Audited Statement": "নিরীক্ষিত আর্থিক বিবরণী"
+  "Audited Statement": "নিরীক্ষিত আর্থিক বিবরণী",
+  "Three Pillars": "তিন স্তম্ভ",
+  "Our Three Pillars": "আমাদের তিন স্তম্ভ",
+  "Community Pillars": "পাড়ার তিন স্তম্ভ",
+  "Durga Puja": "শারদীয়া দুর্গোৎসব",
+  "Sonali Sangha": "সোনালী সঙ্ঘ",
+  "Sonali Sangha Club": "সোনালী সঙ্ঘ ক্লাব",
+  "Sonali Park Club": "সোনালী পার্ক ক্লাব",
+  "Unnayan Samiti": "উন্নয়ন সমিতি",
+  "Sonali Park Unnayan Samiti": "সোনালী পার্ক উন্নয়ন সমিতি",
+  "Club & Sports": "ক্লাব ও ক্রীড়া",
+  "Civic & Development": "নাগরিক ও উন্নয়ন",
+  "Festivities & Culture": "উৎসব ও পূজা",
+  "Explore Wings": "শাখাগুলি দেখুন"
 };
 
 const dictEn = {
@@ -182,7 +195,20 @@ const dictEn = {
   "সাংস্কৃতিক অনুষ্ঠান": "Cultural Programs",
   "প্রচার ও মিডিয়া": "Publicity & Media",
   "অডিট রিপোর্ট": "Audit Report",
-  "নিরীক্ষিত আর্থিক বিবরণী": "Audited Statement"
+  "নিরীক্ষিত আর্থিক বিবরণী": "Audited Statement",
+  "তিন স্তম্ভ": "Three Pillars",
+  "আমাদের তিন স্তম্ভ": "Our Three Pillars",
+  "পাড়ার তিন স্তম্ভ": "Community Pillars",
+  "শারদীয়া দুর্গোৎসব": "Sharadiya Durga Puja",
+  "সোনালী সঙ্ঘ": "Sonali Sangha",
+  "সোনালী সঙ্ঘ ক্লাব": "Sonali Sangha Club",
+  "সোনালী পার্ক ক্লাব": "Sonali Park Club",
+  "উন্নয়ন সমিতি": "Unnayan Samiti",
+  "সোনালী পার্ক উন্নয়ন সমিতি": "Sonali Park Unnayan Samiti",
+  "ক্লাব ও ক্রীড়া": "Club & Sports",
+  "নাগরিক ও উন্নয়ন": "Civic & Development",
+  "উৎসব ও পূজা": "Festivities & Culture",
+  "শাখাগুলি দেখুন": "Explore Wings"
 };
 
 const LanguageContext = createContext();

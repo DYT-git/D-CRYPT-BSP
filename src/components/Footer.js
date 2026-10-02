@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function Footer() {
-  const { lang, b } = useLanguage();
+  const { lang, b, toDigits } = useLanguage();
 
   return (
     <footer className="bg-[#11192E] text-stone-300 pt-16 pb-8 border-t border-white/10 font-sans">
@@ -21,16 +21,30 @@ export default function Footer() {
                 {b('বাঁশদ্রোণী সোনালী পার্ক', 'Bansdroni Sonali Park')}
               </strong>
               <span className="text-[10px] font-semibold text-amber-400 tracking-wider uppercase">
-                {b('সার্বজনীন দুর্গোৎসব ও ক্লাব', 'Club & Puja Committee')}
+                {b('ক্লাব, পূজা ও উন্নয়ন সমিতি', 'Club, Puja & Civic RWA')}
               </span>
             </div>
           </div>
-          <p className="text-xs leading-relaxed text-stone-400 mb-5">
+          <p className="text-xs leading-relaxed text-stone-400 mb-4">
             {b(
               'বাঁশদ্রোণী সোনালী পার্ক — ঐতিহ্য, সংস্কৃতি ও সেবামূলক কর্মকাণ্ডের মিলনমেলা। সার্বজনীন দুর্গোৎসব, সমাজকল্যাণ ও পাড়ার সার্বিক উন্নয়নে আমরা সর্বদা নিবেদিত।',
               'A premier cultural and community welfare organization in Bansdroni, Kolkata. Dedicated to heritage preservation, organizing the grand Durga Puja, and neighborhood civic welfare.'
             )}
           </p>
+
+          {/* 3 Pillars Direct Links */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Link href="/" className="px-2.5 py-1 rounded-full bg-white/10 hover:bg-brand-maroon text-[11px] text-white transition-colors">
+              🌺 {b('শারদীয়া দুর্গোৎসব', 'Durga Puja')}
+            </Link>
+            <Link href="/club" className="px-2.5 py-1 rounded-full bg-white/10 hover:bg-amber-600 text-[11px] text-white transition-colors">
+              🏆 {b('সোনালী সঙ্ঘ', 'Club')}
+            </Link>
+            <Link href="/samiti" className="px-2.5 py-1 rounded-full bg-white/10 hover:bg-emerald-700 text-[11px] text-white transition-colors">
+              🏛️ {b('উন্নয়ন সমিতি', 'Samiti')}
+            </Link>
+          </div>
+
           <Link
             href="/committee"
             className="inline-flex items-center gap-1 text-xs font-semibold text-amber-400 hover:text-white transition-colors"
@@ -98,7 +112,7 @@ export default function Footer() {
 
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 text-center text-xs text-stone-500 flex flex-col md:flex-row justify-between items-center gap-3">
-        <p>© {new Date().getFullYear()} Bansdroni Sonali Park. {b('সর্বস্বত্ব সংরক্ষিত।', 'All rights reserved.')}</p>
+        <p>© {toDigits(new Date().getFullYear(), lang)} {b('বাঁশদ্রোণী সোনালী পার্ক।', 'Bansdroni Sonali Park.')} {b('সর্বস্বত্ব সংরক্ষিত।', 'All rights reserved.')}</p>
         <p className="flex items-center gap-1.5 font-mono text-[11px]">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
           <span>{b('রেজিস্টার্ড সোসাইটি', 'Registered Community Society')}</span>

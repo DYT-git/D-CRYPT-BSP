@@ -3,18 +3,21 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Home, Calendar, Users, Image as ImageIcon, IndianRupee, ChevronRight } from 'lucide-react';
+import { Menu, X, Home, Calendar, Users, Image as ImageIcon, IndianRupee, ChevronRight, Trophy, Building } from 'lucide-react';
+import PillarSwitcher from '@/components/PillarSwitcher';
 
 const NAV_LINKS = [
   { href: '/',             labelKey: 'Home',              fallbackBn: 'হোম',              icon: Home },
-  { href: '/puja',         labelKey: 'Durga Puja 2026',   fallbackBn: 'দুর্গাপূজা ২০২৬',   icon: Calendar },
-  { href: '/committee',    labelKey: 'Committee Members', fallbackBn: 'কমিটি',            icon: Users },
-  { href: '/gallery',      labelKey: 'Gallery',           fallbackBn: 'গ্যালারি',          icon: ImageIcon },
-  { href: '/transparency', labelKey: 'Financials',        fallbackBn: 'হিসাব নিকাশ',      icon: IndianRupee },
+  { href: '/puja',         labelKey: 'Durga Puja',        fallbackBn: 'শারদীয়া দুর্গোৎসব',   icon: Calendar },
+  { href: '/club',         labelKey: 'Sonali Sangha Club', fallbackBn: 'সোনালী সঙ্ঘ ক্লাব',   icon: Trophy },
+  { href: '/samiti',       labelKey: 'Unnayan Samiti',    fallbackBn: 'উন্নয়ন সমিতি (RWA)', icon: Building },
+  { href: '/committee',    labelKey: 'Committee Members', fallbackBn: 'কমিটি সদস্যবৃন্দ',   icon: Users },
+  { href: '/gallery',      labelKey: 'Gallery',           fallbackBn: 'ছবি গ্যালারি',       icon: ImageIcon },
+  { href: '/transparency', labelKey: 'Financials',        fallbackBn: 'হিসাব নিকাশ ও অডিট',  icon: IndianRupee },
 ];
 
 export default function Navbar() {
-  const { lang, changeLanguage, t } = useLanguage();
+  const { lang, changeLanguage, t, b } = useLanguage();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -51,17 +54,22 @@ export default function Navbar() {
                 ? 'text-white'
                 : 'text-brand-dark'
             }`} style={{ textShadow: isHome ? '0 1px 8px rgba(0,0,0,0.8)' : 'none' }}>
-              Bansdroni Sonali Park
+              {b('বাঁশদ্রোণী সোনালী পার্ক', 'Bansdroni Sonali Park')}
             </span>
             <span className={`text-[9px] font-medium tracking-wider transition-colors ${
               isHome
                 ? 'text-white/70'
                 : 'text-brand-maroon font-semibold'
             }`} style={{ textShadow: isHome ? '0 1px 6px rgba(0,0,0,0.7)' : 'none' }}>
-              CLUB & PUJA COMMITTEE
+              {b('ক্লাব, পূজা ও উন্নয়ন সমিতি', 'CLUB, PUJA & CIVIC RWA')}
             </span>
           </div>
         </Link>
+      </div>
+
+      {/* ═══ TOP-CENTER: Fixed 3-Pillar Quick Switcher (Desktop) ═══ */}
+      <div className="fixed top-3 sm:top-5 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-auto">
+        <PillarSwitcher variant="compact" />
       </div>
 
       {/* ═══ TOP-RIGHT: Fixed Lang Switcher & Hamburger Button ═══ */}
@@ -125,8 +133,53 @@ export default function Navbar() {
         <div className="px-4 pt-3.5 pb-2.5 border-b border-gray-100 flex items-center gap-2">
           <span className="text-brand-maroon text-base">ॐ</span>
           <div>
-            <p className="text-[11px] font-black tracking-wider text-brand-dark uppercase">Sonali Park</p>
-            <p className="text-[9px] text-brand-dark/40 tracking-wide">Bansdroni • Club & Puja</p>
+            <p className="text-[11px] font-black tracking-wider text-brand-dark uppercase">{b('সোনালী পার্ক', 'Sonali Park')}</p>
+            <p className="text-[9px] text-brand-dark/40 tracking-wide">{b('বাঁশদ্রোণী • ক্লাব, পূজা ও সমিতি', 'Bansdroni • Club, Puja & Samiti')}</p>
+          </div>
+        </div>
+
+        {/* 3 Community Pillars Quick Box */}
+        <div className="px-3.5 pt-3 pb-2.5 bg-stone-50 border-b border-gray-100">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 block mb-1.5">
+            {b('৩টি মূল শাখা', '3 Community Pillars')}
+          </span>
+          <div className="grid grid-cols-3 gap-1.5">
+            <Link
+              href="/"
+              onClick={() => setMenuOpen(false)}
+              className={`p-2 rounded-xl text-center border transition-all ${
+                pathname === '/' || pathname === '/puja'
+                  ? 'bg-rose-50 border-rose-200 text-brand-maroon font-bold shadow-xs'
+                  : 'bg-white border-stone-200 text-stone-700 hover:border-brand-maroon/30'
+              }`}
+            >
+              <span className="text-base block mb-0.5">🌺</span>
+              <span className="text-[10px] font-bold block leading-tight">{b('পূজা', 'Puja')}</span>
+            </Link>
+            <Link
+              href="/club"
+              onClick={() => setMenuOpen(false)}
+              className={`p-2 rounded-xl text-center border transition-all ${
+                pathname.startsWith('/club')
+                  ? 'bg-amber-50 border-amber-200 text-amber-900 font-bold shadow-xs'
+                  : 'bg-white border-stone-200 text-stone-700 hover:border-amber-500/30'
+              }`}
+            >
+              <span className="text-base block mb-0.5">🏆</span>
+              <span className="text-[10px] font-bold block leading-tight">{b('ক্লাব', 'Club')}</span>
+            </Link>
+            <Link
+              href="/samiti"
+              onClick={() => setMenuOpen(false)}
+              className={`p-2 rounded-xl text-center border transition-all ${
+                pathname.startsWith('/samiti')
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-900 font-bold shadow-xs'
+                  : 'bg-white border-stone-200 text-stone-700 hover:border-emerald-500/30'
+              }`}
+            >
+              <span className="text-base block mb-0.5">🏛️</span>
+              <span className="text-[10px] font-bold block leading-tight">{b('সমিতি', 'Samiti')}</span>
+            </Link>
           </div>
         </div>
 
@@ -157,7 +210,7 @@ export default function Navbar() {
         </nav>
 
         <div className="px-4 py-2.5 border-t border-gray-100 flex items-center gap-1.5 bg-gray-50/50">
-          <span className="text-[10px] text-gray-400 font-medium mr-1">Lang:</span>
+          <span className="text-[10px] text-gray-400 font-medium mr-1">{b('ভাষা:', 'Lang:')}</span>
           <button
             onClick={() => changeLanguage('bn')}
             className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-all ${

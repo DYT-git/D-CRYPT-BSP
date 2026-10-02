@@ -5,6 +5,7 @@ import Countdown from "@/components/Countdown";
 import HeroParticles from "@/components/HeroParticles";
 import { triggerDownload } from "@/utils/download";
 import Link from "next/link";
+import PillarSwitcher from "@/components/PillarSwitcher";
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -167,6 +168,11 @@ export default function HomePage() {
           {/* Time-Aware Atmospheric Floating Particles */}
           <HeroParticles timeOfDay={timeOfDay} />
 
+          {/* ════ TOP 3-PILLAR SWITCHER (DESKTOP) ════ */}
+          <div className="absolute top-4 sm:top-5 inset-x-0 z-30 hidden lg:flex justify-center px-4">
+            <PillarSwitcher active="puja" variant="hero" />
+          </div>
+
           {/* ════ DESKTOP WIDE-SCREEN ONLY (>= lg: 1024px+): LEFT WING ════ */}
           <div className="absolute top-24 sm:top-28 md:top-32 lg:top-36 xl:top-40 left-6 sm:left-8 lg:left-14 z-20 hidden lg:block max-w-md pointer-events-none">
             {/* Symmetrical Header Greeting Badge */}
@@ -291,6 +297,11 @@ export default function HomePage() {
             Standard Native Mobile App Layout: Zero Deity Obstruction, 100% Readable, High-Contrast
             ═══════════════════════════════════════════════════════════════════════════ */}
         <div className="block lg:hidden px-4 sm:px-6 pt-3 pb-6 max-w-2xl mx-auto">
+          {/* ════ TOP 3-PILLAR SWITCHER (MOBILE) ════ */}
+          <div className="mb-4">
+            <PillarSwitcher active="puja" variant="hero" />
+          </div>
+
           {/* Greeting Badge */}
           <div className="flex items-center justify-between gap-2 mb-2">
             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] font-bold tracking-wider uppercase backdrop-blur-md ${curr.badgeClass}`}>
@@ -851,10 +862,10 @@ export default function HomePage() {
             </div>
 
             <Link
-              href="/committee"
+              href="/samiti"
               className="inline-flex items-center justify-center gap-2 w-full py-3 sm:py-3.5 px-5 rounded-2xl bg-rose-500/10 hover:bg-brand-maroon text-rose-600 hover:text-white font-bold text-sm transition-all duration-200 border border-rose-500/25 shadow-sm"
             >
-              {b('উন্নয়ন কমিটির সদস্যবৃন্দ দেখুন →', 'View Development Committee →')}
+              {b('উন্নয়ন সমিতি সম্পূর্ণ পেজ দেখুন →', 'Explore Unnayan Samiti Page →')}
             </Link>
           </div>
 
@@ -905,10 +916,10 @@ export default function HomePage() {
             </div>
 
             <Link
-              href="/puja"
+              href="/club"
               className="inline-flex items-center justify-center gap-2 w-full py-3 sm:py-3.5 px-5 rounded-2xl bg-brand-maroon/10 hover:bg-brand-maroon text-brand-maroon hover:text-white font-bold text-sm transition-all duration-200 border border-brand-maroon/25 shadow-sm"
             >
-              {b('উৎসব ও পুজো পরিক্রমা →', 'Explore Puja Celebrations →')}
+              {b('সোনালী সঙ্ঘ ক্লাব পেজ দেখুন →', 'Explore Sonali Sangha Club →')}
             </Link>
           </div>
         </div>
