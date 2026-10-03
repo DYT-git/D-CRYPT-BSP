@@ -26,7 +26,7 @@ export default function SamitiPage() {
   // Fallback civic gallery photos
   const samitiGalleryItems = useMemo(() => {
     const raw = (data.gallery && data.gallery.length > 0)
-      ? data.gallery.filter(g => g.category === 'Samiti' || g.program === 'Social Work')
+      ? data.gallery.filter(g => g.program === 'Unnayan Samiti' || g.category === 'Samiti' || g.category === 'Roads' || g.category === 'Greenery' || g.category === 'Sanitation' || g.category === 'Civic')
       : [];
 
     if (raw.length > 0) return raw;
@@ -84,7 +84,16 @@ export default function SamitiPage() {
 
   // Samiti Committee Roster
   const samitiCommittee = useMemo(() => {
-    return [
+    const dynamicSamitiMembers = (data.members || [])
+      .filter(m => m.role && m.role.startsWith('[Samiti]'))
+      .map(m => ({
+        name: m.name,
+        role: m.role.replace('[Samiti]', '').trim(),
+        image: m.image,
+        phone: '+91 98300 XXXXX'
+      }));
+
+    const source = dynamicSamitiMembers.length > 0 ? dynamicSamitiMembers : [
       { name: b('শ্রী পার্থসারথি সেনগুপ্ত', 'Partha Sarathi Sengupta'), role: b('সভাপতি', 'President'), phone: '+91 98300 XXXXX' },
       { name: b('শ্রী অসীম চ্যাটার্জি', 'Ashim Chatterjee'), role: b('সহ-সভাপতি', 'Vice President'), phone: '+91 98301 XXXXX' },
       { name: b('শ্রী সুশান্ত রায়', 'Sushanta Roy'), role: b('সাধারণ সম্পাদক', 'General Secretary'), phone: '+91 98302 XXXXX' },
@@ -93,14 +102,28 @@ export default function SamitiPage() {
       { name: b('শ্রীমতী সোমা মুখার্জি', 'Soma Mukherjee'), role: b('পরিচ্ছন্নতা ও স্বাস্থ্য', 'Sanitation & Environment'), phone: '+91 98305 XXXXX' },
       { name: b('শ্রী নারায়ণ ঘোষ', 'Narayan Ghosh'), role: b('কোষাধ্যক্ষ', 'Treasurer'), phone: '+91 98306 XXXXX' },
       { name: b('শ্রী অলোক চক্রবর্তী', 'Aloke Chakraborty'), role: b('প্রবীণ নাগরিক সমন্বয়ক', 'Senior Citizen Support'), phone: '+91 98307 XXXXX' },
-    ].filter(m => 
+    ];
+
+    return source.filter(m => 
       m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
       m.role.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [b, searchQuery]);
+  }, [data.members, b, searchQuery]);
 
   // Samiti Financial Documents
   const samitiFinances = useMemo(() => {
+    const dynamicFinances = (data.finances || [])
+      .filter(f => f.title && f.title.startsWith('[Samiti]'))
+      .map(f => ({
+        title: f.title.replace('[Samiti]', '').trim(),
+        year: f.year,
+        url: f.url
+      }));
+
+    if (dynamicFinances.length > 0) {
+      return dynamicFinances;
+    }
+
     return [
       {
         title: b('সোনালী পার্ক উন্নয়ন সমিতি বার্ষিক অডিট ও আর্থিক হিসাব ২০২৫-২৬', 'Sonali Park Unnayan Samiti Annual Audit Statement 2025-26'),
@@ -118,7 +141,7 @@ export default function SamitiPage() {
         url: '/sample-audit.pdf'
       }
     ];
-  }, [b]);
+  }, [data.finances, b]);
 
   return (
     <main className="bg-[#FAF7F2] min-h-screen pt-20 sm:pt-24 pb-20 selection:bg-brand-maroon selection:text-white font-sans">

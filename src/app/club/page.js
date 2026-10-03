@@ -26,7 +26,7 @@ export default function ClubPage() {
   // Fallback club gallery photos
   const clubGalleryItems = useMemo(() => {
     const raw = (data.gallery && data.gallery.length > 0)
-      ? data.gallery.filter(g => g.program === 'Annual Sports' || g.program === 'Social Work' || g.program === 'Cultural Event' || g.category === 'Club')
+      ? data.gallery.filter(g => g.program === 'Club & Sports' || g.program === 'Annual Sports' || g.program === 'Social Work' || g.program === 'Cultural Event' || g.category === 'Club' || g.category === 'Sports' || g.category === 'Blood Donation')
       : [];
 
     if (raw.length > 0) return raw;
@@ -90,7 +90,16 @@ export default function ClubPage() {
 
   // Club Committee Members
   const clubCommittee = useMemo(() => {
-    return [
+    const dynamicClubMembers = (data.members || [])
+      .filter(m => m.role && m.role.startsWith('[Club]'))
+      .map(m => ({
+        name: m.name,
+        role: m.role.replace('[Club]', '').trim(),
+        image: m.image,
+        phone: '+91 98300 XXXXX'
+      }));
+
+    const source = dynamicClubMembers.length > 0 ? dynamicClubMembers : [
       { name: b('শ্রী সুব্রত ব্যানার্জি', 'Subrata Banerjee'), role: b('সভাপতি', 'President'), phone: '+91 98300 XXXXX' },
       { name: b('শ্রী দেবাশীষ রায়', 'Debasish Roy'), role: b('কার্যকরী সভাপতি', 'Working President'), phone: '+91 98301 XXXXX' },
       { name: b('শ্রী অমিতাভ মুখার্জি', 'Amitabha Mukherjee'), role: b('সাধারণ সম্পাদক', 'General Secretary'), phone: '+91 98302 XXXXX' },
@@ -99,14 +108,28 @@ export default function ClubPage() {
       { name: b('শ্রীমতি অনন্যা চ্যাটার্জি', 'Ananya Chatterjee'), role: b('সাংস্কৃতিক সম্পাদক', 'Cultural Secretary'), phone: '+91 98305 XXXXX' },
       { name: b('শ্রী সুদীপ্ত ঘোষ', 'Sudipta Ghosh'), role: b('কোষাধ্যক্ষ', 'Treasurer'), phone: '+91 98306 XXXXX' },
       { name: b('শ্রী রাহুল মজুমদার', 'Rahul Majumdar'), role: b('যুব শাখা আহ্বায়ক', 'Youth Wing Convenor'), phone: '+91 98307 XXXXX' },
-    ].filter(m => 
+    ];
+
+    return source.filter(m => 
       m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
       m.role.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [b, searchQuery]);
+  }, [data.members, b, searchQuery]);
 
   // Club Financial Documents
   const clubFinances = useMemo(() => {
+    const dynamicFinances = (data.finances || [])
+      .filter(f => f.title && f.title.startsWith('[Club]'))
+      .map(f => ({
+        title: f.title.replace('[Club]', '').trim(),
+        year: f.year,
+        url: f.url
+      }));
+
+    if (dynamicFinances.length > 0) {
+      return dynamicFinances;
+    }
+
     return [
       {
         title: b('সোনালী সঙ্ঘ বার্ষিক অডিট ও আর্থিক স্টেটমেন্ট ২০২৫-২৬', 'Sonali Sangha Annual Audit & Accounts 2025-26'),
@@ -124,7 +147,7 @@ export default function ClubPage() {
         url: '/sample-audit.pdf'
       }
     ];
-  }, [b]);
+  }, [data.finances, b]);
 
   return (
     <main className="bg-[#FAF7F2] min-h-screen pt-20 sm:pt-24 pb-20 selection:bg-brand-maroon selection:text-white font-sans">

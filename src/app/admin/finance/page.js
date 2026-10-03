@@ -19,19 +19,41 @@ import {
 import { useLanguage } from '@/context/LanguageContext';
 import { triggerDownload } from '@/utils/download';
 
-const TITLE_PRESETS = [
-  { bn: 'বার্ষিক অডিট রিপোর্ট ২০২৫-২৬', en: 'Annual Audit Report 2025-26' },
-  { bn: 'শারদীয়া দুর্গোৎসব আয়-ব্যয় বিবরণী ২০২৬', en: 'Sharadiya Durga Puja Balance Sheet 2026' },
-  { bn: 'সমাজকল্যাণ ও চিকিৎসা তহবিল হিসেব', en: 'Social Welfare & Health Fund Report' },
-  { bn: 'ক্লাব ভবন রক্ষণাবেক্ষণ ও উন্নয়ন তহবিল', en: 'Club Infrastructure & Maintenance Report' },
-  { bn: 'অর্ধবার্ষিক আর্থিক বিবরণী ২০২৬', en: 'Semi-Annual Financial Statement 2026' }
-];
+const TITLE_PRESETS_BY_WING = {
+  Puja: [
+    { bn: 'শারদীয়া দুর্গোৎসব পূর্ণাঙ্গ আয়-ব্যয় বিবরণী ২০২৬', en: 'Sharadiya Durga Puja Balance Sheet 2026' },
+    { bn: 'বার্ষিক পূজা অডিট রিপোর্ট ২০২৫-২৬', en: 'Annual Puja Audit Report 2025-26' },
+    { bn: 'মহাষ্টমী ভোগ ও পূজা কল্যাণ তহবিল হিসেব', en: 'Bhog & Puja Welfare Fund Account' },
+    { bn: 'মণ্ডপ ও আলোকসজ্জা ব্যয় বিবরণী', en: 'Pandal & Illumination Expense Audit' }
+  ],
+  Club: [
+    { bn: 'সোনালী সঙ্ঘ বার্ষিক অডিট ও আর্থিক স্টেটমেন্ট ২০২৫-২৬', en: 'Sonali Sangha Annual Audit & Accounts 2025-26' },
+    { bn: 'বার্ষিক ক্রীড়া প্রতিযোগিতা ও টুর্নামেন্ট আয়-ব্যয় হিসাব', en: 'Annual Sports & Tournaments Expenditure Statement' },
+    { bn: 'স্বেচ্ছায় রক্তদান শিবির ও সমাজকল্যাণ তহবিল বিবরণী', en: 'Blood Donation & Social Welfare Fund Audit' },
+    { bn: 'ক্লাব ভবন ও ইনডোর গেমস রক্ষণাবেক্ষণ হিসাব', en: 'Club Infrastructure & Indoor Games Account' }
+  ],
+  Samiti: [
+    { bn: 'সোনালী পার্ক উন্নয়ন সমিতি বার্ষিক অডিট ও আর্থিক হিসাব ২০২৫-২৬', en: 'Sonali Park Unnayan Samiti Annual Audit Statement 2025-26' },
+    { bn: 'পাড়ার রাস্তা, এলইডি আলো ও জলনিকাশি উন্নয়ন হিসাব বিবরণী', en: 'Roads, LED Lighting & Drainage Capital Accounts' },
+    { bn: 'মাসিক নিরাপত্তা প্রহরী ও বর্জ্য নিষ্কাশন পরিচালনা হিসাব', en: 'Monthly Security Patrol & Sanitation Operations Audit' },
+    { bn: 'নাগরিক কল্যাণ তহবিল ও জরুরি সহায়তা ব্যয় বিবরণী', en: 'Civic Welfare & Emergency Support Statement' }
+  ]
+};
+
+export function parseFinanceDoc(doc) {
+  if (!doc?.title) return { wing: 'Puja', cleanTitle: doc?.title || '' };
+  if (doc.title.startsWith('[Club]')) return { wing: 'Club', cleanTitle: doc.title.replace('[Club]', '').trim() };
+  if (doc.title.startsWith('[Samiti]')) return { wing: 'Samiti', cleanTitle: doc.title.replace('[Samiti]', '').trim() };
+  if (doc.title.startsWith('[Puja]')) return { wing: 'Puja', cleanTitle: doc.title.replace('[Puja]', '').trim() };
+  return { wing: 'Puja', cleanTitle: doc.title };
+}
 
 export default function FinanceManagerPage() {
   const { lang, b } = useLanguage();
   const [finances, setFinances] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
+    wing: 'Puja',
     year: new Date().getFullYear().toString()
   });
   const [file, setFile] = useState(null);
@@ -40,6 +62,7 @@ export default function FinanceManagerPage() {
   const [fetching, setFetching] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedYear, setSelectedYear] = useState('ALL');
+  const [filterWing, setFilterWing] = useState('ALL');
   const [message, setMessage] = useState({ type: '', text: '' });
   const [copiedId, setCopiedId] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
@@ -80,18 +103,17 @@ export default function FinanceManagerPage() {
   const filteredFinances = useMemo(() => {
     return finances
       .filter((doc) => {
-        if (selectedYear === 'ALL') return true;
-        return String(doc.year) === String(selectedYear);
-      })
-      .filter((doc) => {
+        const parsed = parseFinanceDoc(doc);
+        if (filterWing !== 'ALL' && parsed.wing !== filterWing) return false;
+        if (selectedYear !== 'ALL' && String(doc.year) !== String(selectedYear)) return false;
         if (!searchQuery.trim()) return true;
         const q = searchQuery.toLowerCase();
         return (
-          doc.title?.toLowerCase().includes(q) ||
+          parsed.cleanTitle?.toLowerCase().includes(q) ||
           String(doc.year).includes(q)
         );
       });
-  }, [finances, selectedYear, searchQuery]);
+  }, [finances, filterWing, selectedYear, searchQuery]);
 
   const handleFileSelect = (selectedFile) => {
     if (!selectedFile) return;
@@ -140,11 +162,12 @@ export default function FinanceManagerPage() {
       const uploadResult = await uploadRes.json();
 
       // 2. Save metadata
+      const encodedTitle = `[${formData.wing}] ${formData.title.trim()}`;
       const dbRes = await fetch('/api/admin/finance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: formData.title.trim(),
+          title: encodedTitle,
           year: parseInt(formData.year),
           url: uploadResult.url
         })
@@ -275,6 +298,48 @@ export default function FinanceManagerPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-3.5">
+            {/* 3-Pillar Wing Selector */}
+            <div>
+              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                {b('অডিট রিপোর্টের শাখা (Wing / Pillar)', 'Audit Report Wing')} <span className="text-rose-500">*</span>
+              </label>
+              <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-100 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, wing: 'Puja' }))}
+                  className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    formData.wing === 'Puja'
+                      ? 'bg-rose-700 text-white shadow-xs'
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-white/50'
+                  }`}
+                >
+                  🌺 {b('দুর্গোৎসব', 'Puja')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, wing: 'Club' }))}
+                  className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    formData.wing === 'Club'
+                      ? 'bg-amber-600 text-white shadow-xs'
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-white/50'
+                  }`}
+                >
+                  🏆 {b('ক্লাব', 'Club')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, wing: 'Samiti' }))}
+                  className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    formData.wing === 'Samiti'
+                      ? 'bg-emerald-700 text-white shadow-xs'
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-white/50'
+                  }`}
+                >
+                  🏛️ {b('সমিতি', 'Samiti')}
+                </button>
+              </div>
+            </div>
+
             {/* Fiscal Year */}
             <div>
               <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
@@ -301,7 +366,7 @@ export default function FinanceManagerPage() {
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 className="w-full px-3 py-2 rounded-xl border border-stone-300 text-base sm:text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon transition-all"
-                placeholder={b('যেমন: শারদীয়া দুর্গোৎসব আয়-ব্যয় বিবরণী ২০২৬', 'e.g. Durga Puja Audit Report 2026')}
+                placeholder={b('যেমন: বার্ষিক অডিট ও আর্থিক স্টেটমেন্ট ২০২৬', 'e.g. Annual Audit & Balance Sheet 2026')}
               />
             </div>
 
@@ -311,7 +376,7 @@ export default function FinanceManagerPage() {
                 {b('প্রস্তাবিত শিরোনাম (Quick Titles)', 'Quick Titles')}
               </span>
               <div className="flex flex-wrap gap-1.5">
-                {TITLE_PRESETS.map((preset) => (
+                {(TITLE_PRESETS_BY_WING[formData.wing] || TITLE_PRESETS_BY_WING.Puja).map((preset) => (
                   <button
                     key={preset.en}
                     type="button"
@@ -443,6 +508,55 @@ export default function FinanceManagerPage() {
             </div>
           </div>
 
+          {/* Wing Filter Pills */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[10px] font-bold text-stone-400 mr-1 uppercase tracking-wider">{b('শাখা:', 'Wing:')}</span>
+            <button
+              type="button"
+              onClick={() => setFilterWing('ALL')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                filterWing === 'ALL'
+                  ? 'bg-stone-900 text-white font-bold shadow-xs'
+                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              }`}
+            >
+              {b('সব শাখা', 'All Wings')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterWing('Puja')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                filterWing === 'Puja'
+                  ? 'bg-rose-700 text-white font-bold shadow-xs'
+                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              }`}
+            >
+              🌺 {b('দুর্গোৎসব', 'Puja')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterWing('Club')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                filterWing === 'Club'
+                  ? 'bg-amber-600 text-white font-bold shadow-xs'
+                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              }`}
+            >
+              🏆 {b('ক্লাব', 'Club')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterWing('Samiti')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                filterWing === 'Samiti'
+                  ? 'bg-emerald-700 text-white font-bold shadow-xs'
+                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              }`}
+            >
+              🏛️ {b('সমিতি', 'Samiti')}
+            </button>
+          </div>
+
           {/* List */}
           {fetching ? (
             <div className="text-center py-16">
@@ -461,30 +575,47 @@ export default function FinanceManagerPage() {
             </div>
           ) : (
             <div className="space-y-2.5 overflow-y-auto max-h-[600px] pr-1">
-              {filteredFinances.map((doc) => (
-                <div
-                  key={doc.id}
-                  className="p-3.5 rounded-xl border border-stone-200/80 bg-stone-50/50 hover:bg-white hover:shadow-2xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                >
-                  {/* Left: Info */}
-                  <div className="flex items-start gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-lg bg-rose-50 border border-rose-100 text-brand-maroon flex items-center justify-center shrink-0 shadow-2xs">
-                      <FileText className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded bg-stone-200/70 text-stone-700 font-mono">
-                          {doc.year}
-                        </span>
-                        <span className="text-[9px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
-                          {b('স্বচ্ছ অডিট', 'Verified')}
-                        </span>
+              {filteredFinances.map((doc) => {
+                const parsed = parseFinanceDoc(doc);
+                return (
+                  <div
+                    key={doc.id}
+                    className="p-3.5 rounded-xl border border-stone-200/80 bg-stone-50/50 hover:bg-white hover:shadow-2xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  >
+                    {/* Left: Info */}
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-lg bg-rose-50 border border-rose-100 text-brand-maroon flex items-center justify-center shrink-0 shadow-2xs">
+                        <FileText className="w-4 h-4" />
                       </div>
-                      <h3 className="font-bold text-stone-900 text-xs sm:text-sm truncate">
-                        {doc.title}
-                      </h3>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                          <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded bg-stone-200/70 text-stone-700 font-mono">
+                            {doc.year}
+                          </span>
+                          {parsed.wing === 'Club' && (
+                            <span className="text-[9px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
+                              🏆 {b('ক্লাব', 'Club')}
+                            </span>
+                          )}
+                          {parsed.wing === 'Samiti' && (
+                            <span className="text-[9px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                              🏛️ {b('সমিতি', 'Samiti')}
+                            </span>
+                          )}
+                          {parsed.wing === 'Puja' && (
+                            <span className="text-[9px] font-bold text-rose-800 bg-rose-50 px-1.5 py-0.2 rounded border border-rose-200">
+                              🌺 {b('পূজা', 'Puja')}
+                            </span>
+                          )}
+                          <span className="text-[9px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                            {b('স্বচ্ছ অডিট', 'Verified')}
+                          </span>
+                        </div>
+                        <h3 className="font-bold text-stone-900 text-xs sm:text-sm truncate">
+                          {parsed.cleanTitle}
+                        </h3>
+                      </div>
                     </div>
-                  </div>
 
                   {/* Right: Actions */}
                   <div className="flex items-center gap-1 self-end sm:self-center shrink-0">

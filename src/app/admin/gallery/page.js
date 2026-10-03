@@ -8,6 +8,8 @@ import { useLanguage } from '@/context/LanguageContext';
 
 const PROGRAMS = {
   "Durga Puja": ["Idol & Pandal", "Rituals", "Cultural Events", "Immersion", "General"],
+  "Club & Sports": ["Sports", "Blood Donation", "Cultural", "Youth Welfare", "General"],
+  "Unnayan Samiti": ["Roads", "Greenery", "Sanitation", "Security & Lighting", "Meetings", "General"],
   "Social Work": ["Blood Donation", "Cloth Distribution", "Health Camp", "Education", "General"],
   "Others": ["General"]
 };
@@ -31,6 +33,7 @@ export default function GalleryManagerPage() {
   const [loadingList, setLoadingList] = useState(false);
   const [message, setMessage] = useState('');
   const [filterYear, setFilterYear] = useState('ALL');
+  const [filterWing, setFilterWing] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
@@ -167,11 +170,21 @@ export default function GalleryManagerPage() {
   };
 
   const filteredImages = images.filter(img => {
+    let matchesWing = true;
+    if (filterWing === 'Puja') {
+      matchesWing = img.program === 'Durga Puja' || (!img.program && img.category !== 'Club' && img.category !== 'Samiti');
+    } else if (filterWing === 'Club') {
+      matchesWing = img.program === 'Club & Sports' || img.category === 'Club' || img.category === 'Sports' || img.category === 'Blood Donation';
+    } else if (filterWing === 'Samiti') {
+      matchesWing = img.program === 'Unnayan Samiti' || img.category === 'Samiti' || img.category === 'Roads' || img.category === 'Greenery' || img.category === 'Sanitation';
+    }
+
     const matchesYear = filterYear === 'ALL' || String(img.year) === filterYear;
     const matchesSearch = !searchQuery.trim() ||
       img.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      img.category?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesYear && matchesSearch;
+      img.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      img.program?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesWing && matchesYear && matchesSearch;
   });
 
   const availableYears = ['ALL', ...Array.from(new Set(images.map(img => String(img.year))))];
@@ -404,22 +417,74 @@ export default function GalleryManagerPage() {
             </div>
           </div>
 
-          {/* Year Filter Pills */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[10px] font-bold text-stone-400 mr-1 uppercase tracking-wider">{b('বছর:', 'Year:')}</span>
-            {availableYears.map(yr => (
+          {/* Filters: Wing & Year */}
+          <div className="space-y-2">
+            {/* Wing Filter Pills */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] font-bold text-stone-400 mr-1 uppercase tracking-wider">{b('শাখা:', 'Wing:')}</span>
               <button
-                key={yr}
-                onClick={() => setFilterYear(yr)}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  filterYear === yr
-                    ? 'bg-brand-maroon text-white shadow-xs font-bold'
+                type="button"
+                onClick={() => setFilterWing('ALL')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  filterWing === 'ALL'
+                    ? 'bg-stone-900 text-white font-bold shadow-xs'
                     : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                 }`}
               >
-                {yr}
+                {b('সব ছবি', 'All Photos')}
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => setFilterWing('Puja')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  filterWing === 'Puja'
+                    ? 'bg-rose-700 text-white font-bold shadow-xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                }`}
+              >
+                🌺 {b('দুর্গোৎসব', 'Puja')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilterWing('Club')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  filterWing === 'Club'
+                    ? 'bg-amber-600 text-white font-bold shadow-xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                }`}
+              >
+                🏆 {b('ক্লাব ও ক্রীড়া', 'Club')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilterWing('Samiti')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  filterWing === 'Samiti'
+                    ? 'bg-emerald-700 text-white font-bold shadow-xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                }`}
+              >
+                🏛️ {b('সমিতি ও নাগরিক', 'Samiti')}
+              </button>
+            </div>
+
+            {/* Year Filter Pills */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] font-bold text-stone-400 mr-1 uppercase tracking-wider">{b('বছর:', 'Year:')}</span>
+              {availableYears.map(yr => (
+                <button
+                  key={yr}
+                  onClick={() => setFilterYear(yr)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    filterYear === yr
+                      ? 'bg-brand-maroon text-white shadow-xs font-bold'
+                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                  }`}
+                >
+                  {yr}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Photos Grid */}

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import {
   Palette, Type, Clock, Sparkles, DollarSign, Save,
-  CheckCircle2, AlertCircle, RefreshCw, Calendar
+  CheckCircle2, AlertCircle, RefreshCw, Calendar, Trophy, ShieldCheck
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -25,7 +25,21 @@ export default function SettingsManagerPage() {
     totalCollection: '',
     totalExpense: '',
     majorExpenseTitle: '',
-    majorExpenseAmount: ''
+    majorExpenseAmount: '',
+    // Club settings
+    clubHeroTitle: '',
+    clubHeroTagline: '',
+    clubTotalCollection: '',
+    clubTotalExpense: '',
+    clubMajorExpenseTitle: '',
+    clubMajorExpenseAmount: '',
+    // Samiti settings
+    samitiHeroTitle: '',
+    samitiHeroTagline: '',
+    samitiTotalCollection: '',
+    samitiTotalExpense: '',
+    samitiMajorExpenseTitle: '',
+    samitiMajorExpenseAmount: ''
   });
 
   const [activeTab, setActiveTab] = useState('branding');
@@ -95,10 +109,12 @@ export default function SettingsManagerPage() {
 
   const tabs = [
     { id: 'branding', labelBn: 'রং ও ব্র্যান্ডিং', labelEn: 'Theme Colors', icon: Palette },
-    { id: 'hero', labelBn: 'হোমপেজ ও শিরোনাম', labelEn: 'Hero & Headlines', icon: Type },
+    { id: 'hero', labelBn: 'হোমপেজ ও দুর্গাপূজা', labelEn: 'Puja & Hero', icon: Type },
     { id: 'countdown', labelBn: 'কাউন্টডাউন টাইমার', labelEn: 'Countdown Timer', icon: Clock },
     { id: 'theme', labelBn: 'পূজার থিম ও শিল্পী', labelEn: 'Theme & Artisans', icon: Sparkles },
-    { id: 'finance', labelBn: 'স্বচ্ছতা ও বাজেট সারসংক্ষেপ', labelEn: 'Financial Summary', icon: DollarSign },
+    { id: 'finance', labelBn: 'পূজা বাজেট সারসংক্ষেপ', labelEn: 'Puja Financials', icon: DollarSign },
+    { id: 'club', labelBn: 'সোনালী সঙ্ঘ ক্লাব', labelEn: 'Club Controls', icon: Trophy },
+    { id: 'samiti', labelBn: 'উন্নয়ন সমিতি', labelEn: 'Samiti Controls', icon: ShieldCheck },
   ];
 
   if (loading) {
@@ -603,6 +619,244 @@ export default function SettingsManagerPage() {
                   className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon outline-none"
                   placeholder="₹ 6,00,000"
                 />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 6. Sonali Sangha Club Controls */}
+        {activeTab === 'club' && (
+          <div className="space-y-6">
+            <div className="border-b border-stone-100 pb-3 flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-bold text-stone-900 flex items-center gap-2">
+                  <Trophy className="w-4 h-4 text-amber-600" />
+                  <span>{b('সোনালী সঙ্ঘ ক্লাব সেটিংস (/club)', 'Sonali Sangha Club Settings (/club)')}</span>
+                </h2>
+                <p className="text-xs text-stone-500 mt-0.5">
+                  {b('ক্লাবের প্রধান শিরোনাম, ভূমিকা বার্তা এবং বাৎসরিক ক্রীড়া ও সাংস্কৃতিক বাজেট পরিচালনা করুন', 'Manage club hero titles, mission tagline, and annual sports/cultural financial totals')}
+                </p>
+              </div>
+              <span className="hidden sm:inline-flex px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold uppercase tracking-wider">
+                {b('ক্লাব শাখা', 'Club Wing')}
+              </span>
+            </div>
+
+            {/* Club Hero Copy */}
+            <div className="p-4 rounded-xl border border-amber-200/60 bg-amber-50/20 space-y-4">
+              <h3 className="text-xs font-bold text-amber-900 uppercase tracking-wider">
+                {b('ক্লাব পেজ ব্যানার ও ভূমিকা', 'Club Hero Banner & Overview')}
+              </h3>
+
+              <div>
+                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                  {b('ক্লাবের প্রধান শিরোনাম (Club Hero Title)', 'Club Hero Title')}
+                </label>
+                <input
+                  type="text"
+                  value={settings.clubHeroTitle || ''}
+                  onChange={(e) => handleChange('clubHeroTitle', e.target.value)}
+                  className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 outline-none"
+                  placeholder="সোনালী সঙ্ঘ"
+                />
+                <p className="text-[11px] text-stone-400 mt-1">{b('ডিফল্ট: সোনালী সঙ্ঘ (ক্লাব শব্দটি স্বয়ংক্রিয়ভাবে সোনালী রঙে যুক্ত হবে)', 'Default: Sonali Sangha (Club will be automatically highlighted)')}</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                  {b('ক্লাব বিবরণ ও বার্তা (Club Tagline & Intro)', 'Club Tagline & Intro')}
+                </label>
+                <textarea
+                  rows={3}
+                  value={settings.clubHeroTagline || ''}
+                  onChange={(e) => handleChange('clubHeroTagline', e.target.value)}
+                  className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-normal focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 outline-none leading-relaxed"
+                  placeholder="বাঁশদ্রোণী সোনালী পার্কের সংস্কৃতি, ক্রীড়া ও যুবকল্যাণের প্রাণকেন্দ্র..."
+                />
+              </div>
+            </div>
+
+            {/* Club Financial Metrics */}
+            <div className="p-4 rounded-xl border border-stone-200 bg-stone-50/50 space-y-4">
+              <h3 className="text-xs font-bold text-stone-800 uppercase tracking-wider">
+                {b('ক্লাব আর্থিক সারসংক্ষেপ (Club Accounts & Transparency)', 'Club Accounts & Financial Metrics')}
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                    {b('মোট বাৎসরিক তহবিল (Total Club Collection)', 'Total Club Collection')}
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.clubTotalCollection || ''}
+                    onChange={(e) => handleChange('clubTotalCollection', e.target.value)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 outline-none"
+                    placeholder="₹ ৮,৫০,০০০"
+                  />
+                  <p className="text-[11px] text-stone-400 mt-1">{b('সদস্য চাঁদা, অনুদান ও টুর্নামেন্ট স্পনসরশিপ', 'Member subscriptions & sponsorships')}</p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                    {b('মোট সামগ্রিক খরচ (Total Expenditure)', 'Total Expenditure')}
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.clubTotalExpense || ''}
+                    onChange={(e) => handleChange('clubTotalExpense', e.target.value)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 outline-none"
+                    placeholder="₹ ৭,৯৫,০০০"
+                  />
+                  <p className="text-[11px] text-stone-400 mt-1">{b('টুর্নামেন্ট, জার্সি, ট্রফি ও সরঞ্জাম', 'Tournaments, equipment & prizes')}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                    {b('প্রধান ব্যয়ের খাত (Major Expense Head)', 'Major Expense Head')}
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.clubMajorExpenseTitle || ''}
+                    onChange={(e) => handleChange('clubMajorExpenseTitle', e.target.value)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 outline-none"
+                    placeholder="ক্রীড়া টুর্নামেন্ট ও উৎসব"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                    {b('প্রধান ব্যয়ের পরিমাণ (Major Expense Amount)', 'Major Expense Amount')}
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.clubMajorExpenseAmount || ''}
+                    onChange={(e) => handleChange('clubMajorExpenseAmount', e.target.value)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 outline-none"
+                    placeholder="₹ ৩,৫০,০০০"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 7. Sonali Park Unnayan Samiti Controls */}
+        {activeTab === 'samiti' && (
+          <div className="space-y-6">
+            <div className="border-b border-stone-100 pb-3 flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-bold text-stone-900 flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <span>{b('উন্নয়ন সমিতি সেটিংস (/samiti)', 'Sonali Park Unnayan Samiti Settings (/samiti)')}</span>
+                </h2>
+                <p className="text-xs text-stone-500 mt-0.5">
+                  {b('নাগরিক উন্নয়ন পরিষদের ব্যানার, পরিচিতি বার্তা এবং পরিকাঠামো অডিট বাজেট পরিচালনা করুন', 'Manage civic RWA hero headline, community intro, and infrastructure welfare budgets')}
+                </p>
+              </div>
+              <span className="hidden sm:inline-flex px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold uppercase tracking-wider">
+                {b('সমিতি শাখা', 'Samiti Wing')}
+              </span>
+            </div>
+
+            {/* Samiti Hero Copy */}
+            <div className="p-4 rounded-xl border border-emerald-200/60 bg-emerald-50/20 space-y-4">
+              <h3 className="text-xs font-bold text-emerald-900 uppercase tracking-wider">
+                {b('সমিতি ব্যানার ও পরিচিতি', 'Samiti Hero Banner & Civic Charter')}
+              </h3>
+
+              <div>
+                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                  {b('সমিতির প্রধান শিরোনাম (Samiti Hero Title)', 'Samiti Hero Title')}
+                </label>
+                <input
+                  type="text"
+                  value={settings.samitiHeroTitle || ''}
+                  onChange={(e) => handleChange('samitiHeroTitle', e.target.value)}
+                  className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none"
+                  placeholder="সোনালী পার্ক"
+                />
+                <p className="text-[11px] text-stone-400 mt-1">{b('ডিফল্ট: সোনালী পার্ক (উন্নয়ন সমিতি কথাটি স্বয়ংক্রিয়ভাবে পান্না সবুজ রঙে থাকবে)', 'Default: Sonali Park (Unnayan Samiti will be styled in emerald)')}</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                  {b('সমিতি পরিচিতি ও বার্তা (Samiti Tagline & Mission)', 'Samiti Tagline & Mission')}
+                </label>
+                <textarea
+                  rows={3}
+                  value={settings.samitiHeroTagline || ''}
+                  onChange={(e) => handleChange('samitiHeroTagline', e.target.value)}
+                  className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-normal focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none leading-relaxed"
+                  placeholder="আমাদের পাড়ার নিরাপত্তা, পরিচ্ছন্নতা, রাস্তাঘাট ও নাগরিকদের দৈনন্দিন স্বাচ্ছন্দ্য রক্ষায় সার্বক্ষণিক নিয়োজিত..."
+                />
+              </div>
+            </div>
+
+            {/* Samiti Financial Metrics */}
+            <div className="p-4 rounded-xl border border-stone-200 bg-stone-50/50 space-y-4">
+              <h3 className="text-xs font-bold text-stone-800 uppercase tracking-wider">
+                {b('নাগরিক কল্যাণ তহবিল ও পরিকাঠামো বাজেট (Civic Fund & Outlay)', 'Civic Maintenance Fund & Outlay')}
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                    {b('মোট বাৎসরিক কল্যাণ তহবিল (Total Maintenance Fund)', 'Total Maintenance Fund')}
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.samitiTotalCollection || ''}
+                    onChange={(e) => handleChange('samitiTotalCollection', e.target.value)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none"
+                    placeholder="₹ ১২,২০,০০০"
+                  />
+                  <p className="text-[11px] text-stone-400 mt-1">{b('আবাসিক মাসিক রক্ষণাবেক্ষণ চাঁদা ও বিশেষ উন্নয়ন তহবিল', 'Monthly maintenance collections & resident welfare fund')}</p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                    {b('মোট সামগ্রিক নাগরিক ব্যয় (Total Civic Expenditure)', 'Total Civic Expenditure')}
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.samitiTotalExpense || ''}
+                    onChange={(e) => handleChange('samitiTotalExpense', e.target.value)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none"
+                    placeholder="₹ ১১,৫০,০০০"
+                  />
+                  <p className="text-[11px] text-stone-400 mt-1">{b('নিরাপত্তা গার্ড, পথবাতি, ড্রেন পরিষ্কার ও পরিচ্ছন্নতা', 'Security guards, streetlights, drainage & garbage clearing')}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                    {b('প্রধান পরিকাঠামো খাত (Major Development Head)', 'Major Development Head')}
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.samitiMajorExpenseTitle || ''}
+                    onChange={(e) => handleChange('samitiMajorExpenseTitle', e.target.value)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none"
+                    placeholder="রাস্তা সংস্কার ও জলনিকাশি"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                    {b('প্রধান খাতের ব্যয়ের পরিমাণ (Major Development Amount)', 'Major Development Amount')}
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.samitiMajorExpenseAmount || ''}
+                    onChange={(e) => handleChange('samitiMajorExpenseAmount', e.target.value)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none"
+                    placeholder="₹ ৫,১০,০০০"
+                  />
+                </div>
               </div>
             </div>
           </div>

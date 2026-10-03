@@ -21,7 +21,23 @@ const DEFAULT_SETTINGS = {
   totalCollection: '₹ 14,50,000',
   totalExpense: '₹ 13,85,000',
   majorExpenseTitle: 'Pandal Construction',
-  majorExpenseAmount: '₹ 6,00,000'
+  majorExpenseAmount: '₹ 6,00,000',
+
+  // Sonali Sangha Club Defaults
+  clubHeroTitle: 'সোনালী সঙ্ঘ',
+  clubHeroTagline: 'বাঁশদ্রোণী সোনালী পার্কের সংস্কৃতি, ক্রীড়া ও যুবকল্যাণের প্রাণকেন্দ্র। খেলাধুলা, সাংস্কৃতিক অনুষ্ঠান এবং রক্তদান শিবিরের মাধ্যমে সমাজের সেবায় আমরা নিয়োজিত।',
+  clubTotalCollection: '₹ ৮,৫০,০০০',
+  clubTotalExpense: '₹ ৭,৯৫,০০০',
+  clubMajorExpenseTitle: 'ক্রীড়া টুর্নামেন্ট ও উৎসব',
+  clubMajorExpenseAmount: '₹ ৩,৫০,০০০',
+
+  // Sonali Park Unnayan Samiti Defaults
+  samitiHeroTitle: 'সোনালী পার্ক',
+  samitiHeroTagline: 'আমাদের পাড়ার নিরাপত্তা, পরিচ্ছন্নতা, রাস্তাঘাট ও নাগরিকদের দৈনন্দিন স্বাচ্ছন্দ্য রক্ষায় সার্বক্ষণিক নিয়োজিত রেজিস্টার্ড উন্নয়ন পরিষদ।',
+  samitiTotalCollection: '₹ ১২,২০,০০০',
+  samitiTotalExpense: '₹ ১১,৫০,০০০',
+  samitiMajorExpenseTitle: 'রাস্তা সংস্কার ও জলনিকাশি',
+  samitiMajorExpenseAmount: '₹ ৫,১০,০০০'
 };
 
 export async function GET() {

@@ -6,21 +6,58 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
-const COMMON_ROLES = [
-  'সভাপতি (President)',
-  'কার্যকরী সভাপতি (Working President)',
-  'সহ-সভাপতি (Vice President)',
-  'সাধারণ সম্পাদক (General Secretary)',
-  'যুগ্ম সম্পাদক (Joint Secretary)',
-  'সহ-সম্পাদক (Assistant Secretary)',
-  'কোষাধ্যক্ষ (Treasurer)',
-  'সহ-কোষাধ্যক্ষ (Asst. Treasurer)',
-  'সাংস্কৃতিক সম্পাদক (Cultural Secretary)',
-  'প্রচার ও গণসংযোগ (Publicity)',
-  'পূজা আহ্বায়ক (Puja Convener)',
-  'মণ্ডপ ও নির্মাণ (Pandal & Construction)',
-  'কার্যকরী সদস্য (Executive Member)'
-];
+const ROLES_BY_WING = {
+  Puja: [
+    'সভাপতি (President)',
+    'কার্যকরী সভাপতি (Working President)',
+    'সহ-সভাপতি (Vice President)',
+    'সাধারণ সম্পাদক (General Secretary)',
+    'যুগ্ম সম্পাদক (Joint Secretary)',
+    'সহ-সম্পাদক (Assistant Secretary)',
+    'পূজা আহ্বায়ক (Puja Convener)',
+    'মণ্ডপ ও নির্মাণ (Pandal & Construction)',
+    'সাংস্কৃতিক সম্পাদক (Cultural Secretary)',
+    'প্রচার ও গণসংযোগ (Publicity)',
+    'কোষাধ্যক্ষ (Treasurer)',
+    'সহ-কোষাধ্যক্ষ (Asst. Treasurer)',
+    'কার্যকরী সদস্য (Executive Member)'
+  ],
+  Club: [
+    'সভাপতি (President)',
+    'কার্যকরী সভাপতি (Working President)',
+    'সহ-সভাপতি (Vice President)',
+    'সাধারণ সম্পাদক (General Secretary)',
+    'সহ-সম্পাদক (Assistant Secretary)',
+    'ক্রীড়া সম্পাদক (Sports Secretary)',
+    'সহ-ক্রীড়া সম্পাদক (Asst. Sports Secretary)',
+    'সাংস্কৃতিক সম্পাদক (Cultural Secretary)',
+    'কোষাধ্যক্ষ (Treasurer)',
+    'যুবকল্যাণ আহ্বায়ক (Youth Welfare)',
+    'ইনডোর গেমস ইনচার্জ (Indoor Games In-Charge)',
+    'কার্যকরী সদস্য (Executive Member)'
+  ],
+  Samiti: [
+    'সভাপতি (President)',
+    'কার্যকরী সভাপতি (Working President)',
+    'সহ-সভাপতি (Vice President)',
+    'সাধারণ সম্পাদক (General Secretary)',
+    'সহ-সম্পাদক (Assistant Secretary)',
+    'নিরাপত্তা আহ্বায়ক (Security In-Charge)',
+    'পরিকাঠামো ও ড্রেনেজ আহ্বায়ক (Civic & Drainage)',
+    'কোষাধ্যক্ষ (Treasurer)',
+    'পরিচ্ছন্নতা ও স্বাস্থ্য আহ্বায়ক (Sanitation & Health)',
+    'লেন প্রতিনিধি (Lane Representative)',
+    'কার্যকরী সদস্য (Executive Member)'
+  ]
+};
+
+export function parseMemberRole(role) {
+  if (!role) return { wing: 'Puja', cleanRole: '' };
+  if (role.startsWith('[Club]')) return { wing: 'Club', cleanRole: role.replace('[Club]', '').trim() };
+  if (role.startsWith('[Samiti]')) return { wing: 'Samiti', cleanRole: role.replace('[Samiti]', '').trim() };
+  if (role.startsWith('[Puja]')) return { wing: 'Puja', cleanRole: role.replace('[Puja]', '').trim() };
+  return { wing: 'Puja', cleanRole: role };
+}
 
 export default function CommitteeManagerPage() {
   const { lang, b } = useLanguage();
@@ -28,6 +65,7 @@ export default function CommitteeManagerPage() {
   const [formData, setFormData] = useState({
     name: '',
     role: 'সভাপতি (President)',
+    wing: 'Puja',
     year: new Date().getFullYear().toString()
   });
   const [customRole, setCustomRole] = useState(false);
@@ -38,7 +76,7 @@ export default function CommitteeManagerPage() {
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterYear, setFilterYear] = useState('ALL');
+  const [filterWing, setFilterWing] = useState('ALL');
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -90,11 +128,19 @@ export default function CommitteeManagerPage() {
         }
       }
 
+      const encodedRole = `[${formData.wing}] ${formData.role.trim()}`;
+
       if (editingId) {
         const res = await fetch('/api/admin/committee', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...formData, id: editingId, image: finalImageUrl })
+          body: JSON.stringify({
+            id: editingId,
+            name: formData.name,
+            role: encodedRole,
+            year: formData.year,
+            image: finalImageUrl
+          })
         });
 
         if (res.ok) {
@@ -108,12 +154,17 @@ export default function CommitteeManagerPage() {
         const res = await fetch('/api/admin/committee', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...formData, image: finalImageUrl })
+          body: JSON.stringify({
+            name: formData.name,
+            role: encodedRole,
+            year: formData.year,
+            image: finalImageUrl
+          })
         });
 
         if (res.ok) {
           setMessage(b('নতুন কমিটি সদস্য যুক্ত হয়েছে!', 'New member added successfully!'));
-          setFormData({ ...formData, name: '' });
+          setFormData(prev => ({ ...prev, name: '' }));
           setFile(null);
           setPreviewUrl(null);
           setCurrentImageUrl(null);
@@ -133,9 +184,11 @@ export default function CommitteeManagerPage() {
 
   const handleEdit = (member) => {
     setEditingId(member.id);
+    const parsed = parseMemberRole(member.role);
     setFormData({
       name: member.name,
-      role: member.role,
+      wing: parsed.wing,
+      role: parsed.cleanRole,
       year: String(member.year)
     });
     setCurrentImageUrl(member.image || null);
@@ -146,7 +199,12 @@ export default function CommitteeManagerPage() {
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setFormData({ name: '', role: 'সভাপতি (President)', year: new Date().getFullYear().toString() });
+    setFormData({
+      name: '',
+      wing: 'Puja',
+      role: ROLES_BY_WING.Puja[0],
+      year: new Date().getFullYear().toString()
+    });
     setCurrentImageUrl(null);
     setFile(null);
     setPreviewUrl(null);
@@ -174,11 +232,13 @@ export default function CommitteeManagerPage() {
   const availableYears = ['ALL', ...Array.from(new Set(members.map(m => String(m.year))))];
 
   const filteredMembers = members.filter(m => {
+    const parsed = parseMemberRole(m.role);
+    const matchesWing = filterWing === 'ALL' || parsed.wing === filterWing;
     const matchesYear = filterYear === 'ALL' || String(m.year) === filterYear;
     const matchesSearch = !searchQuery.trim() ||
       m.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.role?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesYear && matchesSearch;
+      parsed.cleanRole?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesWing && matchesYear && matchesSearch;
   });
 
   return (
@@ -245,6 +305,69 @@ export default function CommitteeManagerPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-3.5">
+            {/* Wing / Pillar Selector */}
+            <div>
+              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                {b('সংগঠনের শাখা (Wing / Pillar)', 'Wing / Pillar')} <span className="text-rose-500">*</span>
+              </label>
+              <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-100 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const w = 'Puja';
+                    setFormData(prev => ({
+                      ...prev,
+                      wing: w,
+                      role: customRole ? prev.role : ROLES_BY_WING[w][0]
+                    }));
+                  }}
+                  className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    formData.wing === 'Puja'
+                      ? 'bg-rose-700 text-white shadow-xs'
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-white/50'
+                  }`}
+                >
+                  🌺 {b('দুর্গোৎসব', 'Puja')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const w = 'Club';
+                    setFormData(prev => ({
+                      ...prev,
+                      wing: w,
+                      role: customRole ? prev.role : ROLES_BY_WING[w][0]
+                    }));
+                  }}
+                  className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    formData.wing === 'Club'
+                      ? 'bg-amber-600 text-white shadow-xs'
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-white/50'
+                  }`}
+                >
+                  🏆 {b('ক্লাব', 'Club')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const w = 'Samiti';
+                    setFormData(prev => ({
+                      ...prev,
+                      wing: w,
+                      role: customRole ? prev.role : ROLES_BY_WING[w][0]
+                    }));
+                  }}
+                  className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    formData.wing === 'Samiti'
+                      ? 'bg-emerald-700 text-white shadow-xs'
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-white/50'
+                  }`}
+                >
+                  🏛️ {b('সমিতি', 'Samiti')}
+                </button>
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
                 {b('পূর্ণ নাম (Full Name)', 'Full Name')} <span className="text-rose-500">*</span>
@@ -302,7 +425,7 @@ export default function CommitteeManagerPage() {
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                     className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-base sm:text-xs font-medium focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon outline-none"
                   >
-                    {COMMON_ROLES.map((r) => (
+                    {(ROLES_BY_WING[formData.wing] || ROLES_BY_WING.Puja).map((r) => (
                       <option key={r} value={r}>{r}</option>
                     ))}
                   </select>
@@ -391,22 +514,74 @@ export default function CommitteeManagerPage() {
             </div>
           </div>
 
-          {/* Year Filter Pills */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[10px] font-bold text-stone-400 mr-1 uppercase tracking-wider">{b('বছর:', 'Year:')}</span>
-            {availableYears.map(yr => (
+          {/* Filters: Wing & Year */}
+          <div className="space-y-2">
+            {/* Wing Filter Pills */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] font-bold text-stone-400 mr-1 uppercase tracking-wider">{b('শাখা:', 'Wing:')}</span>
               <button
-                key={yr}
-                onClick={() => setFilterYear(yr)}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  filterYear === yr
-                    ? 'bg-brand-maroon text-white shadow-xs font-bold'
+                type="button"
+                onClick={() => setFilterWing('ALL')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  filterWing === 'ALL'
+                    ? 'bg-stone-900 text-white font-bold shadow-xs'
                     : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                 }`}
               >
-                {yr}
+                {b('সব শাখা', 'All Wings')}
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => setFilterWing('Puja')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  filterWing === 'Puja'
+                    ? 'bg-rose-700 text-white font-bold shadow-xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                }`}
+              >
+                🌺 {b('দুর্গোৎসব', 'Puja')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilterWing('Club')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  filterWing === 'Club'
+                    ? 'bg-amber-600 text-white font-bold shadow-xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                }`}
+              >
+                🏆 {b('ক্লাব', 'Club')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilterWing('Samiti')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  filterWing === 'Samiti'
+                    ? 'bg-emerald-700 text-white font-bold shadow-xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                }`}
+              >
+                🏛️ {b('সমিতি', 'Samiti')}
+              </button>
+            </div>
+
+            {/* Year Filter Pills */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] font-bold text-stone-400 mr-1 uppercase tracking-wider">{b('বছর:', 'Year:')}</span>
+              {availableYears.map(yr => (
+                <button
+                  key={yr}
+                  onClick={() => setFilterYear(yr)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    filterYear === yr
+                      ? 'bg-brand-maroon text-white shadow-xs font-bold'
+                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                  }`}
+                >
+                  {yr}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Member Cards */}
@@ -417,38 +592,55 @@ export default function CommitteeManagerPage() {
                 {b('কোনো কমিটি সদস্য খুঁজে পাওয়া যায়নি।', 'No members found.')}
               </div>
             ) : (
-              filteredMembers.map((member) => (
-                <div
-                  key={member.id}
-                  className="flex items-center justify-between p-3 rounded-xl border border-stone-200/80 bg-stone-50/50 hover:bg-white hover:shadow-2xs transition-all"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    {member.image ? (
-                      <img
-                        src={member.image}
-                        alt={member.name}
-                        className="w-10 h-10 rounded-full object-cover ring-1 ring-stone-200 shrink-0"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-rose-50 text-brand-maroon flex items-center justify-center font-bold text-xs shrink-0">
-                        {member.name ? member.name[0] : 'U'}
-                      </div>
-                    )}
+              filteredMembers.map((member) => {
+                const parsed = parseMemberRole(member.role);
+                return (
+                  <div
+                    key={member.id}
+                    className="flex items-center justify-between p-3 rounded-xl border border-stone-200/80 bg-stone-50/50 hover:bg-white hover:shadow-2xs transition-all"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      {member.image ? (
+                        <img
+                          src={member.image}
+                          alt={member.name}
+                          className="w-10 h-10 rounded-full object-cover ring-1 ring-stone-200 shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-rose-50 text-brand-maroon flex items-center justify-center font-bold text-xs shrink-0">
+                          {member.name ? member.name[0] : 'U'}
+                        </div>
+                      )}
 
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <h3 className="font-bold text-stone-900 text-xs sm:text-sm truncate">
-                          {member.name}
-                        </h3>
-                        <span className="px-1.5 py-0.2 rounded bg-stone-200/70 text-stone-600 text-[9px] font-mono font-bold">
-                          {member.year}
-                        </span>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <h3 className="font-bold text-stone-900 text-xs sm:text-sm truncate">
+                            {member.name}
+                          </h3>
+                          <span className="px-1.5 py-0.2 rounded bg-stone-200/70 text-stone-600 text-[9px] font-mono font-bold">
+                            {member.year}
+                          </span>
+                          {parsed.wing === 'Club' && (
+                            <span className="px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-300/60 text-[9px] font-bold">
+                              🏆 {b('ক্লাব', 'Club')}
+                            </span>
+                          )}
+                          {parsed.wing === 'Samiti' && (
+                            <span className="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 border border-emerald-300/60 text-[9px] font-bold">
+                              🏛️ {b('সমিতি', 'Samiti')}
+                            </span>
+                          )}
+                          {parsed.wing === 'Puja' && (
+                            <span className="px-1.5 py-0.2 rounded bg-rose-100 text-rose-800 border border-rose-300/60 text-[9px] font-bold">
+                              🌺 {b('পূজা', 'Puja')}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs font-semibold text-stone-600 truncate mt-0.5">
+                          {parsed.cleanRole}
+                        </p>
                       </div>
-                      <p className="text-xs font-semibold text-brand-maroon truncate mt-0.5">
-                        {member.role}
-                      </p>
                     </div>
-                  </div>
 
                   <div className="flex items-center gap-1 shrink-0 ml-2">
                     <button

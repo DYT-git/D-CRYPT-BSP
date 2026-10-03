@@ -1,4 +1,5 @@
 'use client';
+import { useState, useMemo } from 'react';
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { FileText, ExternalLink, Download, TrendingUp, TrendingDown, Landmark, ShieldCheck } from 'lucide-react';
@@ -6,10 +7,30 @@ import Link from 'next/link';
 import YearSelector from "@/components/YearSelector";
 import { triggerDownload } from "@/utils/download";
 
+function parseFinanceDoc(doc) {
+  if (!doc?.title) return { wing: 'Puja', cleanTitle: doc?.title || '' };
+  if (doc.title.startsWith('[Club]')) return { wing: 'Club', cleanTitle: doc.title.replace('[Club]', '').trim() };
+  if (doc.title.startsWith('[Samiti]')) return { wing: 'Samiti', cleanTitle: doc.title.replace('[Samiti]', '').trim() };
+  if (doc.title.startsWith('[Puja]')) return { wing: 'Puja', cleanTitle: doc.title.replace('[Puja]', '').trim() };
+  return { wing: 'Puja', cleanTitle: doc.title };
+}
+
 export default function TransparencyPage() {
   const { data, settings, selectedYear } = useData();
   const { lang, b, t, toDigits } = useLanguage();
-  const finances = data.finances.filter(f => f.year === selectedYear);
+  const [activeWing, setActiveWing] = useState('ALL');
+
+  const allYearFinances = useMemo(() => {
+    return (data.finances || []).filter(f => f.year === selectedYear);
+  }, [data.finances, selectedYear]);
+
+  const filteredFinances = useMemo(() => {
+    return allYearFinances.filter(f => {
+      const parsed = parseFinanceDoc(f);
+      if (activeWing === 'ALL') return true;
+      return parsed.wing === activeWing;
+    });
+  }, [allYearFinances, activeWing]);
 
   return (
     <main className="bg-[#FAF7F2] min-h-screen pt-24 sm:pt-28 pb-24 selection:bg-brand-maroon selection:text-white font-sans">
@@ -116,56 +137,118 @@ export default function TransparencyPage() {
           </p>
         </div>
 
-        {finances.length > 0 ? (
-          <div className="space-y-3.5 sm:space-y-4">
-            {finances.map((doc, i) => (
-              <Link 
-                key={i} 
-                href={`?viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(doc.title)}`}
-                scroll={false}
-                className="group relative flex items-center gap-3.5 sm:gap-5 bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-stone-200/80 hover:border-brand-maroon/30 overflow-hidden"
-              >
-                {/* Subtle top highlight */}
-                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        {/* 3-Pillar Wing Tabs for Audits */}
+        <div className="flex items-center justify-center gap-2 mb-8 flex-wrap">
+          <button
+            onClick={() => setActiveWing('ALL')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              activeWing === 'ALL'
+                ? 'bg-stone-900 text-white shadow-xs'
+                : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-stone-50'
+            }`}
+          >
+            {b('সকল অডিট নথি', 'All Audits')} ({toDigits(allYearFinances.length, lang)})
+          </button>
+          <button
+            onClick={() => setActiveWing('Puja')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              activeWing === 'Puja'
+                ? 'bg-rose-700 text-white shadow-xs'
+                : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-rose-50 hover:text-rose-700'
+            }`}
+          >
+            🌺 {b('শারদীয়া দুর্গোৎসব', 'Durga Puja')}
+          </button>
+          <button
+            onClick={() => setActiveWing('Club')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              activeWing === 'Club'
+                ? 'bg-amber-600 text-white shadow-xs'
+                : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-amber-50 hover:text-amber-700'
+            }`}
+          >
+            🏆 {b('সোনালী সঙ্ঘ ক্লাব', 'Sonali Club')}
+          </button>
+          <button
+            onClick={() => setActiveWing('Samiti')}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              activeWing === 'Samiti'
+                ? 'bg-emerald-700 text-white shadow-xs'
+                : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-emerald-50 hover:text-emerald-700'
+            }`}
+          >
+            🏛️ {b('উন্নয়ন সমিতি', 'Unnayan Samiti')}
+          </button>
+        </div>
 
-                <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-center text-rose-600 shrink-0 group-hover:scale-105 transition-transform">
-                  <FileText className="w-5 h-5 sm:w-7 sm:h-7" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-sm sm:text-base md:text-xl font-serif font-bold text-stone-900 group-hover:text-brand-maroon transition-colors truncate">
-                    {t(doc.title)}
-                  </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-stone-100 text-stone-500 border border-stone-200">
-                      {b('পিডিএফ নথি', 'PDF Document')}
-                    </span>
-                    <span className="text-xs text-stone-400">{b('সাল:', 'Year:')} {toDigits(doc.year, lang)}</span>
+        {filteredFinances.length > 0 ? (
+          <div className="space-y-3.5 sm:space-y-4">
+            {filteredFinances.map((doc, i) => {
+              const parsed = parseFinanceDoc(doc);
+              return (
+                <Link 
+                  key={i} 
+                  href={`?viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(parsed.cleanTitle)}`}
+                  scroll={false}
+                  className="group relative flex items-center gap-3.5 sm:gap-5 bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-stone-200/80 hover:border-brand-maroon/30 overflow-hidden"
+                >
+                  {/* Subtle top highlight */}
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                  <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-center text-rose-600 shrink-0 group-hover:scale-105 transition-transform">
+                    <FileText className="w-5 h-5 sm:w-7 sm:h-7" />
                   </div>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <div className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon font-bold text-xs group-hover:bg-brand-maroon group-hover:text-white transition-all shadow-sm">
-                    <span>{b('দেখুন', 'View')}</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm sm:text-base md:text-xl font-serif font-bold text-stone-900 group-hover:text-brand-maroon transition-colors truncate">
+                      {t(parsed.cleanTitle)}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                      <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-stone-100 text-stone-500 border border-stone-200">
+                        {b('পিডিএফ নথি', 'PDF Document')}
+                      </span>
+                      {parsed.wing === 'Club' && (
+                        <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                          🏆 {b('সোনালী সঙ্ঘ ক্লাব', 'Club Audit')}
+                        </span>
+                      )}
+                      {parsed.wing === 'Samiti' && (
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          🏛️ {b('উন্নয়ন সমিতি', 'Samiti Audit')}
+                        </span>
+                      )}
+                      {parsed.wing === 'Puja' && (
+                        <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                          🌺 {b('শারদীয়া দুর্গোৎসব', 'Puja Audit')}
+                        </span>
+                      )}
+                      <span className="text-xs text-stone-400">{b('সাল:', 'Year:')} {toDigits(doc.year, lang)}</span>
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    title={b('পিডিএফ ডাউনলোড করুন', 'Download PDF')}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      triggerDownload(doc.url, `${doc.title || 'audit-report'}.pdf`);
-                    }}
-                    className="p-1.5 sm:p-2 rounded-full bg-stone-100 hover:bg-brand-maroon hover:text-white text-stone-600 border border-stone-200 transition-all cursor-pointer shadow-2xs"
-                  >
-                    <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  </button>
-                </div>
-              </Link>
-            ))}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon font-bold text-xs group-hover:bg-brand-maroon group-hover:text-white transition-all shadow-sm">
+                      <span>{b('দেখুন', 'View')}</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </div>
+                    <button
+                      type="button"
+                      title={b('পিডিএফ ডাউনলোড করুন', 'Download PDF')}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        triggerDownload(doc.url, `${parsed.cleanTitle || 'audit-report'}.pdf`);
+                      }}
+                      className="p-1.5 sm:p-2 rounded-full bg-stone-100 hover:bg-brand-maroon hover:text-white text-stone-600 border border-stone-200 transition-all cursor-pointer shadow-2xs"
+                    >
+                      <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </button>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-20 bg-white/80 rounded-3xl border border-dashed border-stone-300 text-stone-500">
-            <h3 className="text-xl font-serif">{b('এই বছরের কোনো আর্থিক রিপোর্ট এখনও আপলোড করা হয়নি।', 'No financial reports uploaded for this year yet.')}</h3>
+            <h3 className="text-xl font-serif">{b('এই বিভাগের কোনো আর্থিক রিপোর্ট এখনও আপলোড করা হয়নি।', 'No financial reports uploaded for this category yet.')}</h3>
             <p className="text-stone-400 text-sm mt-1">{b('অডিট সম্পন্ন হওয়ার পর নথিপত্র প্রকাশ করা হবে।', 'Documents will be published after the audit is finalized.')}</p>
           </div>
         )}
