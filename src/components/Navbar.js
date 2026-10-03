@@ -10,7 +10,7 @@ const NAV_LINKS = [
   { href: '/',             labelKey: 'Home',              fallbackBn: 'হোম',              icon: Home },
   { href: '/puja',         labelKey: 'Durga Puja',        fallbackBn: 'শারদীয়া দুর্গোৎসব',   icon: Calendar },
   { href: '/club',         labelKey: 'Sonali Sangha Club', fallbackBn: 'সোনালী সঙ্ঘ ক্লাব',   icon: Trophy },
-  { href: '/samiti',       labelKey: 'Unnayan Samiti',    fallbackBn: 'উন্নয়ন সমিতি (RWA)', icon: Building },
+  { href: '/samiti',       labelKey: 'Unnayan Samiti',    fallbackBn: 'উন্নয়ন সমিতি',       icon: Building },
   { href: '/committee',    labelKey: 'Committee Members', fallbackBn: 'কমিটি সদস্যবৃন্দ',   icon: Users },
   { href: '/gallery',      labelKey: 'Gallery',           fallbackBn: 'ছবি গ্যালারি',       icon: ImageIcon },
   { href: '/transparency', labelKey: 'Financials',        fallbackBn: 'হিসাব নিকাশ ও অডিট',  icon: IndianRupee },
