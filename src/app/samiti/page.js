@@ -145,9 +145,9 @@ export default function SamitiPage() {
 
   return (
     <main className="bg-[#FAF7F2] min-h-screen pt-20 sm:pt-24 pb-20 selection:bg-brand-maroon selection:text-white font-sans">
-      {/* ═══ TOP 3-PILLAR SWITCHER HUB ═══ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8">
-        <PillarSwitcher active="samiti" variant="hero" />
+      {/* ═══ TOP 3-PILLAR SWITCHER HUB (MOBILE ONLY) ═══ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8 md:hidden">
+        <PillarSwitcher active="samiti" variant="mobile" />
       </div>
 
       {/* ═══ INDEPENDENT SAMITI HERO BANNER (NO PUJA COUNTDOWN) ═══ */}

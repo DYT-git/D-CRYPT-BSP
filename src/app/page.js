@@ -168,11 +168,6 @@ export default function HomePage() {
           {/* Time-Aware Atmospheric Floating Particles */}
           <HeroParticles timeOfDay={timeOfDay} />
 
-          {/* ════ TOP 3-PILLAR SWITCHER (DESKTOP) ════ */}
-          <div className="absolute top-4 sm:top-5 inset-x-0 z-30 hidden lg:flex justify-center px-4">
-            <PillarSwitcher active="puja" variant="hero" />
-          </div>
-
           {/* ════ DESKTOP WIDE-SCREEN ONLY (>= lg: 1024px+): LEFT WING ════ */}
           <div className="absolute top-24 sm:top-28 md:top-32 lg:top-36 xl:top-40 left-6 sm:left-8 lg:left-14 z-20 hidden lg:block max-w-md pointer-events-none">
             {/* Symmetrical Header Greeting Badge */}
@@ -297,9 +292,9 @@ export default function HomePage() {
             Standard Native Mobile App Layout: Zero Deity Obstruction, 100% Readable, High-Contrast
             ═══════════════════════════════════════════════════════════════════════════ */}
         <div className="block lg:hidden px-4 sm:px-6 pt-3 pb-6 max-w-2xl mx-auto">
-          {/* ════ TOP 3-PILLAR SWITCHER (MOBILE) ════ */}
-          <div className="mb-4">
-            <PillarSwitcher active="puja" variant="hero" />
+          {/* ════ TOP 3-PILLAR SWITCHER (MOBILE ONLY) ════ */}
+          <div className="mb-4 md:hidden">
+            <PillarSwitcher active="puja" variant="mobile" />
           </div>
 
           {/* Greeting Badge */}
