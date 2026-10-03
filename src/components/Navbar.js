@@ -68,7 +68,7 @@ export default function Navbar() {
       </div>
 
       {/* ═══ TOP-CENTER: Fixed 3-Pillar Quick Switcher (Desktop) ═══ */}
-      <div className="fixed top-3 sm:top-5 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-auto">
+      <div className="fixed top-2 sm:top-2.5 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-auto">
         <PillarSwitcher variant="compact" />
       </div>
 

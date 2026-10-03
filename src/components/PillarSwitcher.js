@@ -25,6 +25,7 @@ export default function PillarSwitcher({ active, variant = 'nav', className = ''
       shortBn: 'শারদীয়া পূজা',
       labelEn: 'Sharadiya Durga Puja',
       shortEn: 'Durga Puja',
+      activeSubtle: 'bg-rose-500/25 text-rose-100 border-rose-300/40 backdrop-blur-sm shadow-xs font-semibold',
       activeGradient: 'bg-gradient-to-r from-rose-700 via-brand-maroon to-[#6B081F] text-white border-rose-400/50 shadow-rose-950/60 ring-1 ring-rose-400/40',
       activeRing: 'ring-rose-400/50',
     },
@@ -36,6 +37,7 @@ export default function PillarSwitcher({ active, variant = 'nav', className = ''
       shortBn: 'সোনালী সঙ্ঘ',
       labelEn: 'Sonali Sangha Club',
       shortEn: 'Sonali Club',
+      activeSubtle: 'bg-amber-500/25 text-amber-100 border-amber-300/40 backdrop-blur-sm shadow-xs font-semibold',
       activeGradient: 'bg-gradient-to-r from-amber-600 via-amber-700 to-amber-900 text-white border-amber-400/50 shadow-amber-950/60 ring-1 ring-amber-400/40',
       activeRing: 'ring-amber-400/50',
     },
@@ -47,6 +49,7 @@ export default function PillarSwitcher({ active, variant = 'nav', className = ''
       shortBn: 'উন্নয়ন সমিতি',
       labelEn: 'Unnayan Samiti',
       shortEn: 'Civic Samiti',
+      activeSubtle: 'bg-emerald-500/25 text-emerald-100 border-emerald-300/40 backdrop-blur-sm shadow-xs font-semibold',
       activeGradient: 'bg-gradient-to-r from-emerald-700 via-teal-800 to-slate-900 text-white border-emerald-400/50 shadow-emerald-950/60 ring-1 ring-emerald-400/40',
       activeRing: 'ring-emerald-400/50',
     },
@@ -58,7 +61,7 @@ export default function PillarSwitcher({ active, variant = 'nav', className = ''
     return (
       <nav
         aria-label="3 Community Pillars Navigation"
-        className={`flex items-center p-1 sm:p-1.5 rounded-full bg-stone-950/85 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] ${className}`}
+        className={`flex items-center p-0.5 sm:p-1 rounded-full bg-black/30 hover:bg-black/45 backdrop-blur-md border border-white/15 shadow-sm transition-all duration-300 ${className}`}
       >
         {pillars.map((p) => {
           const isActive = currentPillar === p.id;
@@ -66,22 +69,19 @@ export default function PillarSwitcher({ active, variant = 'nav', className = ''
             <Link
               key={p.id}
               href={p.href}
-              className={`relative flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-xs md:text-sm transition-all duration-300 whitespace-nowrap cursor-pointer ${
+              className={`relative flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 rounded-full text-xs transition-all duration-200 whitespace-nowrap cursor-pointer ${
                 isActive
-                  ? `${p.activeGradient} font-bold shadow-md scale-[1.02] border z-10 ring-1 ${p.activeRing}`
-                  : 'text-stone-300 hover:text-white hover:bg-white/10 font-medium'
+                  ? `${p.activeSubtle} border z-10`
+                  : 'text-white/70 hover:text-white hover:bg-white/10 font-medium'
               }`}
             >
-              <span className="text-sm leading-none">{p.icon}</span>
+              <span className="text-xs sm:text-sm leading-none">{p.icon}</span>
               <span className="leading-snug hidden lg:inline">
                 {lang === 'bn' ? p.labelBn : p.labelEn}
               </span>
               <span className="leading-snug inline lg:hidden">
                 {lang === 'bn' ? p.shortBn : p.shortEn}
               </span>
-              {isActive && (
-                <span className="w-1.5 h-1.5 rounded-full bg-white/90 animate-pulse ml-0.5" />
-              )}
             </Link>
           );
         })}
