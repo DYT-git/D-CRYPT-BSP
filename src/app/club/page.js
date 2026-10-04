@@ -171,16 +171,16 @@ export default function ClubPage() {
   };
 
 const FALLBACK_CLUB_MEMBERS = [
-  { id: 13, name: "রবি জানা (RABI JANA)", role: "[Club] সভাপতি | 7980464187", image: "/assets/avatars/president.svg", year: 2026 },
+  { id: 13, name: "রবি জানা (RABI JANA)", role: "[Club] সভাপতি | 7980464187", image: "/assets/avatars/rabi-jana.jpg", year: 2026 },
   { id: 14, name: "ছোটকা দাস (বাপি) (CHOTKA DAS)", role: "[Club] সহঃ সভাপতি | 8910936506", image: "/assets/avatars/vice-president.svg", year: 2026 },
   { id: 15, name: "তরুণ দেবনাথ (TARUN DEBNATH)", role: "[Club] সহঃ সভাপতি | 7890867584", image: "/assets/avatars/vice-president.svg", year: 2026 },
-  { id: 16, name: "নৃপেন সাহা (NRIPEN SAHA)", role: "[Club] সম্পাদক | 8777484189", image: "/assets/avatars/secretary.svg", year: 2026 },
+  { id: 16, name: "নৃপেন সাহা (NRIPEN SAHA)", role: "[Club] সম্পাদক | 8777484189", image: "/assets/avatars/nripen-saha.jpg", year: 2026 },
   { id: 17, name: "সুরজিৎ সরকার (SURAJIT SARKAR)", role: "[Club] সহঃ সম্পাদক | 8777581827", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
   { id: 18, name: "অরূপ মল্লিক (ARUP MULLICK)", role: "[Club] সহঃ সম্পাদক | 8777285009", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
-  { id: 19, name: "শুভজিৎ মালো (সনু) (SUBHAJIT MALO)", role: "[Club] কোষাধ্যক্ষ | 9123727257", image: "/assets/avatars/treasurer.svg", year: 2026 },
+  { id: 19, name: "শুভজিৎ মালো (সনু) (SUBHAJIT MALO)", role: "[Club] কোষাধ্যক্ষ | 9123727257", image: "/assets/avatars/subhajit-malo.jpg", year: 2026 },
   { id: 20, name: "অভিষেক চৌধুরী (শিবা) (AVISEK CHOUDHURY)", role: "[Club] সহঃ কোষাধ্যক্ষ | 8013337014", image: "/assets/avatars/asst-treasurer.svg", year: 2026 },
   { id: 21, name: "রবি গোস্বামী (RAVI GOSWAMI)", role: "[Club] সহঃ কোষাধ্যক্ষ | 8240672206", image: "/assets/avatars/asst-treasurer.svg", year: 2026 },
-  { id: 22, name: "অমল দাস (বাবাই) (AMAL DAS)", role: "[Club] ক্রীড়া সম্পাদক | 8777368136", image: "/assets/avatars/sports-secretary.svg", year: 2026 },
+  { id: 22, name: "অমল দাস (বাবাই) (AMAL DAS)", role: "[Club] ক্রীড়া সম্পাদক | 8777368136", image: "/assets/avatars/amal-das.jpg", year: 2026 },
   { id: 23, name: "আকাশ জানা (AKASH JANA)", role: "[Club] সহঃ ক্রীড়া সম্পাদক | 6289640300", image: "/assets/avatars/sports-secretary.svg", year: 2026 },
   { id: 24, name: "অতনু দত্ত (টুটু) (ATANU DUTTA)", role: "[Club] সহঃ ক্রীড়া সম্পাদক | 9339748034", image: "/assets/avatars/sports-secretary.svg", year: 2026 },
   { id: 25, name: "পিংকি কুণ্ডু (PINKI KUNDU)", role: "[Club] সাংস্কৃতিক সম্পাদক | 9874674901", image: "/assets/avatars/cultural-female.svg", year: 2026 },
