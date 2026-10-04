@@ -10,6 +10,8 @@ export default function NoticesManagerPage() {
   const { lang, b } = useLanguage();
   const [notices, setNotices] = useState([]);
   const [activeFormTab, setActiveFormTab] = useState('notice'); // 'notice' | 'popup'
+  const [selectedWing, setSelectedWing] = useState('puja'); // 'puja' | 'club' | 'samiti'
+  const [filterWing, setFilterWing] = useState('all'); // 'all' | 'puja' | 'club' | 'samiti'
 
   const [formData, setFormData] = useState({
     title: '',
@@ -64,16 +66,32 @@ export default function NoticesManagerPage() {
   const handleNoticeSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    // Apply wing tag to title
+    let cleanTitle = formData.title.replace(/^\[Club\]\s*/, '').replace(/^\[Samiti\]\s*/, '').trim();
+    let finalTitle = cleanTitle;
+    if (selectedWing === 'club') {
+      finalTitle = `[Club] ${cleanTitle}`;
+    } else if (selectedWing === 'samiti') {
+      finalTitle = `[Samiti] ${cleanTitle}`;
+    }
+
+    const payload = {
+      ...formData,
+      title: finalTitle
+    };
+
     try {
       if (editingId) {
         const res = await fetch('/api/admin/notices', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...formData, id: editingId })
+          body: JSON.stringify({ ...payload, id: editingId })
         });
         if (res.ok) {
           setMessage(b('নোটিশ সফলভাবে আপডেট করা হয়েছে!', 'Notice updated successfully!'));
           setEditingId(null);
+          setSelectedWing('puja');
           setFormData({ title: '', text: '', isUrgent: false, year: new Date().getFullYear().toString() });
           fetchNotices();
         } else {
@@ -83,10 +101,11 @@ export default function NoticesManagerPage() {
         const res = await fetch('/api/admin/notices', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(payload)
         });
         if (res.ok) {
           setMessage(b('নতুন নোটিশ সফলভাবে প্রকাশিত হয়েছে!', 'Notice published successfully!'));
+          setSelectedWing('puja');
           setFormData({ title: '', text: '', isUrgent: false, year: new Date().getFullYear().toString() });
           fetchNotices();
         } else {
@@ -104,8 +123,20 @@ export default function NoticesManagerPage() {
   const startEdit = (notice) => {
     setActiveFormTab('notice');
     setEditingId(notice.id);
+
+    let wing = 'puja';
+    let cleanTitle = notice.title || '';
+    if (cleanTitle.startsWith('[Club]')) {
+      wing = 'club';
+      cleanTitle = cleanTitle.replace(/^\[Club\]\s*/, '');
+    } else if (cleanTitle.startsWith('[Samiti]')) {
+      wing = 'samiti';
+      cleanTitle = cleanTitle.replace(/^\[Samiti\]\s*/, '');
+    }
+    setSelectedWing(wing);
+
     setFormData({
-      title: notice.title,
+      title: cleanTitle,
       text: notice.text,
       isUrgent: Boolean(notice.isUrgent),
       year: String(notice.year || new Date().getFullYear())
@@ -115,6 +146,7 @@ export default function NoticesManagerPage() {
 
   const cancelEdit = () => {
     setEditingId(null);
+    setSelectedWing('puja');
     setFormData({ title: '', text: '', isUrgent: false, year: new Date().getFullYear().toString() });
   };
 
@@ -159,6 +191,14 @@ export default function NoticesManagerPage() {
   };
 
   const filteredNotices = notices.filter(n => {
+    const isClubNotice = n.title?.startsWith('[Club]');
+    const isSamitiNotice = n.title?.startsWith('[Samiti]');
+    const isPujaNotice = !isClubNotice && !isSamitiNotice;
+
+    if (filterWing === 'puja' && !isPujaNotice) return false;
+    if (filterWing === 'club' && !isClubNotice) return false;
+    if (filterWing === 'samiti' && !isSamitiNotice) return false;
+
     const matchesSearch = !searchQuery.trim() ||
       n.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       n.text?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -261,6 +301,53 @@ export default function NoticesManagerPage() {
                     <span>{b('বাতিল', 'Cancel')}</span>
                   </button>
                 )}
+              </div>
+
+              {/* 3-Wing Selector */}
+              <div>
+                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                  {b('শাখা নির্বাচন (Target Pillar Wing)', 'Target Pillar Wing')} <span className="text-rose-500">*</span>
+                </label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedWing('puja')}
+                    className={`p-2 rounded-xl text-center border text-xs font-semibold transition-all cursor-pointer ${
+                      selectedWing === 'puja'
+                        ? 'bg-rose-50 border-rose-300 text-brand-maroon font-bold shadow-xs'
+                        : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100'
+                    }`}
+                  >
+                    <span className="block text-sm mb-0.5">🌺</span>
+                    <span>{b('শারদীয়া দুর্গোৎসব', 'Durga Puja')}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedWing('club')}
+                    className={`p-2 rounded-xl text-center border text-xs font-semibold transition-all cursor-pointer ${
+                      selectedWing === 'club'
+                        ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold shadow-xs'
+                        : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100'
+                    }`}
+                  >
+                    <span className="block text-sm mb-0.5">🏆</span>
+                    <span>{b('সোনালী সঙ্ঘ', 'Club')}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedWing('samiti')}
+                    className={`p-2 rounded-xl text-center border text-xs font-semibold transition-all cursor-pointer ${
+                      selectedWing === 'samiti'
+                        ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold shadow-xs'
+                        : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100'
+                    }`}
+                  >
+                    <span className="block text-sm mb-0.5">🏛️</span>
+                    <span>{b('উন্নয়ন সমিতি', 'Samiti')}</span>
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -442,6 +529,30 @@ export default function NoticesManagerPage() {
             </div>
           </div>
 
+          {/* Wing Filter Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-stone-100">
+            {[
+              { key: 'all', labelBn: 'সকল শাখা', labelEn: 'All Wings', count: notices.length },
+              { key: 'puja', labelBn: '🌺 শারদীয়া পূজা', labelEn: '🌺 Durga Puja', count: notices.filter(n => !n.title?.startsWith('[Club]') && !n.title?.startsWith('[Samiti]')).length },
+              { key: 'club', labelBn: '🏆 সোনালী সঙ্ঘ', labelEn: '🏆 Sonali Sangha', count: notices.filter(n => n.title?.startsWith('[Club]')).length },
+              { key: 'samiti', labelBn: '🏛️ উন্নয়ন সমিতি', labelEn: '🏛️ Unnayan Samiti', count: notices.filter(n => n.title?.startsWith('[Samiti]')).length },
+            ].map(tab => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setFilterWing(tab.key)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                  filterWing === tab.key
+                    ? 'bg-stone-900 text-white shadow-xs font-bold'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                }`}
+              >
+                <span>{lang === 'bn' ? tab.labelBn : tab.labelEn}</span>
+                <span className="ml-1 opacity-70">({tab.count})</span>
+              </button>
+            ))}
+          </div>
+
           {/* Notices Stack */}
           <div className="overflow-y-auto max-h-[600px] pr-1 space-y-2.5">
             {filteredNotices.length === 0 ? (
@@ -467,11 +578,25 @@ export default function NoticesManagerPage() {
                             Urgent
                           </span>
                         )}
+                        {/* Wing Badge */}
+                        {notice.title?.startsWith('[Club]') ? (
+                          <span className="px-2 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-[10px] font-bold">
+                            🏆 {b('সোনালী সঙ্ঘ', 'Club')}
+                          </span>
+                        ) : notice.title?.startsWith('[Samiti]') ? (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 text-[10px] font-bold">
+                            🏛️ {b('উন্নয়ন সমিতি', 'Samiti')}
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full bg-rose-100 border border-rose-300 text-brand-maroon text-[10px] font-bold">
+                            🌺 {b('শারদীয়া দুর্গোৎসব', 'Puja')}
+                          </span>
+                        )}
                         <span className="px-1.5 py-0.5 rounded bg-stone-200/70 text-stone-700 text-[10px] font-mono font-bold">
                           {notice.year}
                         </span>
                         <h3 className="font-bold text-stone-900 text-xs sm:text-sm truncate">
-                          {notice.title}
+                          {notice.title.replace(/^\[Club\]\s*/, '').replace(/^\[Samiti\]\s*/, '')}
                         </h3>
                       </div>
                       <p className="text-xs text-stone-600 whitespace-pre-line pt-0.5 leading-relaxed">

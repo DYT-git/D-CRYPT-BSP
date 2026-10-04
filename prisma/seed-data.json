@@ -1,83 +1,258 @@
 {
   "events": [
     {
-      "id": 9,
+      "id": 1,
       "year": 2026,
-      "title": "মহাষষ্ঠী — বোধন ও উদ্বোধন",
+      "title": "মহাষষ্ঠী — কল্পরম্ভা, দেবীর বোধন ও অধিবাস",
+      "date": "2026-10-16",
+      "text": "সকাল ৮:০০ টায় দেবীর কল্পরম্ভা ও ষষ্ঠী বিহিত পূজা। সন্ধ্যা ৬:৩০ টায় দেবীর বোধন, আমন্ত্রণ ও অধিবাস। রাত ৮:০০ টায় মণ্ডপ ও প্রতিমা শুভ দ্বার উন্মোচন।"
+    },
+    {
+      "id": 2,
+      "year": 2026,
+      "title": "মহাসপ্তমী — নবপত্রিকা স্নান ও সপ্তমী বিহিত পূজা",
       "date": "2026-10-17",
-      "text": "দেবীর বোধন, আমন্ত্রণ, অধিবাস ও পুজো উদ্বোধন।"
+      "text": "ভোর ৬:৩০ টায় গঙ্গার পবিত্র জলে নবপত্রিকা (কলাবউ) স্নান ও প্রবেশ। সকাল ৮:৩০ টায় সপ্তমী বিহিত পূজা ও সকাল ১০:০০ টায় পুষ্পাঞ্জলি। রাত ৮:০০ টায় সান্ধ্য আরতি।"
     },
     {
-      "id": 10,
+      "id": 3,
       "year": 2026,
-      "title": "মহাসপ্তমী — নবপত্রিকা স্থাপন",
+      "title": "মহাষ্টমী — অঞ্জলি, কুমারী পূজা ও সন্ধিপূজা",
       "date": "2026-10-18",
-      "text": "সকালে নবপত্রিকা স্নান, স্থাপন ও সপ্তমী বিহিত পূজা।"
+      "text": "সকাল ৮:৩০ টায় মহাষ্টমী বিহিত পূজা। সকাল ৯:৪৫ টায় সার্বজনীন পুষ্পাঞ্জলি। সন্ধিপূজা ও ১০৮ প্রদীপ প্রজ্জ্বলন। সকাল ১১:৩০ টায় কুমারী পূজা। রাত ৮:০০ টায় ধুনুচি আরতি।"
     },
     {
-      "id": 11,
+      "id": 4,
       "year": 2026,
-      "title": "মহাষ্টমী — কুমারী পূজা ও সন্ধিপূজা",
+      "title": "মহানবমী — নবমী বিহিত পূজা, মহাহোম ও ভোগ বিতরণ",
       "date": "2026-10-19",
-      "text": "অষ্টমী বিহিত পূজা, পুষ্পাঞ্জলি এবং বিশেষ সন্ধিপূজা।"
+      "text": "সকাল ৯:০০ টায় মহানবমী বিহিত পূজা ও অঞ্জলি। সকাল ১১:০০ টায় মহাহোম ও নবমী যজ্ঞ। দুপুর ১:০০ টায় সর্বস্তরের ভক্তদের মাঝে মহাভোগ বিতরণ। রাত ৮:৩০ টায় বিশেষ সাংস্কৃতিক অনুষ্ঠান।"
     },
     {
-      "id": 12,
+      "id": 5,
       "year": 2026,
-      "title": "মহানবমী — মহানবমী বিহিত পূজা",
+      "title": "বিজয়া দশমী — দর্পণ বিসর্জন, সিঁদুর খেলা ও প্রতিমা নিরঞ্জন",
       "date": "2026-10-20",
-      "text": "নবমী পূজা, যজ্ঞ ও সন্ধ্যায় বিশেষ আরতি।"
-    },
-    {
-      "id": 13,
-      "year": 2026,
-      "title": "বিজয়া দশমী — প্রতিমা নিরঞ্জন",
-      "date": "2026-10-21",
-      "text": "দশমী বিহিত পূজা, দর্পণ বিসর্জন, সিঁদুর খেলা এবং প্রতিমা ভাসান।"
+      "text": "সকাল ৮:৩০ টায় দশমী বিহিত পূজা ও সমাপন। সকাল ৯:৪৫ টায় দর্পণ বিসর্জন। সকাল ১০:৩০ টা থেকে ঐতিহ্যবাহী সিঁদুর খেলা ও দেবী বরণ। বিকেল ৫:০০ টায় প্রতিমা নিরঞ্জন শোভাযাত্রা ও মিষ্টিমুখ।"
     }
   ],
   "members": [
     {
-      "id": 8,
+      "id": 1,
       "year": 2026,
-      "name": "Sample President",
+      "name": "শ্রী মৃণাল কান্তি রায়",
       "role": "সভাপতি",
-      "image": null
+      "image": "/assets/avatars/president.svg"
+    },
+    {
+      "id": 2,
+      "year": 2026,
+      "name": "শ্রী রাধেশ্যাম দাস",
+      "role": "সহঃ সভাপতি",
+      "image": "/assets/avatars/vice-president.svg"
+    },
+    {
+      "id": 3,
+      "year": 2026,
+      "name": "শ্রী তপন কুমার পাল",
+      "role": "সম্পাদক",
+      "image": "/assets/avatars/tapan-kumar-pal.jpg"
+    },
+    {
+      "id": 4,
+      "year": 2026,
+      "name": "শ্রী ঝন্টু দাস",
+      "role": "সহঃ সম্পাদক",
+      "image": "/assets/avatars/jhantu-das.png"
+    },
+    {
+      "id": 5,
+      "year": 2026,
+      "name": "শ্রী বান্টি হালদার",
+      "role": "কোষাধ্যক্ষ",
+      "image": "/assets/avatars/bunty-halder.png"
+    },
+    {
+      "id": 6,
+      "year": 2026,
+      "name": "শ্রী তপন হালদার",
+      "role": "সহঃ কোষাধ্যক্ষ",
+      "image": "/assets/avatars/tapan-halder.jpg"
+    },
+    {
+      "id": 7,
+      "name": "রবি জানা (RABI JANA)",
+      "role": "[Club] সভাপতি | 7980464187",
+      "image": "/assets/avatars/president.svg",
+      "year": 2026
+    },
+    {
+      "id": 8,
+      "name": "ছোটকা দাস (বাপি) (CHOTKA DAS)",
+      "role": "[Club] সহঃ সভাপতি | 8910936506",
+      "image": "/assets/avatars/vice-president.svg",
+      "year": 2026
     },
     {
       "id": 9,
-      "year": 2026,
-      "name": "Sample Secretary",
-      "role": "সম্পাদক",
-      "image": null
+      "name": "তরুণ দেবনাথ (TARUN DEBNATH)",
+      "role": "[Club] সহঃ সভাপতি | 7890867584",
+      "image": "/assets/avatars/vice-president.svg",
+      "year": 2026
     },
     {
       "id": 10,
-      "year": 2026,
-      "name": "Sample Treasurer",
-      "role": "কোষাধ্যক্ষ",
-      "image": null
+      "name": "নৃপেন সাহা (NRIPEN SAHA)",
+      "role": "[Club] সম্পাদক | 8777484189",
+      "image": "/assets/avatars/secretary.svg",
+      "year": 2026
     },
     {
       "id": 11,
-      "year": 2026,
-      "name": "Sample Member 1",
-      "role": "সদস্য",
-      "image": null
+      "name": "সুরজিৎ সরকার (SURAJIT SARKAR)",
+      "role": "[Club] সহঃ সম্পাদক | 8777581827",
+      "image": "/assets/avatars/asst-secretary.svg",
+      "year": 2026
     },
     {
       "id": 12,
-      "year": 2026,
-      "name": "Sample Member 2",
-      "role": "সদস্য",
-      "image": null
+      "name": "অরূপ মল্লিক (ARUP MULLICK)",
+      "role": "[Club] সহঃ সম্পাদক | 8777285009",
+      "image": "/assets/avatars/asst-secretary.svg",
+      "year": 2026
+    },
+    {
+      "id": 13,
+      "name": "শুভজিৎ মালো (সনু) (SUBHAJIT MALO)",
+      "role": "[Club] কোষাধ্যক্ষ | 9123727257",
+      "image": "/assets/avatars/treasurer.svg",
+      "year": 2026
     },
     {
       "id": 14,
-      "year": 2026,
-      "name": "c",
-      "role": "c",
-      "image": "/uploads/committee-1789055019288-20057298.svg"
+      "name": "অভিষেক চৌধুরী (শিবা) (AVISEK CHOUDHURY)",
+      "role": "[Club] সহঃ কোষাধ্যক্ষ | 8013337014",
+      "image": "/assets/avatars/asst-treasurer.svg",
+      "year": 2026
+    },
+    {
+      "id": 15,
+      "name": "রবি গোস্বামী (RAVI GOSWAMI)",
+      "role": "[Club] সহঃ কোষাধ্যক্ষ | 8240672206",
+      "image": "/assets/avatars/asst-treasurer.svg",
+      "year": 2026
+    },
+    {
+      "id": 16,
+      "name": "অমল দাস (বাবাই) (AMAL DAS)",
+      "role": "[Club] ক্রীড়া সম্পাদক | 8777368136",
+      "image": "/assets/avatars/sports-secretary.svg",
+      "year": 2026
+    },
+    {
+      "id": 17,
+      "name": "আকাশ জানা (AKASH JANA)",
+      "role": "[Club] সহঃ ক্রীড়া সম্পাদক | 6289640300",
+      "image": "/assets/avatars/sports-secretary.svg",
+      "year": 2026
+    },
+    {
+      "id": 18,
+      "name": "অতনু দত্ত (টুটু) (ATANU DUTTA)",
+      "role": "[Club] সহঃ ক্রীড়া সম্পাদক | 9339748034",
+      "image": "/assets/avatars/sports-secretary.svg",
+      "year": 2026
+    },
+    {
+      "id": 19,
+      "name": "পিংকি কুণ্ডু (PINKI KUNDU)",
+      "role": "[Club] সাংস্কৃতিক সম্পাদক | 9874674901",
+      "image": "/assets/avatars/cultural-female.svg",
+      "year": 2026
+    },
+    {
+      "id": 20,
+      "name": "স্নেহা ঘোষ (SNEHA GHOSH)",
+      "role": "[Club] সাংস্কৃতিক সম্পাদক | 6289860007",
+      "image": "/assets/avatars/cultural-female.svg",
+      "year": 2026
+    },
+    {
+      "id": 21,
+      "name": "তরুণ দেবনাথ (TARUN DEBNATH)",
+      "role": "[Club] সাংস্কৃতিক সম্পাদক | 7890867584",
+      "image": "/assets/avatars/cultural-secretary.svg",
+      "year": 2026
+    },
+    {
+      "id": 22,
+      "name": "দেবাশীষ দেওয়ান (DEBASISH DEWAN)",
+      "role": "[Club] সহযোগী সদস্য",
+      "image": "/assets/avatars/club-member.svg",
+      "year": 2026
+    },
+    {
+      "id": 23,
+      "name": "সঞ্জয় মণ্ডল (বাবাই) (SANJOY MONDAL)",
+      "role": "[Club] সহযোগী সদস্য",
+      "image": "/assets/avatars/club-member.svg",
+      "year": 2026
+    },
+    {
+      "id": 24,
+      "name": "শ্রী পার্থসারথি সেনগুপ্ত (PARTHA SARATHI SENGUPTA)",
+      "role": "[Samiti] সভাপতি | 9830012345",
+      "image": "/assets/avatars/president.svg",
+      "year": 2026
+    },
+    {
+      "id": 25,
+      "name": "শ্রী অসীম চ্যাটার্জি (ASHIM CHATTERJEE)",
+      "role": "[Samiti] সহ-সভাপতি | 9830112345",
+      "image": "/assets/avatars/vice-president.svg",
+      "year": 2026
+    },
+    {
+      "id": 26,
+      "name": "শ্রী সুশান্ত রায় (SUSHANTA ROY)",
+      "role": "[Samiti] সাধারণ সম্পাদক | 9830212345",
+      "image": "/assets/avatars/secretary.svg",
+      "year": 2026
+    },
+    {
+      "id": 27,
+      "name": "শ্রী ভাস্কর মজুমদার (BHASKAR MAJUMDAR)",
+      "role": "[Samiti] সহ-সম্পাদক | 9830312345",
+      "image": "/assets/avatars/asst-secretary.svg",
+      "year": 2026
+    },
+    {
+      "id": 28,
+      "name": "শ্রী তপন ভট্টাচার্য (TAPAN BHATTACHARYA)",
+      "role": "[Samiti] পরিকাঠামো আহ্বায়ক | 9830412345",
+      "image": "/assets/avatars/club-member.svg",
+      "year": 2026
+    },
+    {
+      "id": 29,
+      "name": "শ্রীমতী সোমা মুখার্জি (SOMA MUKHERJEE)",
+      "role": "[Samiti] পরিচ্ছন্নতা ও স্বাস্থ্য | 9830512345",
+      "image": "/assets/avatars/cultural-female.svg",
+      "year": 2026
+    },
+    {
+      "id": 30,
+      "name": "শ্রী নারায়ণ ঘোষ (NARAYAN GHOSH)",
+      "role": "[Samiti] কোষাধ্যক্ষ | 9830612345",
+      "image": "/assets/avatars/treasurer.svg",
+      "year": 2026
+    },
+    {
+      "id": 31,
+      "name": "শ্রী অলোক চক্রবর্তী (ALOKE CHAKRABORTY)",
+      "role": "[Samiti] প্রবীণ নাগরিক সমন্বয়ক | 9830712345",
+      "image": "/assets/avatars/club-member.svg",
+      "year": 2026
     }
   ],
   "notices": [
@@ -226,6 +401,14 @@
     {
       "key": "majorExpenseAmount",
       "value": "₹ 6,00,000"
+    },
+    {
+      "key": "clubHeroImage",
+      "value": "/assets/club-hero-banner.jpg"
+    },
+    {
+      "key": "samitiHeroImage",
+      "value": "/assets/samiti-hero-banner.jpg"
     }
   ],
   "admins": [

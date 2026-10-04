@@ -658,7 +658,8 @@ export default function FinanceManagerPage() {
                     </button>
                   </div>
                 </div>
-              ))}
+              );
+            })}
             </div>
           )}
         </div>

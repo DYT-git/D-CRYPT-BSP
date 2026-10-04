@@ -2,14 +2,48 @@
 import { useState, useMemo } from 'react';
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
-import PillarSwitcher from "@/components/PillarSwitcher";
 import { 
   Users, Image as ImageIcon, IndianRupee, Trophy, HeartHandshake, ShieldCheck, 
   ArrowRight, Activity, Calendar, Download, Eye, ExternalLink, FileText, 
-  Dumbbell, Music, Search, X, ZoomIn, CheckCircle2, ChevronRight, Award
+  Dumbbell, Music, Search, X, ZoomIn, CheckCircle2, ChevronRight, Award,
+  Megaphone, Phone
 } from 'lucide-react';
 import Link from 'next/link';
 import { triggerDownload } from '@/utils/download';
+
+function parseMemberRole(role) {
+  if (!role) return { wing: 'Club', cleanRole: '', phone: '' };
+  let wing = 'Club';
+  let rest = role;
+  if (rest.startsWith('[Club]')) { wing = 'Club'; rest = rest.replace('[Club]', '').trim(); }
+  else if (rest.startsWith('[Samiti]')) { wing = 'Samiti'; rest = rest.replace('[Samiti]', '').trim(); }
+  else if (rest.startsWith('[Puja]')) { wing = 'Puja'; rest = rest.replace('[Puja]', '').trim(); }
+
+  let cleanRole = rest;
+  let phone = '';
+  if (rest.includes('|')) {
+    const parts = rest.split('|');
+    cleanRole = parts[0].trim();
+    phone = parts[1].replace(/phone|tel|m\.|m:/gi, '').trim();
+  }
+  return { wing, cleanRole, phone };
+}
+
+function parseMemberNameDetails(rawName) {
+  if (!rawName) return { mainName: '', nickname: '', englishName: '' };
+  const parenMatches = [...rawName.matchAll(/\(([^)]+)\)/g)].map(m => m[1].trim());
+  let nickname = '';
+  let englishName = '';
+  parenMatches.forEach(item => {
+    if (/[a-zA-Z]/.test(item)) {
+      englishName = item;
+    } else {
+      nickname = item;
+    }
+  });
+  const mainName = rawName.replace(/\([^)]+\)/g, '').trim();
+  return { mainName, nickname, englishName };
+}
 
 export default function ClubPage() {
   const { data, settings, selectedYear } = useData();
@@ -22,6 +56,54 @@ export default function ClubPage() {
 
   // Committee search
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Club Dedicated Notices
+  const clubNotices = useMemo(() => {
+    const raw = (data.notices && data.notices.length > 0)
+      ? data.notices
+          .filter(n => n.title && n.title.startsWith('[Club]'))
+          .map(n => ({
+            ...n,
+            title: n.title.replace(/^\[Club\]\s*/, '')
+          }))
+      : [];
+
+    if (raw.length > 0) return raw;
+
+    // Authentic fallback notices for club
+    return [
+      {
+        id: 'club-notice-1',
+        title: b('বার্ষিক ফুটবল ও ক্রিকেট টুর্নামেন্ট ২০২৬ খেলোয়াড় রেজিস্ট্রেশন', 'Annual Sports Tournament 2026 Registration Open'),
+        text: b(
+          'সোনালী সঙ্ঘের বাৎসরিক ফুটবল ও ক্রিকেট টুর্নামেন্টের দল গঠন প্রক্রিয়া শুরু হয়েছে। পাড়ার আগ্রহী তরুণ ও যুবকদের আগামী ১৫ দিনের মধ্যে ক্লাবের ক্রীড়া সম্পাদকের সাথে যোগাযোগ করার অনুরোধ জানানো হচ্ছে।',
+          'Registration is now open for the Annual Football and Cricket Tournament 2026. Neighborhood youth are requested to contact the Club Sports Secretary within the next 15 days.'
+        ),
+        isUrgent: true,
+        year: 2026
+      },
+      {
+        id: 'club-notice-2',
+        title: b('স্বেচ্ছায় রক্তদান ও বিনামূল্যে স্বাস্থ্য পরীক্ষা শিবির', 'Voluntary Blood Donation & Free Health Screening Camp'),
+        text: b(
+          'সোনালী সঙ্ঘ ক্লাবের উদ্যোগে আগামী রবিবার সকাল ৯টা থেকে ক্লাব ভবনে বাৎসরিক রক্তদান ও চক্ষু পরীক্ষা শিবির অনুষ্ঠিত হবে। পাড়ার সকল নাগরিককে অংশগ্রহণ করে এই মহৎ উদ্যোগকে সফল করার আবেদন জানানো হচ্ছে।',
+          'A voluntary blood donation camp along with free eye checkups will be held at the club premises next Sunday starting 9:00 AM. All residents are cordially invited to participate.'
+        ),
+        isUrgent: false,
+        year: 2026
+      },
+      {
+        id: 'club-notice-3',
+        title: b('সাংস্কৃতিক সন্ধ্যা ও রবীন্দ্র-নজরুল জয়ন্তী মহড়া সময়সূচি', 'Cultural Evening Rehearsal & Audition Schedule'),
+        text: b(
+          'আসন্ন সাংস্কৃতিক অনুষ্ঠানের জন্য সংগীত, নৃত্য ও নাটক বিভাগের নিয়মিত মহড়া প্রতি মঙ্গলবার ও শুক্রবার সন্ধ্যা ৬টা থেকে ক্লাব মঞ্চে অনুষ্ঠিত হবে।',
+          'Regular rehearsals for music, dance, and drama will be held at the club auditorium every Tuesday and Friday at 6:00 PM.'
+        ),
+        isUrgent: false,
+        year: 2026
+      }
+    ];
+  }, [data.notices, b]);
 
   // Fallback club gallery photos
   const clubGalleryItems = useMemo(() => {
@@ -88,33 +170,55 @@ export default function ClubPage() {
     setLightboxIdx(next);
   };
 
+const FALLBACK_CLUB_MEMBERS = [
+  { id: 13, name: "রবি জানা (RABI JANA)", role: "[Club] সভাপতি | 7980464187", image: "/assets/avatars/president.svg", year: 2026 },
+  { id: 14, name: "ছোটকা দাস (বাপি) (CHOTKA DAS)", role: "[Club] সহঃ সভাপতি | 8910936506", image: "/assets/avatars/vice-president.svg", year: 2026 },
+  { id: 15, name: "তরুণ দেবনাথ (TARUN DEBNATH)", role: "[Club] সহঃ সভাপতি | 7890867584", image: "/assets/avatars/vice-president.svg", year: 2026 },
+  { id: 16, name: "নৃপেন সাহা (NRIPEN SAHA)", role: "[Club] সম্পাদক | 8777484189", image: "/assets/avatars/secretary.svg", year: 2026 },
+  { id: 17, name: "সুরজিৎ সরকার (SURAJIT SARKAR)", role: "[Club] সহঃ সম্পাদক | 8777581827", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
+  { id: 18, name: "অরূপ মল্লিক (ARUP MULLICK)", role: "[Club] সহঃ সম্পাদক | 8777285009", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
+  { id: 19, name: "শুভজিৎ মালো (সনু) (SUBHAJIT MALO)", role: "[Club] কোষাধ্যক্ষ | 9123727257", image: "/assets/avatars/treasurer.svg", year: 2026 },
+  { id: 20, name: "অভিষেক চৌধুরী (শিবা) (AVISEK CHOUDHURY)", role: "[Club] সহঃ কোষাধ্যক্ষ | 8013337014", image: "/assets/avatars/asst-treasurer.svg", year: 2026 },
+  { id: 21, name: "রবি গোস্বামী (RAVI GOSWAMI)", role: "[Club] সহঃ কোষাধ্যক্ষ | 8240672206", image: "/assets/avatars/asst-treasurer.svg", year: 2026 },
+  { id: 22, name: "অমল দাস (বাবাই) (AMAL DAS)", role: "[Club] ক্রীড়া সম্পাদক | 8777368136", image: "/assets/avatars/sports-secretary.svg", year: 2026 },
+  { id: 23, name: "আকাশ জানা (AKASH JANA)", role: "[Club] সহঃ ক্রীড়া সম্পাদক | 6289640300", image: "/assets/avatars/sports-secretary.svg", year: 2026 },
+  { id: 24, name: "অতনু দত্ত (টুটু) (ATANU DUTTA)", role: "[Club] সহঃ ক্রীড়া সম্পাদক | 9339748034", image: "/assets/avatars/sports-secretary.svg", year: 2026 },
+  { id: 25, name: "পিংকি কুণ্ডু (PINKI KUNDU)", role: "[Club] সাংস্কৃতিক সম্পাদক | 9874674901", image: "/assets/avatars/cultural-female.svg", year: 2026 },
+  { id: 26, name: "স্নেহা ঘোষ (SNEHA GHOSH)", role: "[Club] সাংস্কৃতিক সম্পাদক | 6289860007", image: "/assets/avatars/cultural-female.svg", year: 2026 },
+  { id: 27, name: "তরুণ দেবনাথ (TARUN DEBNATH)", role: "[Club] সাংস্কৃতিক সম্পাদক | 7890867584", image: "/assets/avatars/cultural-secretary.svg", year: 2026 },
+  { id: 28, name: "দেবাশীষ দেওয়ান (DEBASISH DEWAN)", role: "[Club] সহযোগী সদস্য", image: "/assets/avatars/club-member.svg", year: 2026 },
+  { id: 29, name: "সঞ্জয় মণ্ডল (বাবাই) (SANJOY MONDAL)", role: "[Club] সহযোগী সদস্য", image: "/assets/avatars/club-member.svg", year: 2026 }
+];
+
   // Club Committee Members
   const clubCommittee = useMemo(() => {
-    const dynamicClubMembers = (data.members || [])
-      .filter(m => m.role && m.role.startsWith('[Club]'))
-      .map(m => ({
-        name: m.name,
-        role: m.role.replace('[Club]', '').trim(),
-        image: m.image,
-        phone: '+91 98300 XXXXX'
-      }));
+    let rawClubMembers = (data.members || [])
+      .filter(m => m.role && m.role.startsWith('[Club]'));
 
-    const source = dynamicClubMembers.length > 0 ? dynamicClubMembers : [
-      { name: b('শ্রী সুব্রত ব্যানার্জি', 'Subrata Banerjee'), role: b('সভাপতি', 'President'), phone: '+91 98300 XXXXX' },
-      { name: b('শ্রী দেবাশীষ রায়', 'Debasish Roy'), role: b('কার্যকরী সভাপতি', 'Working President'), phone: '+91 98301 XXXXX' },
-      { name: b('শ্রী অমিতাভ মুখার্জি', 'Amitabha Mukherjee'), role: b('সাধারণ সম্পাদক', 'General Secretary'), phone: '+91 98302 XXXXX' },
-      { name: b('শ্রী রঞ্জিত দত্ত', 'Ranjit Dutta'), role: b('সহ-সম্পাদক', 'Assistant Secretary'), phone: '+91 98303 XXXXX' },
-      { name: b('শ্রী প্রসেনজিৎ সেন', 'Prosenjit Sen'), role: b('ক্রীড়া সম্পাদক', 'Sports Secretary'), phone: '+91 98304 XXXXX' },
-      { name: b('শ্রীমতি অনন্যা চ্যাটার্জি', 'Ananya Chatterjee'), role: b('সাংস্কৃতিক সম্পাদক', 'Cultural Secretary'), phone: '+91 98305 XXXXX' },
-      { name: b('শ্রী সুদীপ্ত ঘোষ', 'Sudipta Ghosh'), role: b('কোষাধ্যক্ষ', 'Treasurer'), phone: '+91 98306 XXXXX' },
-      { name: b('শ্রী রাহুল মজুমদার', 'Rahul Majumdar'), role: b('যুব শাখা আহ্বায়ক', 'Youth Wing Convenor'), phone: '+91 98307 XXXXX' },
-    ];
+    if (rawClubMembers.length === 0) {
+      rawClubMembers = FALLBACK_CLUB_MEMBERS;
+    }
 
-    return source.filter(m => 
-      m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const mapped = rawClubMembers.map(m => {
+      const parsedRole = parseMemberRole(m.role);
+      const parsedName = parseMemberNameDetails(m.name);
+      return {
+        id: m.id,
+        name: parsedName.mainName,
+        nickname: parsedName.nickname,
+        englishName: parsedName.englishName,
+        rawName: m.name,
+        role: parsedRole.cleanRole,
+        phone: parsedRole.phone,
+        image: m.image || '/assets/avatars/club-member.svg'
+      };
+    });
+
+    return mapped.filter(m => 
+      m.rawName.toLowerCase().includes(searchQuery.toLowerCase()) || 
       m.role.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [data.members, b, searchQuery]);
+  }, [data.members, searchQuery]);
 
   // Club Financial Documents
   const clubFinances = useMemo(() => {
@@ -151,105 +255,44 @@ export default function ClubPage() {
 
   return (
     <main className="bg-[#FAF7F2] min-h-screen pt-20 sm:pt-24 pb-20 selection:bg-brand-maroon selection:text-white font-sans">
-      {/* ═══ TOP 3-PILLAR SWITCHER HUB (MOBILE ONLY) ═══ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8 md:hidden">
-        <PillarSwitcher active="club" variant="mobile" />
-      </div>
-
-      {/* ═══ INDEPENDENT CLUB HERO BANNER (NO PUJA COUNTDOWN) ═══ */}
+      {/* ═══ INDEPENDENT CLUB HERO BANNER (WITH HERO IMAGE & CONTROLS) ═══ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-16">
-        <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-[#2D0612] via-[#4A0A1C] to-[#1F040C] text-white border border-rose-900/30">
-          {/* Subtle Ambient Background Layer */}
-          <div className="absolute inset-0 bg-[radial-gradient(#F59E0B_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
-          <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+        <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-stone-950 text-white border border-stone-800/80 group">
+          {/* Hero Banner Background Image */}
+          <div className="absolute inset-0 z-0 overflow-hidden">
+            <img
+              src={settings?.clubHeroImage || '/assets/club-hero-banner.jpg'}
+              alt="Bansdroni Sonali Sangha Club Banner"
+              className="w-full h-full object-cover object-center transform scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
+            />
+            {/* Cinematic Multi-Layer Gradient Overlays for maximum legibility */}
+            <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/80 to-stone-950/55" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-stone-950/90" />
+            <div className="absolute inset-0 bg-[radial-gradient(#F59E0B_1px,transparent_1px)] [background-size:24px_24px] opacity-15 pointer-events-none" />
+          </div>
 
-          <div className="relative z-10 px-6 py-12 sm:py-16 md:py-20 lg:px-12 flex flex-col items-center text-center max-w-4xl mx-auto">
+          {/* Top golden decorative highlight */}
+          <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-amber-400 to-transparent z-10" />
+
+          <div className="relative z-10 px-6 py-14 sm:py-20 md:py-24 lg:px-12 flex flex-col items-center text-center max-w-4xl mx-auto">
             {/* Club Registration / Identity Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-sm backdrop-blur-md">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-sm backdrop-blur-md">
               <Trophy className="w-4 h-4 text-amber-400" />
               <span>{b('সোনালী সঙ্ঘ • ক্রীড়া, সংস্কৃতি ও যুবকল্যাণ শাখা', 'Sonali Sangha • Sports, Cultural & Youth Wing')}</span>
             </div>
 
             {/* Club Main Title */}
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-tight text-white mb-4 leading-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-tight text-white mb-4 leading-tight drop-shadow-md">
               {settings.clubHeroTitle || b('সোনালী সঙ্ঘ', 'Sonali Sangha')} <span className="text-amber-400">{b('ক্লাব', 'Club')}</span>
             </h1>
 
             {/* Club Subtitle & Tagline */}
-            <p className="text-base sm:text-lg md:text-xl text-rose-100/90 font-light max-w-2xl leading-relaxed mb-8">
+            <p className="text-base sm:text-lg md:text-xl text-stone-200 font-normal max-w-2xl leading-relaxed drop-shadow-sm">
               {settings.clubHeroTagline || b(
                 'বাঁশদ্রোণী সোনালী পার্কের সংস্কৃতি, ক্রীড়া ও যুবকল্যাণের প্রাণকেন্দ্র। খেলাধুলা, সাংস্কৃতিক অনুষ্ঠান এবং রক্তদান শিবিরের মাধ্যমে সমাজের সেবায় আমরা নিয়োজিত।',
                 'The athletic, cultural, and youth epicenter of Bansdroni Sonali Park. Fostering sporting excellence, cultural unity, and humanitarian welfare since 1952.'
               )}
             </p>
-
-            {/* Stat Pills (Replacing Puja Countdown) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 w-full max-w-3xl mb-8">
-              <div className="p-3 sm:p-4 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md text-center">
-                <span className="text-amber-400 text-xl sm:text-2xl font-black block font-mono">
-                  {toDigits(1952, lang)}
-                </span>
-                <span className="text-[11px] sm:text-xs text-stone-300 font-medium">
-                  {b('প্রতিষ্ঠা বর্ষ', 'Established')}
-                </span>
-              </div>
-              <div className="p-3 sm:p-4 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md text-center">
-                <span className="text-amber-400 text-xl sm:text-2xl font-black block font-mono">
-                  {toDigits(250, lang)}+
-                </span>
-                <span className="text-[11px] sm:text-xs text-stone-300 font-medium">
-                  {b('সদস্য সংখ্যা', 'Active Members')}
-                </span>
-              </div>
-              <div className="p-3 sm:p-4 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md text-center">
-                <span className="text-amber-400 text-xl sm:text-2xl font-black block font-mono">
-                  {toDigits(12, lang)}
-                </span>
-                <span className="text-[11px] sm:text-xs text-stone-300 font-medium">
-                  {b('বাৎসরিক টুর্নামেন্ট', 'Annual Tournaments')}
-                </span>
-              </div>
-              <div className="p-3 sm:p-4 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-md text-center">
-                <span className="text-amber-400 text-xl sm:text-2xl font-black block font-mono">
-                  {toDigits(500, lang)}+
-                </span>
-                <span className="text-[11px] sm:text-xs text-stone-300 font-medium">
-                  {b('রক্তদাতা যুক্ত', 'Blood Donors')}
-                </span>
-              </div>
-            </div>
-
-            {/* Quick Action Navigation Links */}
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <a
-                href="#club-overview"
-                className="bg-white/10 hover:bg-white/20 text-white font-semibold px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm transition-all border border-white/20 backdrop-blur-md flex items-center gap-1.5"
-              >
-                <Activity className="w-3.5 h-3.5 text-amber-400" />
-                <span>{b('ক্লাব পরিচিতি', 'Overview')}</span>
-              </a>
-              <a
-                href="#club-committee"
-                className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm transition-all shadow-md flex items-center gap-1.5"
-              >
-                <Users className="w-3.5 h-3.5" />
-                <span>{b('কমিটি পরিষদ', 'Committee')}</span>
-              </a>
-              <a
-                href="#club-gallery"
-                className="bg-white/10 hover:bg-white/20 text-white font-semibold px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm transition-all border border-white/20 backdrop-blur-md flex items-center gap-1.5"
-              >
-                <ImageIcon className="w-3.5 h-3.5 text-amber-400" />
-                <span>{b('ক্রীড়া গ্যালারি', 'Gallery')}</span>
-              </a>
-              <a
-                href="#club-finance"
-                className="bg-white/10 hover:bg-white/20 text-white font-semibold px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm transition-all border border-white/20 backdrop-blur-md flex items-center gap-1.5"
-              >
-                <IndianRupee className="w-3.5 h-3.5 text-amber-400" />
-                <span>{b('ক্লাব অডিট ও হিসাব', 'Financials')}</span>
-              </a>
-            </div>
           </div>
         </div>
       </section>
@@ -335,18 +378,76 @@ export default function ClubPage() {
         </div>
       </section>
 
-      {/* ═══ 2. DEDICATED CLUB COMMITTEE ROSTER ═══ */}
+      {/* ═══ 2. DEDICATED CLUB NOTICE BOARD ═══ */}
+      <section id="club-notices" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
+        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-sm">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 pb-6 border-b border-stone-100 mb-6">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-900 text-[11px] font-bold uppercase tracking-wider mb-2">
+                <Megaphone className="w-3.5 h-3.5 text-amber-700" />
+                <span>{b('ক্লাব বুলেটিন ও বিজ্ঞপ্তি', 'Club Bulletin & Circulars')}</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
+                {b('সোনালী সঙ্ঘের জরুরি', 'Sonali Sangha Official')} <span className="text-amber-800">{b('বিজ্ঞপ্তি ও নোটিস', 'Notices & Circulars')}</span>
+              </h2>
+              <p className="text-stone-500 text-xs sm:text-sm mt-1">
+                {b('টুর্নামেন্ট, রক্তদান শিবির ও সাংস্কৃতিক কর্মকাণ্ডের সাম্প্রতিক নোটিশ', 'Latest circulars regarding sports schedules, blood donation drives, and cultural programs.')}
+              </p>
+            </div>
+            <div className="shrink-0 text-xs font-bold px-3.5 py-1.5 rounded-full bg-amber-50 text-amber-900 border border-amber-200 shadow-2xs">
+              {b('সক্রিয় নোটিশ', 'Active Notices')}: {toDigits(clubNotices.length, lang)} {b('টি', '')}
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
+            {clubNotices.map((notice, idx) => (
+              <div
+                key={notice.id || idx}
+                className="group relative p-5 sm:p-6 rounded-2xl bg-[#FAF7F2] border border-stone-200/80 hover:border-amber-500/40 hover:shadow-md transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-500/25">
+                      🏆 {b('ক্লাব বিজ্ঞপ্তি', 'Club Notice')}
+                    </span>
+                    {notice.isUrgent && (
+                      <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold animate-pulse">
+                        {b('জরুরি', 'Urgent')}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-serif font-bold text-stone-900 text-base mb-2 group-hover:text-amber-900 transition-colors leading-snug">
+                    {notice.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-stone-600 leading-relaxed whitespace-pre-line">
+                    {notice.text}
+                  </p>
+                </div>
+                <div className="pt-4 mt-4 border-t border-stone-200/60 flex items-center justify-between text-[11px] text-stone-400">
+                  <span>{b('সাল:', 'Year:')} {toDigits(notice.year, lang)}</span>
+                  <span className="text-amber-800 font-semibold">{b('সোনালী সঙ্ঘ', 'Sonali Sangha')}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 3. DEDICATED CLUB COMMITTEE ROSTER ═══ */}
       <section id="club-committee" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
         <div className="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-sm">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-stone-100">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-900 text-[11px] font-bold uppercase tracking-wider mb-2">
                 <Users className="w-3.5 h-3.5 text-amber-700" />
-                <span>{b('ক্লাব পরিচালনা পরিষদ', 'Club Leadership Roster')}</span>
+                <span>{b('কার্য্যকরী কমিটি • ২০২৬–২০২৮', 'Executive Committee • 2026–2028')}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                {b('সোনালী সঙ্ঘের কর্মকর্তা ও কার্যকরী সদস্যবৃন্দ', 'Sonali Sangha Executive Committee')}
+                {b('সোনালী সঙ্ঘের কর্মকর্তা ও পরিচালনা পরিষদ', 'Sonali Sangha Executive Committee')}
               </h2>
+              <p className="text-stone-500 text-xs sm:text-sm mt-1">
+                {b('বাঁশদ্রোণী সোনালী পার্ক ক্লাবের সমাজকল্যাণ ও ক্রীড়া কর্মকাণ্ড পরিচালনার কর্মকর্তা তালিকা', 'Official committee members, conveners and coordinators of Sonali Sangha')}
+              </p>
             </div>
 
             {/* Search Input */}
@@ -356,23 +457,65 @@ export default function ClubPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={b('নাম বা পদবী খুঁজুন...', 'Search name or role...')}
-                className="w-full pl-9 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-full text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-maroon/20"
+                placeholder={b('নাম, ডাকনাম বা পদবী খুঁজুন...', 'Search name, nickname or role...')}
+                className="w-full pl-9 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-full text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
               />
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 mt-6">
             {clubCommittee.map((m, idx) => (
-              <div key={idx} className="group relative p-4 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 hover:border-amber-500/40 hover:shadow-md transition-all text-center">
-                <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-900 font-serif font-bold text-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-105 transition-transform">
-                  {m.name.charAt(0)}
+              <div
+                key={m.id || idx}
+                className="group relative p-4 rounded-2xl bg-[#FAF7F2] border border-stone-200/70 hover:border-amber-500/40 hover:bg-white hover:shadow-md transition-all flex flex-col items-center justify-between text-center"
+              >
+                <div className="w-full flex flex-col items-center">
+                  {/* Portrait Avatar Frame (Adaptive 4:5 Ratio) */}
+                  <div className="relative w-full max-w-[120px] aspect-[4/5] mx-auto rounded-xl overflow-hidden border border-amber-200/80 bg-stone-100 shadow-2xs mb-2.5 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                    <img
+                      src={m.image}
+                      alt={m.name}
+                      className="w-full h-full object-cover object-top"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  {/* Name */}
+                  <h4 className="font-bold text-stone-900 text-xs sm:text-sm leading-snug line-clamp-1 group-hover:text-amber-800 transition-colors">
+                    {m.name}
+                  </h4>
+
+                  {/* Nickname & English */}
+                  {m.nickname && (
+                    <span className="mt-1 px-2 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
+                      “{m.nickname}”
+                    </span>
+                  )}
+                  {m.englishName && (
+                    <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block mt-0.5">
+                      {m.englishName}
+                    </span>
+                  )}
                 </div>
-                <h4 className="font-bold text-stone-900 text-sm sm:text-base leading-snug">{m.name}</h4>
-                <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[11px] font-semibold border border-amber-200">
-                  {m.role}
-                </span>
-                <p className="text-[11px] text-stone-400 font-mono mt-2">{m.phone}</p>
+
+                {/* Role & Direct Phone Action */}
+                <div className="w-full flex flex-col items-center gap-1.5 mt-3 pt-2.5 border-t border-stone-200/60">
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-100/80 text-amber-900 text-[11px] font-bold border border-amber-200/80 leading-tight">
+                    {t(m.role)}
+                  </span>
+                  {m.phone ? (
+                    <a
+                      href={`tel:+91${m.phone}`}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-stone-100 hover:bg-emerald-50 text-stone-700 hover:text-emerald-700 border border-stone-200 hover:border-emerald-300 text-[10px] font-mono font-bold transition-all shadow-2xs cursor-pointer group/tel"
+                      title={b('কল করুন', 'Call')}
+                    >
+                      <Phone className="w-3 h-3 text-emerald-600 group-hover/tel:scale-110 transition-transform" />
+                      <span>{m.phone}</span>
+                    </a>
+                  ) : (
+                    <span className="text-[10px] text-stone-400 font-mono">২০২৬–২০২৮</span>
+                  )}
+                </div>
               </div>
             ))}
           </div>

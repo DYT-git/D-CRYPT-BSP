@@ -6,7 +6,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import {
   LayoutDashboard, Settings, Image as ImageIcon, Megaphone, Camera,
   CalendarDays, Users, Wallet, LogOut, ChevronRight, Menu, X,
-  ExternalLink, ShieldCheck
+  ExternalLink, ShieldCheck, Bell
 } from 'lucide-react';
 
 const navGroups = [
@@ -15,6 +15,7 @@ const navGroups = [
     titleEn: 'OVERVIEW',
     items: [
       { nameBn: 'ড্যাশবোর্ড', nameEn: 'Dashboard', path: '/admin', icon: LayoutDashboard },
+      { nameBn: 'নোটিফিকেশন সেন্টার', nameEn: 'Notification Center', path: '/admin/notifications', icon: Bell },
     ]
   },
   {
@@ -281,7 +282,7 @@ export default function AdminLayout({ children }) {
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
             <span>{lang === 'bn' ? 'সুরক্ষিত অ্যাডমিন সেশন' : 'Authorized Secure Session'}</span>
             <span>•</span>
-            <span>{lang === 'bn' ? 'বাঁশদ্রোণী, কলকাতা ৭০০০৭০' : 'Bansdroni, Kolkata 700070'}</span>
+            <span>{lang === 'bn' ? 'বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০' : 'B/137, Sonali Park, Bansdroni, Kolkata - 700070'}</span>
           </div>
         </footer>
       </main>

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#831843"/>
+      <stop offset="50%" stop-color="#500724"/>
+      <stop offset="100%" stop-color="#20020D"/>
+    </linearGradient>
+    <radialGradient id="spotlight" cx="50%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#FDE047" stop-opacity="0.3"/>
+      <stop offset="60%" stop-color="#EAB308" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="50%" stop-color="#EAB308"/>
+      <stop offset="100%" stop-color="#A16207"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#bgGrad)"/>
+  <rect width="400" height="500" fill="url(#spotlight)"/>
+  <g opacity="0.12" stroke="#FDE047" stroke-width="1.5" fill="none">
+    <circle cx="200" cy="180" r="130"/>
+    <circle cx="200" cy="180" r="105" stroke-dasharray="6,4"/>
+  </g>
+  <!-- Female Silhouette with Hair & Bindi -->
+  <path d="M 145 190 C 145 110, 255 110, 255 190 C 255 240, 235 250, 200 250 C 165 250, 145 240, 145 190 Z" fill="#1E1B4B"/>
+  <circle cx="200" cy="165" r="48" fill="#FCE7F3"/>
+  <circle cx="200" cy="148" r="3.5" fill="#BE123C"/>
+  <path d="M 125 320 C 125 240, 275 240, 275 320 Z" fill="#F43F5E"/>
+  <path d="M 150 320 L 200 230 L 250 320 Z" fill="url(#gold)"/>
+  <!-- Badge -->
+  <circle cx="200" cy="290" r="34" fill="url(#gold)" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="200" y="298" text-anchor="middle" font-size="24" fill="#831843">🌸</text>
+  <!-- Banner -->
+  <rect x="50" y="410" width="300" height="44" rx="22" fill="#500724" stroke="#FDE047" stroke-width="1.5"/>
+  <text x="200" y="438" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="14" fill="#FEF08A">CULTURAL COMMITTEE</text>
+</svg>

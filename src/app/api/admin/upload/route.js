@@ -25,6 +25,8 @@ export async function POST(request) {
       'hero-evening': { filename: 'durga-evening.png', settingKey: 'heroImageEvening' },
       'hero-fallback': { filename: 'durga-hero.png', settingKey: 'heroImageFallback' },
       'hero': { filename: 'durga-hero.png', settingKey: 'heroImageFallback' },
+      'club-hero': { filename: 'club-hero-banner.jpg', settingKey: 'clubHeroImage' },
+      'samiti-hero': { filename: 'samiti-hero-banner.jpg', settingKey: 'samitiHeroImage' },
       'audio': { filename: 'dhak.mp3', settingKey: 'dhakAudio' }
     };
 

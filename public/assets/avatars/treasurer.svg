@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGradTr" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B0810"/>
+      <stop offset="45%" stop-color="#6E121E"/>
+      <stop offset="100%" stop-color="#210307"/>
+    </linearGradient>
+
+    <!-- Radial Spotlight -->
+    <radialGradient id="spotlightTr" cx="50%" cy="38%" r="55%">
+      <stop offset="0%" stop-color="#FFDF73" stop-opacity="0.25"/>
+      <stop offset="50%" stop-color="#B8860B" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Gold Gradients -->
+    <linearGradient id="goldBaseTr" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE57F"/>
+      <stop offset="30%" stop-color="#FFC107"/>
+      <stop offset="70%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#996515"/>
+    </linearGradient>
+
+    <linearGradient id="goldLightTr" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#BF953F"/>
+      <stop offset="25%" stop-color="#FCF6BA"/>
+      <stop offset="50%" stop-color="#B38728"/>
+      <stop offset="75%" stop-color="#FBF5B7"/>
+      <stop offset="100%" stop-color="#AA771C"/>
+    </linearGradient>
+
+    <linearGradient id="silhouetteGradTr" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="50%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+
+    <linearGradient id="suitGradTr" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+
+    <filter id="goldGlowTr" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#FFDF73" flood-opacity="0.4"/>
+    </filter>
+
+    <filter id="cardShadowTr" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="500" fill="url(#bgGradTr)"/>
+  <rect width="400" height="500" fill="url(#spotlightTr)"/>
+
+  <!-- Subtle Alpona Motif Backdrop -->
+  <g opacity="0.08" stroke="#FFE57F" stroke-width="1.5" fill="none">
+    <circle cx="200" cy="180" r="140"/>
+    <circle cx="200" cy="180" r="110" stroke-dasharray="6,4"/>
+    <circle cx="200" cy="180" r="80"/>
+    <path d="M 200,40 L 200,320 M 60,180 L 340,180 M 100,80 L 300,280 M 100,280 L 300,80"/>
+  </g>
+
+  <!-- Golden Laurel Wreath Arch -->
+  <g transform="translate(200, 185) scale(0.95)" filter="url(#goldGlowTr)">
+    <path d="M -115,-40 Q -140,20 -110,80 Q -80,130 0,150" fill="none" stroke="url(#goldLightTr)" stroke-width="3"/>
+    <circle cx="-120" cy="-30" r="5" fill="url(#goldLightTr)"/>
+    <circle cx="-135" cy="0" r="5.5" fill="url(#goldLightTr)"/>
+    <circle cx="-133" cy="35" r="6" fill="url(#goldLightTr)"/>
+    <circle cx="-118" cy="70" r="6.5" fill="url(#goldLightTr)"/>
+    <circle cx="-90" cy="105" r="7" fill="url(#goldLightTr)"/>
+    <circle cx="-50" cy="135" r="7" fill="url(#goldLightTr)"/>
+
+    <path d="M 115,-40 Q 140,20 110,80 Q 80,130 0,150" fill="none" stroke="url(#goldLightTr)" stroke-width="3"/>
+    <circle cx="120" cy="-30" r="5" fill="url(#goldLightTr)"/>
+    <circle cx="135" cy="0" r="5.5" fill="url(#goldLightTr)"/>
+    <circle cx="133" cy="35" r="6" fill="url(#goldLightTr)"/>
+    <circle cx="118" cy="70" r="6.5" fill="url(#goldLightTr)"/>
+    <circle cx="90" cy="105" r="7" fill="url(#goldLightTr)"/>
+    <circle cx="50" cy="135" r="7" fill="url(#goldLightTr)"/>
+  </g>
+
+  <!-- Golden Inner Medallion Frame -->
+  <circle cx="200" cy="175" r="105" fill="#180306" stroke="url(#goldLightTr)" stroke-width="3.5" filter="url(#cardShadowTr)"/>
+  <circle cx="200" cy="175" r="99" fill="none" stroke="url(#goldBaseTr)" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- Dignified Executive Silhouette -->
+  <g id="executiveSilhouetteTr">
+    <clipPath id="medallionClipTr">
+      <circle cx="200" cy="175" r="97"/>
+    </clipPath>
+
+    <g clip-path="url(#medallionClipTr)">
+      <!-- Torso / Traditional Attire -->
+      <path d="M 115,280 C 115,225 150,215 170,212 L 175,200 L 225,200 L 230,212 C 250,215 285,225 285,280 Z" fill="url(#suitGradTr)"/>
+      
+      <!-- Collar & Buttons -->
+      <path d="M 180,200 L 200,225 L 220,200" fill="none" stroke="url(#goldLightTr)" stroke-width="2.5"/>
+      <line x1="200" y1="225" x2="200" y2="280" stroke="url(#goldLightTr)" stroke-width="2"/>
+      <circle cx="200" cy="238" r="2.5" fill="url(#goldLightTr)"/>
+      <circle cx="200" cy="252" r="2.5" fill="url(#goldLightTr)"/>
+      <circle cx="200" cy="266" r="2.5" fill="url(#goldLightTr)"/>
+
+      <!-- Golden Executive Sash -->
+      <path d="M 140,280 L 225,205 L 245,212 L 170,280 Z" fill="url(#goldBaseTr)" opacity="0.32"/>
+
+      <!-- Neck -->
+      <rect x="187" y="172" width="26" height="32" rx="4" fill="url(#silhouetteGradTr)"/>
+
+      <!-- Head Silhouette -->
+      <ellipse cx="200" cy="148" rx="36" ry="42" fill="url(#silhouetteGradTr)"/>
+
+      <!-- Executive Hair Silhouette -->
+      <path d="M 166,146 C 164,124 176,108 200,108 C 224,108 236,124 234,146 C 231,121 219,114 200,114 C 181,114 169,121 166,146 Z" fill="#0F172A"/>
+
+      <!-- Treasury Insignia Coin Lapel -->
+      <circle cx="165" cy="230" r="7" fill="url(#goldLightTr)"/>
+      <circle cx="165" cy="230" r="5" fill="#180306"/>
+      <text x="165" y="233" font-size="6" font-weight="900" fill="url(#goldLightTr)" text-anchor="middle">₹</text>
+    </g>
+  </g>
+
+  <!-- Top Crown / Treasury Insignia -->
+  <g transform="translate(200, 52) scale(0.9)" filter="url(#goldGlowTr)">
+    <polygon points="0,-16 5,-4 18,-4 8,4 12,16 0,8 -12,16 -8,4 -18,-4 -5,-4" fill="url(#goldLightTr)"/>
+    <circle cx="-28" cy="0" r="3" fill="url(#goldLightTr)"/>
+    <circle cx="28" cy="0" r="3" fill="url(#goldLightTr)"/>
+  </g>
+
+  <!-- Formal Title Plaque / Ribbon at Bottom -->
+  <g transform="translate(200, 365)" filter="url(#cardShadowTr)">
+    <rect x="-150" y="0" width="300" height="74" rx="37" fill="#180306" stroke="url(#goldLightTr)" stroke-width="2.5"/>
+    <rect x="-144" y="4" width="288" height="66" rx="33" fill="none" stroke="url(#goldBaseTr)" stroke-width="1" stroke-dasharray="4,2"/>
+
+    <circle cx="-130" cy="37" r="5" fill="url(#goldLightTr)"/>
+    <circle cx="130" cy="37" r="5" fill="url(#goldLightTr)"/>
+
+    <!-- Bengali Title -->
+    <text x="0" y="36" font-family="'Noto Sans Bengali', 'Hind Siliguri', 'Mukti', sans-serif" font-size="24" font-weight="900" fill="url(#goldLightTr)" text-anchor="middle" letter-spacing="1">
+      কোষাধ্যক্ষ
+    </text>
+
+    <!-- English Subtitle -->
+    <text x="0" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="800" fill="#FFE57F" text-anchor="middle" letter-spacing="3.5">
+      TREASURER
+    </text>
+  </g>
+
+  <!-- Official Authority Ribbon Footer -->
+  <g transform="translate(200, 468)">
+    <text x="0" y="0" font-family="'Noto Sans Bengali', sans-serif" font-size="10" font-weight="700" fill="#E2E8F0" text-anchor="middle" opacity="0.8" letter-spacing="1.5">
+      বাঁশদ্রোণী সোনালী পার্ক শারদ উৎসব ২০২৬
+    </text>
+    <text x="0" y="14" font-family="system-ui, sans-serif" font-size="8" font-weight="700" fill="url(#goldLightTr)" text-anchor="middle" letter-spacing="2">
+      EXECUTIVE COUNCIL • OFFICIAL SEAL
+    </text>
+  </g>
+</svg>

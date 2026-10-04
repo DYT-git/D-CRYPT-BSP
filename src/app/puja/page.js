@@ -267,6 +267,10 @@ export default function PujaSchedule() {
             </h2>
             <div className="space-y-1.5 text-stone-600 text-xs sm:text-sm md:text-base">
               <p>
+                <strong className="text-stone-900 font-bold">{b('মণ্ডপের ঠিকানা:', 'Pandal Address:')}</strong>{' '}
+                {b('বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০', 'B/137, Sonali Park, Bansdroni, Kolkata - 700070')}
+              </p>
+              <p>
                 <strong className="text-stone-900 font-bold">{b('মেট্রো:', 'Metro:')}</strong>{' '}
                 {b('মাস্টারদা সূর্য সেন (বাঁশদ্রোণী) মেট্রো স্টেশন থেকে ৫ মিনিটের হাঁটা পথ বা রিকশা।', '5 minutes by walking or rickshaw from Masterda Surya Sen (Bansdroni) Metro Station.')}
               </p>

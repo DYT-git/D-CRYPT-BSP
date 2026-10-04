@@ -52,11 +52,21 @@ const ROLES_BY_WING = {
 };
 
 export function parseMemberRole(role) {
-  if (!role) return { wing: 'Puja', cleanRole: '' };
-  if (role.startsWith('[Club]')) return { wing: 'Club', cleanRole: role.replace('[Club]', '').trim() };
-  if (role.startsWith('[Samiti]')) return { wing: 'Samiti', cleanRole: role.replace('[Samiti]', '').trim() };
-  if (role.startsWith('[Puja]')) return { wing: 'Puja', cleanRole: role.replace('[Puja]', '').trim() };
-  return { wing: 'Puja', cleanRole: role };
+  if (!role) return { wing: 'Puja', cleanRole: '', phone: '' };
+  let wing = 'Puja';
+  let rest = role;
+  if (rest.startsWith('[Club]')) { wing = 'Club'; rest = rest.replace('[Club]', '').trim(); }
+  else if (rest.startsWith('[Samiti]')) { wing = 'Samiti'; rest = rest.replace('[Samiti]', '').trim(); }
+  else if (rest.startsWith('[Puja]')) { wing = 'Puja'; rest = rest.replace('[Puja]', '').trim(); }
+
+  let cleanRole = rest;
+  let phone = '';
+  if (rest.includes('|')) {
+    const parts = rest.split('|');
+    cleanRole = parts[0].trim();
+    phone = parts[1].replace(/phone|tel|m\.|m:/gi, '').trim();
+  }
+  return { wing, cleanRole, phone };
 }
 
 export default function CommitteeManagerPage() {
@@ -66,6 +76,7 @@ export default function CommitteeManagerPage() {
     name: '',
     role: 'সভাপতি (President)',
     wing: 'Puja',
+    phone: '',
     year: new Date().getFullYear().toString()
   });
   const [customRole, setCustomRole] = useState(false);
@@ -76,7 +87,7 @@ export default function CommitteeManagerPage() {
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterWing, setFilterWing] = useState('ALL');
+  const [filterWing, setFilterWing] = useState('Puja');
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -128,7 +139,10 @@ export default function CommitteeManagerPage() {
         }
       }
 
-      const encodedRole = `[${formData.wing}] ${formData.role.trim()}`;
+      let encodedRole = `[${formData.wing}] ${formData.role.trim()}`;
+      if (formData.phone && formData.phone.trim()) {
+        encodedRole += ` | ${formData.phone.trim()}`;
+      }
 
       if (editingId) {
         const res = await fetch('/api/admin/committee', {
@@ -164,7 +178,7 @@ export default function CommitteeManagerPage() {
 
         if (res.ok) {
           setMessage(b('নতুন কমিটি সদস্য যুক্ত হয়েছে!', 'New member added successfully!'));
-          setFormData(prev => ({ ...prev, name: '' }));
+          setFormData(prev => ({ ...prev, name: '', phone: '' }));
           setFile(null);
           setPreviewUrl(null);
           setCurrentImageUrl(null);
@@ -189,6 +203,7 @@ export default function CommitteeManagerPage() {
       name: member.name,
       wing: parsed.wing,
       role: parsed.cleanRole,
+      phone: parsed.phone || '',
       year: String(member.year)
     });
     setCurrentImageUrl(member.image || null);
@@ -203,6 +218,7 @@ export default function CommitteeManagerPage() {
       name: '',
       wing: 'Puja',
       role: ROLES_BY_WING.Puja[0],
+      phone: '',
       year: new Date().getFullYear().toString()
     });
     setCurrentImageUrl(null);
@@ -433,6 +449,23 @@ export default function CommitteeManagerPage() {
               </div>
             </div>
 
+            {/* Phone Number Field */}
+            <div>
+              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                {b('ফোন নম্বর (Phone Number - ঐচ্ছিক)', 'Phone Number (Optional)')}
+              </label>
+              <input
+                type="text"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder={b('যেমন: 8910936506 বা +91 98300 XXXXX', 'e.g. 9830012345')}
+                className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon outline-none"
+              />
+              <p className="text-[10px] text-stone-400 mt-1">
+                {b('ডাকনাম বা ইংরেজি নাম নামের বন্ধনীতে লিখুন, যেমন: ছোটকা দাস (বাপি) (CHOTKA DAS)', 'Include nickname or English in brackets: Name (Nickname) (ENGLISH)')}
+              </p>
+            </div>
+
             {/* Profile Photo Upload */}
             <div>
               <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
@@ -519,17 +552,6 @@ export default function CommitteeManagerPage() {
             {/* Wing Filter Pills */}
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-[10px] font-bold text-stone-400 mr-1 uppercase tracking-wider">{b('শাখা:', 'Wing:')}</span>
-              <button
-                type="button"
-                onClick={() => setFilterWing('ALL')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  filterWing === 'ALL'
-                    ? 'bg-stone-900 text-white font-bold shadow-xs'
-                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                }`}
-              >
-                {b('সব শাখা', 'All Wings')}
-              </button>
               <button
                 type="button"
                 onClick={() => setFilterWing('Puja')}
@@ -636,9 +658,16 @@ export default function CommitteeManagerPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs font-semibold text-stone-600 truncate mt-0.5">
-                          {parsed.cleanRole}
-                        </p>
+                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                          <p className="text-xs font-semibold text-stone-600 truncate">
+                            {parsed.cleanRole}
+                          </p>
+                          {parsed.phone && (
+                            <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                              📞 {parsed.phone}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -659,8 +688,9 @@ export default function CommitteeManagerPage() {
                     </button>
                   </div>
                 </div>
-              ))
-            )}
+              );
+            })
+          )}
           </div>
         </div>
       </div>

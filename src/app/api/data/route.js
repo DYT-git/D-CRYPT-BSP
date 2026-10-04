@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import fs from 'fs';
+import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,16 +19,60 @@ export async function GET() {
       settings[s.key] = s.value;
     });
 
+    let allMembers = members;
+    try {
+      const hasClub = allMembers.some(m => m.role && m.role.includes('[Club]'));
+      const hasSamiti = allMembers.some(m => m.role && m.role.includes('[Samiti]'));
+      if (!hasClub || !hasSamiti) {
+        const seedPath = path.join(process.cwd(), 'prisma', 'seed-data.json');
+        if (fs.existsSync(seedPath)) {
+          const seedContent = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+          if (!hasClub) {
+            const seedClub = (seedContent.members || []).filter(m => m.role && m.role.includes('[Club]'));
+            allMembers = [...allMembers, ...seedClub];
+          }
+          if (!hasSamiti) {
+            const seedSamiti = (seedContent.members || []).filter(m => m.role && m.role.includes('[Samiti]'));
+            allMembers = [...allMembers, ...seedSamiti];
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Could not merge seed members:", e);
+    }
+
     return NextResponse.json({
       events,
-      members,
+      members: allMembers,
       notices,
       gallery,
       finances,
       settings,
     });
   } catch (error) {
-    console.error("Failed to fetch data", error);
-    return NextResponse.json({ error: "Failed to fetch data" }, { status: 500 });
+    console.warn("DB connection error in api/data, loading seed-data fallback:", error.message);
+    try {
+      const seedPath = path.join(process.cwd(), 'prisma', 'seed-data.json');
+      if (fs.existsSync(seedPath)) {
+        const seedContent = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+        const settings = {};
+        if (Array.isArray(seedContent.settings)) {
+          seedContent.settings.forEach(s => {
+            settings[s.key] = s.value;
+          });
+        }
+        return NextResponse.json({
+          events: seedContent.events || [],
+          members: seedContent.members || [],
+          notices: seedContent.notices || [],
+          gallery: seedContent.gallery || [],
+          finances: seedContent.finances || [],
+          settings,
+        });
+      }
+    } catch (fallbackErr) {
+      console.error("Fallback error:", fallbackErr);
+    }
+    return NextResponse.json({ events: [], members: [], notices: [], gallery: [], finances: [], settings: {} });
   }
 }

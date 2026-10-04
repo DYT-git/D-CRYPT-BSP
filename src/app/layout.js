@@ -35,7 +35,12 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const settings = await prisma.siteSetting.findMany();
+  let settings = [];
+  try {
+    settings = await prisma.siteSetting.findMany();
+  } catch (err) {
+    console.warn("Could not reach DB for layout settings, using defaults:", err.message);
+  }
   
   let primaryColor = '#E11D48'; // Vibrant Alta Red
   let secondaryColor = '#F59E0B'; // Bright Amber

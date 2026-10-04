@@ -5,7 +5,6 @@ import Countdown from "@/components/Countdown";
 import HeroParticles from "@/components/HeroParticles";
 import { triggerDownload } from "@/utils/download";
 import Link from "next/link";
-import PillarSwitcher from "@/components/PillarSwitcher";
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -137,7 +136,7 @@ export default function HomePage() {
     }
   };
 
-  const notices = data.notices.filter(n => n.year === selectedYear);
+  const notices = data.notices.filter(n => n.year === selectedYear && !n.title?.startsWith('[Club]') && !n.title?.startsWith('[Samiti]'));
 
   return (
     <main className="min-h-screen transition-colors duration-700 selection:bg-brand-maroon selection:text-white" style={{ backgroundColor: curr.pageBg }}>
@@ -292,11 +291,6 @@ export default function HomePage() {
             Standard Native Mobile App Layout: Zero Deity Obstruction, 100% Readable, High-Contrast
             ═══════════════════════════════════════════════════════════════════════════ */}
         <div className="block lg:hidden px-4 sm:px-6 pt-3 pb-6 max-w-2xl mx-auto">
-          {/* ════ TOP 3-PILLAR SWITCHER (MOBILE ONLY) ════ */}
-          <div className="mb-4 md:hidden">
-            <PillarSwitcher active="puja" variant="mobile" />
-          </div>
-
           {/* Greeting Badge */}
           <div className="flex items-center justify-between gap-2 mb-2">
             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] font-bold tracking-wider uppercase backdrop-blur-md ${curr.badgeClass}`}>
@@ -787,154 +781,21 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* ═══ 4. TWIN PILLARS (Editorial 2-Column Split Header) ═══ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-14 sm:my-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-end mb-8 sm:mb-12 pb-5 sm:pb-6 border-b border-stone-200/70">
-          <div className="lg:col-span-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-300 text-slate-800 text-xs font-bold uppercase tracking-widest mb-3 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-700 animate-pulse" />
-              {b('আমাদের পরিচয় ও দুই স্তম্ভ', 'Our Community Pillars')}
-            </div>
-            <h2 className={`text-2xl sm:text-3xl lg:text-5xl font-serif font-bold ${curr.textHead} tracking-tight leading-tight`}>
-              {b('আমাদের পরিচয় ও', 'Our Identity &')} <span className="text-brand-maroon">{b('দুই স্তম্ভ', 'Two Pillars')}</span>
-            </h2>
-          </div>
-          <div className="lg:col-span-6 lg:border-l lg:border-stone-300/80 lg:pl-6">
-            <p className={`text-sm sm:text-base ${curr.textSub} leading-relaxed font-light`}>
-              {b(
-                'আমাদের পাড়ার সমস্ত কর্মকাণ্ড দুটি সুনির্দিষ্ট শাখার মাধ্যমে পরিচালিত হয় — একটি নাগরিক উন্নয়ন ও নিরাপত্তা নিশ্চিত করে, অন্যটি আমাদের সংস্কৃতি, ঐতিহ্য ও উৎসবের প্রাণকেন্দ্র।',
-                'All community affairs are stewarded through two distinct pillars — one dedicated to civic welfare and infrastructure, the other the heartbeat of our culture, traditions, and celebrations.'
-              )}
-            </p>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
-          {/* Pillar 1: Unnayan Samiti */}
-          <div className={`group relative ${curr.cardBg} rounded-3xl p-5 sm:p-8 md:p-10 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden border border-rose-500/20 hover:border-rose-500/40 flex flex-col justify-between`}>
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent" />
-
-            <div>
-              <div className="flex items-center gap-3.5 sm:gap-4 mb-5 sm:mb-6">
-                <div className="w-13 h-13 sm:w-16 sm:h-16 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-center text-rose-500 shadow-sm group-hover:scale-105 group-hover:rotate-2 transition-all duration-300 shrink-0">
-                  <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11m16-11v11M8 14v3m4-3v3m4-3v3" /></svg>
-                </div>
-                <div>
-                  <h3 className={`text-xl sm:text-2xl md:text-3xl font-bold ${curr.textHead} leading-tight`}>{b('সোনালী পার্ক', 'Sonali Park')}</h3>
-                  <span className="text-rose-600 font-bold text-base sm:text-lg">{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
-                  <span className="block text-[11px] sm:text-xs uppercase tracking-wider text-stone-400 font-semibold mt-0.5">{b('নাগরিক উন্নয়ন ও সেবা', 'Civic Development Committee')}</span>
-                </div>
-              </div>
-
-              <p className={`${curr.textSub} mb-5 sm:mb-6 leading-relaxed text-sm sm:text-base`}>
-                {b(
-                  'উন্নয়ন সমিতি হলো আমাদের পাড়ার অভিভাবক। রাস্তাঘাট, নিরাপত্তা, পরিচ্ছন্নতা এবং নাগরিকদের দৈনন্দিন সুবিধা-অসুবিধা দেখার দায়িত্ব এই শাখার।',
-                  'The Unnayan Samiti oversees civic welfare, neighborhood security, clean roads, and daily citizen amenities.'
-                )}
-              </p>
-
-              {/* Bento Sub-cards */}
-              <div className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
-                <div className="flex items-center gap-3 sm:gap-3.5 p-2.5 sm:p-3 rounded-2xl bg-rose-500/5 border border-rose-500/15">
-                  <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-xl bg-rose-500/20 text-rose-500 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
-                  <div>
-                    <span className={`font-semibold text-xs sm:text-sm ${curr.textHead}`}>{b('নাগরিক কল্যাণ ও নিরাপত্তা', 'Civic Welfare & Security')}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 sm:gap-3.5 p-2.5 sm:p-3 rounded-2xl bg-rose-500/5 border border-rose-500/15">
-                  <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-xl bg-rose-500/20 text-rose-500 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
-                  <div>
-                    <span className={`font-semibold text-xs sm:text-sm ${curr.textHead}`}>{b('রাস্তাঘাট ও আলোক পরিকাঠামো', 'Roads & Street Infrastructure')}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 sm:gap-3.5 p-2.5 sm:p-3 rounded-2xl bg-rose-500/5 border border-rose-500/15">
-                  <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-xl bg-rose-500/20 text-rose-500 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
-                  <div>
-                    <span className={`font-semibold text-xs sm:text-sm ${curr.textHead}`}>{b('পরিবেশ পরিচ্ছন্নতা ও বৃক্ষরোপণ', 'Cleanliness, Sanitation & Greenery')}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <Link
-              href="/samiti"
-              className="inline-flex items-center justify-center gap-2 w-full py-3 sm:py-3.5 px-5 rounded-2xl bg-rose-500/10 hover:bg-brand-maroon text-rose-600 hover:text-white font-bold text-sm transition-all duration-200 border border-rose-500/25 shadow-sm"
-            >
-              {b('উন্নয়ন সমিতি সম্পূর্ণ পেজ দেখুন →', 'Explore Unnayan Samiti Page →')}
-            </Link>
-          </div>
-
-          {/* Pillar 2: Sonali Sangha */}
-          <div className={`group relative ${curr.cardBg} rounded-3xl p-5 sm:p-8 md:p-10 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden border border-stone-200/80 hover:border-brand-maroon/40 flex flex-col justify-between`}>
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/40 to-transparent" />
-
-            <div>
-              <div className="flex items-center gap-3.5 sm:gap-4 mb-5 sm:mb-6">
-                <div className="w-13 h-13 sm:w-16 sm:h-16 rounded-2xl bg-brand-maroon/10 border border-brand-maroon/20 flex items-center justify-center text-brand-maroon shadow-sm group-hover:scale-105 group-hover:-rotate-2 transition-all duration-300 shrink-0">
-                  <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-                </div>
-                <div>
-                  <h3 className={`text-xl sm:text-2xl md:text-3xl font-bold ${curr.textHead} leading-tight`}>{b('সোনালী সঙ্ঘ', 'Sonali Sangha')}</h3>
-                  <span className="text-brand-maroon font-bold text-base sm:text-lg">{b('ক্লাব ও দুর্গোৎসব', 'Club & Festivities')}</span>
-                  <span className="block text-[11px] sm:text-xs uppercase tracking-wider text-stone-400 font-semibold mt-0.5">{b('সংস্কৃতি ও উৎসব', 'Cultural Club & Festivities')}</span>
-                </div>
-              </div>
-
-              <p className={`${curr.textSub} mb-5 sm:mb-6 leading-relaxed text-sm sm:text-base`}>
-                {b(
-                  'সোনালী সঙ্ঘ হলো আমাদের সংস্কৃতি ও আনন্দের উৎসব। দুর্গাপূজা থেকে শুরু করে খেলাধুলা ও রক্তদান — সবকিছুর আয়োজন করে এই ক্লাব।',
-                  'Sonali Sangha is the spirit of culture and joy — organizing Durga Puja celebrations, sports tournaments, and humanitarian welfare drives.'
-                )}
-              </p>
-
-              {/* Bento Sub-cards */}
-              <div className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
-                <div className="flex items-center gap-3 sm:gap-3.5 p-2.5 sm:p-3 rounded-2xl bg-brand-maroon/5 border border-brand-maroon/15">
-                  <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-xl bg-brand-maroon/15 text-brand-maroon flex items-center justify-center text-xs font-bold shrink-0">✓</span>
-                  <div>
-                    <span className={`font-semibold text-xs sm:text-sm ${curr.textHead}`}>{b('শারদীয়া দুর্গোৎসব ও মেলা', 'Sharadiya Durga Puja & Festive Fair')}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 sm:gap-3.5 p-2.5 sm:p-3 rounded-2xl bg-brand-maroon/5 border border-brand-maroon/15">
-                  <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-xl bg-brand-maroon/15 text-brand-maroon flex items-center justify-center text-xs font-bold shrink-0">✓</span>
-                  <div>
-                    <span className={`font-semibold text-xs sm:text-sm ${curr.textHead}`}>{b('রক্তদান ও সমাজসেবা শিবির', 'Blood Donation & Social Welfare Camps')}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 sm:gap-3.5 p-2.5 sm:p-3 rounded-2xl bg-brand-maroon/5 border border-brand-maroon/15">
-                  <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-xl bg-brand-maroon/15 text-brand-maroon flex items-center justify-center text-xs font-bold shrink-0">✓</span>
-                  <div>
-                    <span className={`font-semibold text-xs sm:text-sm ${curr.textHead}`}>{b('বার্ষিক ক্রীড়া ও সাংস্কৃতিক সন্ধ্যা', 'Annual Sports & Cultural Evenings')}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <Link
-              href="/club"
-              className="inline-flex items-center justify-center gap-2 w-full py-3 sm:py-3.5 px-5 rounded-2xl bg-brand-maroon/10 hover:bg-brand-maroon text-brand-maroon hover:text-white font-bold text-sm transition-all duration-200 border border-brand-maroon/25 shadow-sm"
-            >
-              {b('সোনালী সঙ্ঘ ক্লাব পেজ দেখুন →', 'Explore Sonali Sangha Club →')}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ 5. NOTICE BOARD (Left-Right Split Flow with Live Badge) ═══ */}
+      {/* ═══ 4. PUJA NOTICES (Live Bulletins & Circulars) ═══ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-14 sm:my-20">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-700 text-xs font-bold uppercase tracking-widest mb-2.5 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
-              {b('অফিশিয়াল বুলেটিন', 'Official Bulletin')}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-800 text-xs font-bold uppercase tracking-widest mb-2.5 shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
+              {b('শারদীয়া বুলেটিন', 'Puja Bulletins')}
             </div>
             <h2 className={`text-2xl sm:text-3xl lg:text-5xl font-serif font-bold ${curr.textHead} tracking-tight leading-tight`}>
-              {b('পাড়ার জরুরি', 'Community')} <span className="text-brand-maroon">{b('বিজ্ঞপ্তি ও নোটিস', 'Notices & Circulars')}</span>
+              {b('পূজা নোটিশ ও', 'Puja')} <span className="text-brand-maroon">{b('বিজ্ঞপ্তি', 'Notices')}</span>
             </h2>
             <p className={`text-sm sm:text-base ${curr.textSub} mt-2 leading-relaxed max-w-2xl`}>
               {b(
-                'সোনালী পার্কের সমস্ত সাম্প্রতিক বিজ্ঞপ্তি, চাঁদা সংগ্রহের তথ্য ও নাগরিক নির্দেশিকা এক নজরে',
-                'Recent community notices, announcements, and essential citizen circulars at a glance.'
+                'শারদীয়া দুর্গোৎসবের সমস্ত আনুষ্ঠানিক বিজ্ঞপ্তি, সময়সূচি পরিবর্তন, অঞ্জলি ও সাংস্কৃতিক নির্দেশিকা',
+                'Official Durga Puja notices, ritual announcements, pushpanjali guidelines, and event updates.'
               )}
             </p>
           </div>
@@ -959,7 +820,7 @@ export default function HomePage() {
                   {formatDate(notice.date, lang)}
                 </span>
               </div>
-              <h3 className={`text-lg sm:text-xl font-bold ${curr.textHead} mb-2 leading-snug group-hover:text-brand-maroon transition-colors`}>{t(notice.title)}</h3>
+              <h3 className={`text-lg sm:text-xl font-bold ${curr.textHead} mb-2 leading-snug group-hover:text-brand-maroon transition-colors`}>{t(notice.title?.replace(/^\[Puja\]\s*/, ''))}</h3>
               <p className={`${curr.textSub} text-xs sm:text-sm leading-relaxed`}>{notice.text}</p>
             </div>
           )) : (
@@ -967,6 +828,146 @@ export default function HomePage() {
               {b('এই বছরের কোনো নোটিশ নেই।', 'No active notices published for this year.')}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* ═══ 5. VISIT OUR OTHER PORTALS (Compact Redesigned Bento Cards) ═══ */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-14 sm:my-20">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-900 text-xs font-bold uppercase tracking-widest mb-2.5 shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse" />
+              {b('অন্যান্য পোর্টাল ও বিভাগ', 'Sister Portals & Wings')}
+            </div>
+            <h2 className={`text-2xl sm:text-3xl lg:text-5xl font-serif font-bold ${curr.textHead} tracking-tight leading-tight`}>
+              {b('আমাদের অন্যান্য বিভাগ', 'Explore Our Other')} <span className="text-brand-maroon">{b('দেখুন', 'Portals')}</span>
+            </h2>
+            <p className={`text-sm sm:text-base ${curr.textSub} mt-2 leading-relaxed max-w-2xl`}>
+              {b(
+                'বাঁশদ্রোণী সোনালী পার্কের ক্লাব এবং নাগরিক উন্নয়ন সমিতির আলাদা নিবেদিত পেজগুলো ঘুরে দেখুন — যেখানে পাবেন নিজস্ব কার্যনির্বাহী কমিটি, আর্থিক হিসাব ও নির্দিষ্ট নোটিশ।',
+                'Visit our dedicated portals for Bansdroni Sonali Sangha and Sonali Park Unnayan Samiti — featuring dedicated leadership, accounts, and announcements.'
+              )}
+            </p>
+          </div>
+          <Link
+            href="/committee"
+            className="shrink-0 text-xs font-bold px-4 py-2 rounded-full bg-white hover:bg-stone-900 text-stone-700 hover:text-white border border-stone-200 shadow-sm transition-all duration-200 flex items-center gap-1.5"
+          >
+            <span>{b('সকল কমিটির তালিকা', 'View All Committees')}</span>
+            <span>→</span>
+          </Link>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-5 sm:gap-6 lg:gap-8">
+          {/* Wing 1: Bansdroni Sonali Sangha (Club) */}
+          <div className={`group relative ${curr.cardBg} rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-stone-200/80 hover:border-brand-maroon/30 flex flex-col justify-between`}>
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+            <div>
+              {/* Header Badge */}
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-700 font-bold text-lg shrink-0 group-hover:scale-105 transition-transform">
+                    🏆
+                  </div>
+                  <div>
+                    <h3 className={`text-lg sm:text-xl font-bold ${curr.textHead} leading-tight group-hover:text-brand-maroon transition-colors`}>
+                      {b('বাঁশদ্রোণী সোনালী সঙ্ঘ', 'Bansdroni Sonali Sangha')}
+                    </h3>
+                    <span className="text-xs text-stone-500 font-medium block mt-0.5">
+                      {b('ক্লাব, ক্রীড়া ও যুবকল্যাণ', 'Club, Sports & Youth Welfare')}
+                    </span>
+                  </div>
+                </div>
+                <span className="hidden sm:inline-block text-[10px] font-mono font-semibold text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200">
+                  SO067242
+                </span>
+              </div>
+
+              <p className={`${curr.textSub} text-xs sm:text-sm leading-relaxed mb-4`}>
+                {b(
+                  'আমাদের সংস্কৃতি, আনন্দ ও ক্রীড়া উৎসবের প্রাণকেন্দ্র। ফুটবল, ক্রিকেট টুর্নামেন্ট, রক্তদান শিবির ও সারা বছর সমাজসেবামূলক কর্মকাণ্ড আয়োজন করে এই ক্লাব।',
+                  'The athletic and cultural heartbeat of Sonali Park. Hosting seasonal tournaments, blood donation camps, and humanitarian social welfare.'
+                )}
+              </p>
+
+              {/* Compact Highlight Tags */}
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-5">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
+                  ⚽ {b('বার্ষিক ক্রীড়া প্রতিযোগিতা', 'Annual Sports')}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
+                  🩸 {b('রক্তদান শিবির', 'Blood Donation')}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
+                  🎭 {b('সাংস্কৃতিক সন্ধ্যা', 'Cultural Evenings')}
+                </span>
+              </div>
+            </div>
+
+            <Link
+              href="/club"
+              className="inline-flex items-center justify-between w-full py-2.5 sm:py-3 px-4 sm:px-5 rounded-xl bg-stone-50 hover:bg-brand-maroon text-stone-800 hover:text-white font-bold text-xs sm:text-sm transition-all duration-200 border border-stone-200/80 hover:border-brand-maroon shadow-sm group/btn"
+            >
+              <span>{b('সোনালী সঙ্ঘ পেজ দেখুন', 'Visit Sonali Sangha Portal')}</span>
+              <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
+            </Link>
+          </div>
+
+          {/* Wing 2: Sonali Park Unnayan Samiti */}
+          <div className={`group relative ${curr.cardBg} rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-stone-200/80 hover:border-brand-maroon/30 flex flex-col justify-between`}>
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+            <div>
+              {/* Header Badge */}
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-700 font-bold text-lg shrink-0 group-hover:scale-105 transition-transform">
+                    🏛️
+                  </div>
+                  <div>
+                    <h3 className={`text-lg sm:text-xl font-bold ${curr.textHead} leading-tight group-hover:text-brand-maroon transition-colors`}>
+                      {b('সোনালী পার্ক উন্নয়ন সমিতি', 'Sonali Park Unnayan Samiti')}
+                    </h3>
+                    <span className="text-xs text-stone-500 font-medium block mt-0.5">
+                      {b('নাগরিক উন্নয়ন ও সেবা পরিষদ', 'Civic Development & Residents Welfare')}
+                    </span>
+                  </div>
+                </div>
+                <span className="hidden sm:inline-block text-[10px] font-semibold text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200">
+                  {b('রেজিস্টার্ড RWA', 'Registered RWA')}
+                </span>
+              </div>
+
+              <p className={`${curr.textSub} text-xs sm:text-sm leading-relaxed mb-4`}>
+                {b(
+                  'আমাদের পাড়ার অভিভাবক ও পরিচালন পরিষদ। রাস্তাঘাট সংস্কার, আলোক পরিকাঠামো, পরিচ্ছন্নতা, ড্রেনেজ ও নাগরিকদের দৈনন্দিন স্বাচ্ছন্দ্য রক্ষায় সার্বক্ষণিক নিবেদিত।',
+                  'The civic guardian and registered RWA of our locality. Stewarding security, paved roads, lighting, sanitation, and neighborhood development.'
+                )}
+              </p>
+
+              {/* Compact Highlight Tags */}
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-5">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
+                  🛡️ {b('নাগরিক নিরাপত্তা ও সিসিটিভি', 'Security & CCTV')}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
+                  💡 {b('রাস্তাঘাট ও আলোক পরিকাঠামো', 'Roads & Lights')}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
+                  🌳 {b('পরিবেশ পরিচ্ছন্নতা ও বৃক্ষরোপণ', 'Sanitation & Greenery')}
+                </span>
+              </div>
+            </div>
+
+            <Link
+              href="/samiti"
+              className="inline-flex items-center justify-between w-full py-2.5 sm:py-3 px-4 sm:px-5 rounded-xl bg-stone-50 hover:bg-brand-maroon text-stone-800 hover:text-white font-bold text-xs sm:text-sm transition-all duration-200 border border-stone-200/80 hover:border-brand-maroon shadow-sm group/btn"
+            >
+              <span>{b('উন্নয়ন সমিতি পেজ দেখুন', 'Visit Unnayan Samiti Portal')}</span>
+              <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
+            </Link>
+          </div>
         </div>
       </section>
 

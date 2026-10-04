@@ -64,8 +64,8 @@ export default function Footer() {
               <MapPin className="text-amber-400 w-4 h-4 shrink-0 mt-0.5" />
               <span>
                 {b(
-                  'বাঁশদ্রোণী সোনালী পার্ক, পোঃ বাঁশদ্রোণী, কলকাতা - ৭০০০৭০, পশ্চিমবঙ্গ',
-                  'Bansdroni Sonali Park, P.O. Bansdroni, Kolkata - 700070, West Bengal'
+                  'বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০',
+                  'B/137, Sonali Park, Bansdroni, Kolkata - 700070'
                 )}
               </span>
             </li>

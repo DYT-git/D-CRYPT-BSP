@@ -1,8 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Palette, Type, Clock, Sparkles, DollarSign, Save,
-  CheckCircle2, AlertCircle, RefreshCw, Calendar, Trophy, ShieldCheck
+  CheckCircle2, AlertCircle, RefreshCw, Calendar, Trophy, ShieldCheck,
+  Image as ImageIcon, UploadCloud, RotateCcw
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -29,6 +30,7 @@ export default function SettingsManagerPage() {
     // Club settings
     clubHeroTitle: '',
     clubHeroTagline: '',
+    clubHeroImage: '',
     clubTotalCollection: '',
     clubTotalExpense: '',
     clubMajorExpenseTitle: '',
@@ -36,6 +38,7 @@ export default function SettingsManagerPage() {
     // Samiti settings
     samitiHeroTitle: '',
     samitiHeroTagline: '',
+    samitiHeroImage: '',
     samitiTotalCollection: '',
     samitiTotalExpense: '',
     samitiMajorExpenseTitle: '',
@@ -81,6 +84,76 @@ export default function SettingsManagerPage() {
     if (!val) return;
     const isoWithTz = `${val}:00+05:30`;
     handleChange('countdownDate', isoWithTz);
+  };
+
+  const clubHeroFileInputRef = useRef(null);
+  const [uploadingHero, setUploadingHero] = useState(false);
+
+  const handleHeroUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingHero(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'club-hero');
+
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const resData = await res.json();
+      if (res.ok && resData.url) {
+        const freshUrl = resData.url + '?t=' + Date.now();
+        handleChange('clubHeroImage', freshUrl);
+        setMessage(b('ক্লাব হিরো ব্যানার সফলভাবে আপলোড হয়েছে!', 'Club hero banner uploaded successfully!'));
+        setTimeout(() => setMessage(''), 4000);
+      } else {
+        setMessage(b('আপলোড ব্যর্থ হয়েছে: ' + (resData.error || 'Unknown error'), 'Upload failed: ' + (resData.error || 'Unknown error')));
+      }
+    } catch (err) {
+      setMessage(b('আপলোড ত্রুটি: ' + err.message, 'Upload error: ' + err.message));
+    } finally {
+      setUploadingHero(false);
+      if (clubHeroFileInputRef.current) clubHeroFileInputRef.current.value = '';
+    }
+  };
+
+  const samitiHeroFileInputRef = useRef(null);
+  const [uploadingSamitiHero, setUploadingSamitiHero] = useState(false);
+
+  const handleSamitiHeroUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingSamitiHero(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'samiti-hero');
+
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const resData = await res.json();
+      if (res.ok && resData.url) {
+        const freshUrl = resData.url + '?t=' + Date.now();
+        handleChange('samitiHeroImage', freshUrl);
+        setMessage(b('সমিতি হিরো ব্যানার সফলভাবে আপলোড হয়েছে!', 'Samiti hero banner uploaded successfully!'));
+        setTimeout(() => setMessage(''), 4000);
+      } else {
+        setMessage(b('আপলোড ব্যর্থ হয়েছে: ' + (resData.error || 'Unknown error'), 'Upload failed: ' + (resData.error || 'Unknown error')));
+      }
+    } catch (err) {
+      setMessage(b('আপলোড ত্রুটি: ' + err.message, 'Upload error: ' + err.message));
+    } finally {
+      setUploadingSamitiHero(false);
+      if (samitiHeroFileInputRef.current) samitiHeroFileInputRef.current.value = '';
+    }
   };
 
   const handleSave = async (e) => {
@@ -164,6 +237,38 @@ export default function SettingsManagerPage() {
           <span>{message}</span>
         </div>
       )}
+
+      {/* ═══ 3-Pillar Quick Pillar Switcher ═══ */}
+      <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-stone-100 border border-stone-200/90 overflow-x-auto no-scrollbar">
+        {[
+          { id: 'all', bn: 'সব সেটিংস', en: 'All Settings', icon: '⚙️' },
+          { id: 'puja', bn: '🌺 শারদীয়া দুর্গাপূজা', en: '🌺 Durga Puja', icon: '🌺' },
+          { id: 'club', bn: '🏆 সোনালী সঙ্ঘ ক্লাব', en: '🏆 Sonali Sangha Club', icon: '🏆' },
+          { id: 'samiti', bn: '🏛️ উন্নয়ন সমিতি', en: '🏛️ Unnayan Samiti', icon: '🏛️' },
+        ].map((pillar) => (
+          <button
+            key={pillar.id}
+            type="button"
+            onClick={() => {
+              if (pillar.id === 'puja') setActiveTab('hero');
+              else if (pillar.id === 'club') setActiveTab('club');
+              else if (pillar.id === 'samiti') setActiveTab('samiti');
+              else if (pillar.id === 'all') setActiveTab('branding');
+            }}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              (pillar.id === 'puja' && ['hero', 'countdown', 'theme', 'finance'].includes(activeTab)) ||
+              (pillar.id === 'club' && activeTab === 'club') ||
+              (pillar.id === 'samiti' && activeTab === 'samiti') ||
+              (pillar.id === 'all' && activeTab === 'branding')
+                ? 'bg-stone-900 text-white shadow-xs font-extrabold'
+                : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
+            }`}
+          >
+            <span>{pillar.icon}</span>
+            <span>{lang === 'bn' ? pillar.bn : pillar.en}</span>
+          </button>
+        ))}
+      </div>
 
       {/* Clean Tabs Strip */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
@@ -676,6 +781,104 @@ export default function SettingsManagerPage() {
               </div>
             </div>
 
+            {/* Club Hero Banner Image Control */}
+            <div className="p-4 rounded-xl border border-amber-200/60 bg-amber-50/20 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-amber-600" />
+                    <span>{b('ক্লাব হিরো ব্যানার ছবি (Club Hero Banner Image)', 'Club Hero Banner Image')}</span>
+                  </h3>
+                  <p className="text-[11px] text-stone-500 mt-0.5">
+                    {b('স্ট্যান্ডার্ড ১৬:৯ ল্যান্ডস্কেপ অনুপাতের ছবি ব্যবহার করুন (অনুপাত 16:9)', 'Standard 16:9 landscape aspect ratio banner')}
+                  </p>
+                </div>
+                {settings.clubHeroImage && settings.clubHeroImage !== '/assets/club-hero-banner.jpg' && (
+                  <button
+                    type="button"
+                    onClick={() => handleChange('clubHeroImage', '/assets/club-hero-banner.jpg')}
+                    className="text-[11px] font-semibold text-amber-700 hover:text-amber-900 flex items-center gap-1 bg-white/80 px-2.5 py-1 rounded-lg border border-amber-200/80 shadow-2xs cursor-pointer hover:bg-white"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>{b('ডিফল্ট ব্যানারে রিসেট', 'Reset Default')}</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Live Banner Preview */}
+              <div className="relative rounded-2xl overflow-hidden border border-amber-300/60 aspect-[16/9] max-h-56 bg-stone-900 shadow-md group">
+                <img
+                  src={settings.clubHeroImage || '/assets/club-hero-banner.jpg'}
+                  alt="Club Banner Preview"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/70 to-stone-950/40" />
+                <div className="absolute bottom-3 left-4 right-4 text-white z-10 flex items-end justify-between">
+                  <div>
+                    <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest block font-mono">
+                      {b('লাইভ হিরো প্রিভিউ', 'Live Banner Preview')}
+                    </span>
+                    <h4 className="text-base sm:text-lg font-serif font-black drop-shadow">
+                      {settings.clubHeroTitle || b('সোনালী সঙ্ঘ', 'Sonali Sangha')} <span className="text-amber-400">{b('ক্লাব', 'Club')}</span>
+                    </h4>
+                  </div>
+                  <span className="text-[10px] bg-black/60 px-2 py-0.5 rounded text-stone-300 font-mono border border-white/10">
+                    16:9 Ratio
+                  </span>
+                </div>
+              </div>
+
+              {/* Upload & URL Inputs */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                    {b('ছবির পাথ বা ইউআরএল (Image URL / Path)', 'Image URL or Asset Path')}
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.clubHeroImage || ''}
+                    onChange={(e) => handleChange('clubHeroImage', e.target.value)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-mono text-stone-800 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 outline-none"
+                    placeholder="/assets/club-hero-banner.jpg"
+                  />
+                  <p className="text-[10px] text-stone-400 mt-1">
+                    {b('ডিফল্ট: /assets/club-hero-banner.jpg বা যেকোনো কাস্টম লিঙ্ক দিন', 'Default: /assets/club-hero-banner.jpg or paste any custom image URL')}
+                  </p>
+                </div>
+
+                <div className="flex flex-col justify-end">
+                  <input
+                    type="file"
+                    ref={clubHeroFileInputRef}
+                    onChange={handleHeroUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    disabled={uploadingHero}
+                    onClick={() => clubHeroFileInputRef.current?.click()}
+                    className="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-stone-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    {uploadingHero ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>{b('আপলোড হচ্ছে...', 'Uploading...')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <UploadCloud className="w-4 h-4 text-stone-950" />
+                        <span>{b('নতুন ছবি আপলোড', 'Upload Image')}</span>
+                      </>
+                    )}
+                  </button>
+                  <p className="text-[10px] text-stone-400 mt-1 text-center">
+                    JPG, PNG, WebP (max 10MB)
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Club Financial Metrics */}
             <div className="p-4 rounded-xl border border-stone-200 bg-stone-50/50 space-y-4">
               <h3 className="text-xs font-bold text-stone-800 uppercase tracking-wider">
@@ -792,6 +995,104 @@ export default function SettingsManagerPage() {
                   className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-normal focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none leading-relaxed"
                   placeholder="আমাদের পাড়ার নিরাপত্তা, পরিচ্ছন্নতা, রাস্তাঘাট ও নাগরিকদের দৈনন্দিন স্বাচ্ছন্দ্য রক্ষায় সার্বক্ষণিক নিয়োজিত..."
                 />
+              </div>
+            </div>
+
+            {/* Samiti Hero Banner Image Control */}
+            <div className="p-4 rounded-xl border border-emerald-200/60 bg-emerald-50/20 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xs font-bold text-emerald-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{b('সমিতি হিরো ব্যানার ছবি (Samiti Hero Banner Image)', 'Samiti Hero Banner Image')}</span>
+                  </h3>
+                  <p className="text-[11px] text-stone-500 mt-0.5">
+                    {b('স্ট্যান্ডার্ড ১৬:৯ ল্যান্ডস্কেপ অনুপাতের ছবি ব্যবহার করুন (অনুপাত 16:9)', 'Standard 16:9 landscape aspect ratio banner')}
+                  </p>
+                </div>
+                {settings.samitiHeroImage && settings.samitiHeroImage !== '/assets/samiti-hero-banner.jpg' && (
+                  <button
+                    type="button"
+                    onClick={() => handleChange('samitiHeroImage', '/assets/samiti-hero-banner.jpg')}
+                    className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 bg-white/80 px-2.5 py-1 rounded-lg border border-emerald-200/80 shadow-2xs cursor-pointer hover:bg-white"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>{b('ডিফল্ট ব্যানারে রিসেট', 'Reset Default')}</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Live Banner Preview */}
+              <div className="relative rounded-2xl overflow-hidden border border-emerald-300/60 aspect-[16/9] max-h-56 bg-stone-900 shadow-md group">
+                <img
+                  src={settings.samitiHeroImage || '/assets/samiti-hero-banner.jpg'}
+                  alt="Samiti Banner Preview"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/70 to-stone-950/40" />
+                <div className="absolute bottom-3 left-4 right-4 text-white z-10 flex items-end justify-between">
+                  <div>
+                    <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block font-mono">
+                      {b('লাইভ হিরো প্রিভিউ', 'Live Banner Preview')}
+                    </span>
+                    <h4 className="text-base sm:text-lg font-serif font-black drop-shadow">
+                      {settings.samitiHeroTitle || b('সোনালী পার্ক', 'Sonali Park')} <span className="text-emerald-400">{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
+                    </h4>
+                  </div>
+                  <span className="text-[10px] bg-black/60 px-2 py-0.5 rounded text-stone-300 font-mono border border-white/10">
+                    16:9 Ratio
+                  </span>
+                </div>
+              </div>
+
+              {/* Upload & URL Inputs */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                    {b('ছবির পাথ বা ইউআরএল (Image URL / Path)', 'Image URL or Asset Path')}
+                  </label>
+                  <input
+                    type="text"
+                    value={settings.samitiHeroImage || ''}
+                    onChange={(e) => handleChange('samitiHeroImage', e.target.value)}
+                    className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-mono text-stone-800 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none"
+                    placeholder="/assets/samiti-hero-banner.jpg"
+                  />
+                  <p className="text-[10px] text-stone-400 mt-1">
+                    {b('ডিফল্ট: /assets/samiti-hero-banner.jpg বা যেকোনো কাস্টম লিঙ্ক দিন', 'Default: /assets/samiti-hero-banner.jpg or paste any custom image URL')}
+                  </p>
+                </div>
+
+                <div className="flex flex-col justify-end">
+                  <input
+                    type="file"
+                    ref={samitiHeroFileInputRef}
+                    onChange={handleSamitiHeroUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    disabled={uploadingSamitiHero}
+                    onClick={() => samitiHeroFileInputRef.current?.click()}
+                    className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    {uploadingSamitiHero ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>{b('আপলোড হচ্ছে...', 'Uploading...')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <UploadCloud className="w-4 h-4 text-white" />
+                        <span>{b('নতুন ছবি আপলোড', 'Upload Image')}</span>
+                      </>
+                    )}
+                  </button>
+                  <p className="text-[10px] text-stone-400 mt-1 text-center">
+                    JPG, PNG, WebP (max 10MB)
+                  </p>
+                </div>
               </div>
             </div>
 

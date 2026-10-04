@@ -15,7 +15,9 @@ import {
   Sun,
   Sunset,
   Moon,
-  Shield
+  Shield,
+  Trophy,
+  Building
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useData } from '@/context/DataContext';
@@ -69,11 +71,34 @@ export default function MediaManagerPage() {
       icon: Shield,
       iconColor: 'text-stone-500',
     },
+    {
+      id: 'club',
+      uploadType: 'club-hero',
+      settingKey: 'clubHeroImage',
+      defaultPath: '/assets/club-hero-banner.jpg',
+      nameBn: 'সোনালী সঙ্ঘ ক্লাব ব্যানার',
+      nameEn: 'Club Hero Banner',
+      hours: 'ক্লাব পেজ (/club) প্রধান হিরো ব্যানার',
+      icon: Trophy,
+      iconColor: 'text-amber-500',
+    },
+    {
+      id: 'samiti',
+      uploadType: 'samiti-hero',
+      settingKey: 'samitiHeroImage',
+      defaultPath: '/assets/samiti-hero-banner.jpg',
+      nameBn: 'সোনালী পার্ক উন্নয়ন সমিতি ব্যানার',
+      nameEn: 'Samiti Hero Banner',
+      hours: 'উন্নয়ন সমিতি পেজ (/samiti) প্রধান হিরো ব্যানার',
+      icon: Building,
+      iconColor: 'text-emerald-500',
+    },
   ];
 
   const [isMounted, setIsMounted] = useState(false);
   const [currentHour, setCurrentHour] = useState(null);
   const [timestamps, setTimestamps] = useState({});
+  const [filterWing, setFilterWing] = useState('all'); // 'all' | 'puja' | 'club' | 'samiti'
 
   // Per-slot upload state
   const [pendingFiles, setPendingFiles] = useState({});
@@ -334,19 +359,50 @@ export default function MediaManagerPage() {
         </div>
       </div>
 
-      {/* ═══ 2. Time-Based Hero Banners Grid (Clean 4 Cards) ═══ */}
+      {/* ═══ 2. Wing-Specific Hero Banners Grid ═══ */}
       <div>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider">
-            {b('সময়ভিত্তিক হিরো ব্যানারসমূহ (৪টি স্লট)', 'Time-of-Day Hero Banners (4 Slots)')}
-          </h2>
-          <span className="text-[11px] text-stone-400">
-            {b('ঘড়ির সময় অনুযায়ী স্বয়ংক্রিয় পরিবর্তিত হয়', 'Switches automatically based on clock')}
-          </span>
+        <div className="mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider">
+              {b('শাখাভিত্তিক হিরো ব্যানারসমূহ (৬টি স্লট)', 'Pillar & Time-of-Day Hero Banners (6 Slots)')}
+            </h2>
+            <p className="text-[11px] text-stone-400">
+              {b('পূজা, ক্লাব ও সমিতি — প্রতিটি পেজের প্রধান ব্যানার এখান থেকে স্বতন্ত্রভাবে আপডেট করুন', 'Update hero banners individually for Puja, Club, and Samiti')}
+            </p>
+          </div>
+
+          {/* Wing Filter Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+            {[
+              { id: 'all', bn: 'সব ব্যানার (৬)', en: 'All (6)', icon: '🌐' },
+              { id: 'puja', bn: '🌺 পূজা ব্যানার (৪)', en: '🌺 Puja (4)', icon: '🌺' },
+              { id: 'club', bn: '🏆 ক্লাব ব্যানার (১)', en: '🏆 Club (1)', icon: '🏆' },
+              { id: 'samiti', bn: '🏛️ সমিতি ব্যানার (১)', en: '🏛️ Samiti (1)', icon: '🏛️' },
+            ].map((w) => (
+              <button
+                key={w.id}
+                type="button"
+                onClick={() => setFilterWing(w.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                  filterWing === w.id
+                    ? 'bg-stone-900 text-white shadow-xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'
+                }`}
+              >
+                <span>{w.icon}</span>
+                <span>{lang === 'bn' ? w.bn : w.en}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {SLOTS.map((slot) => {
+          {SLOTS.filter((s) => {
+            if (filterWing === 'puja') return ['morning', 'afternoon', 'evening', 'fallback'].includes(s.id);
+            if (filterWing === 'club') return s.id === 'club';
+            if (filterWing === 'samiti') return s.id === 'samiti';
+            return true;
+          }).map((slot) => {
             const Icon = slot.icon;
             const isLive = isLiveSlot(slot.id);
             const isUploading = uploadingSlot === slot.id;

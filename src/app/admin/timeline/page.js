@@ -17,7 +17,7 @@ const PUJA_PRESETS = [
   {
     nameBn: 'মহাষষ্ঠী',
     nameEn: 'Maha Shashthi',
-    date: '2026-10-17',
+    date: '2026-10-16',
     titleBn: 'মহাষষ্ঠী — বোধন, আমন্ত্রণ ও অধিবাস',
     titleEn: 'Maha Shashthi — Bodhon & Adhibas',
     descBn: 'সকাল ৮:০০ টায় দেবীর বোধন ও আমন্ত্রণ। সন্ধ্যায় অধিবাস এবং ভক্তদের জন্য দ্বার উন্মোচন।',
@@ -26,7 +26,7 @@ const PUJA_PRESETS = [
   {
     nameBn: 'মহাসপ্তমী',
     nameEn: 'Maha Saptami',
-    date: '2026-10-18',
+    date: '2026-10-17',
     titleBn: 'মহাসপ্তমী — নবপত্রিকা প্রবেশ ও সপ্তমী বিহিত পূজা',
     titleEn: 'Maha Saptami — Nabapatrika & Puja',
     descBn: 'ভোর ৬:৩০ টায় নবপত্রিকা স্নান ও প্রবেশ। সকাল ৯:০০ টায় সপ্তমী বিহিত পূজা ও অঞ্জলি।',
@@ -35,16 +35,16 @@ const PUJA_PRESETS = [
   {
     nameBn: 'মহাষ্টমী',
     nameEn: 'Maha Ashtami',
-    date: '2026-10-19',
+    date: '2026-10-18',
     titleBn: 'মহাষ্টমী — অঞ্জলি, কুমারী পূজা ও সন্ধিপূজা',
     titleEn: 'Maha Ashtami — Kumari & Sandhi Puja',
-    descBn: 'সকাল ৯:৩০ টায় সার্বজনীন পুষ্পাঞ্জলি। দুপুর ১১:৩০ টায় কুমারী পূজা। বিকেল ৫:৪২ থেকে সন্ধিপূজা।',
-    descEn: '09:30 AM: Pushpanjali. 11:30 AM: Kumari Puja. 05:42 PM: Sandhi Puja.'
+    descBn: 'সকাল ৯:৪৫ টায় সার্বজনীন পুষ্পাঞ্জলি। সন্ধিপূজা ও ১০৮ প্রদীপ প্রজ্জ্বলন। দুপুর ১১:৩০ টায় কুমারী পূজা।',
+    descEn: '09:45 AM: Pushpanjali. Sandhi Puja & Kumari Puja.'
   },
   {
     nameBn: 'মহানবমী',
     nameEn: 'Maha Nabami',
-    date: '2026-10-20',
+    date: '2026-10-19',
     titleBn: 'মহানবমী — নবমী হোম ও ভোগ বিতরণ',
     titleEn: 'Maha Nabami — Maha Hom & Bhog',
     descBn: 'সকাল ১০:০০ টায় নবমী বিহিত পূজা। দুপুর ১২:৩০ টায় মহাহোম। দুপুর ১:৩০ টা থেকে ভোগ বিতরণ।',
@@ -53,7 +53,7 @@ const PUJA_PRESETS = [
   {
     nameBn: 'বিজয়া দশমী',
     nameEn: 'Bijoya Dashami',
-    date: '2026-10-21',
+    date: '2026-10-20',
     titleBn: 'বিজয়া দশমী — দশমী পূজা, সিঁদুর খেলা ও বিসর্জন',
     titleEn: 'Bijoya Dashami — Sindoor Khela & Immersion',
     descBn: 'সকাল ৯:০০ টায় দর্পণ বিসর্জন। দুপুর ২:০০ টা থেকে সিঁদুর খেলা। সন্ধ্যায় প্রতিমা নিরঞ্জন।',

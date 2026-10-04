@@ -3,26 +3,61 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Home, Calendar, Users, Image as ImageIcon, IndianRupee, ChevronRight, Trophy, Building } from 'lucide-react';
-import PillarSwitcher from '@/components/PillarSwitcher';
+import { Menu, X, Home, Calendar, Users, Image as ImageIcon, IndianRupee, ChevronRight, Trophy, Building, Megaphone, Bell, Shield } from 'lucide-react';
+import NotificationDrawer from '@/components/NotificationDrawer';
 
-const NAV_LINKS = [
-  { href: '/',             labelKey: 'Home',              fallbackBn: 'হোম',              icon: Home },
-  { href: '/puja',         labelKey: 'Durga Puja',        fallbackBn: 'শারদীয়া দুর্গোৎসব',   icon: Calendar },
-  { href: '/club',         labelKey: 'Sonali Sangha Club', fallbackBn: 'সোনালী সঙ্ঘ ক্লাব',   icon: Trophy },
-  { href: '/samiti',       labelKey: 'Unnayan Samiti',    fallbackBn: 'উন্নয়ন সমিতি',       icon: Building },
-  { href: '/committee',    labelKey: 'Committee Members', fallbackBn: 'কমিটি সদস্যবৃন্দ',   icon: Users },
-  { href: '/gallery',      labelKey: 'Gallery',           fallbackBn: 'ছবি গ্যালারি',       icon: ImageIcon },
-  { href: '/transparency', labelKey: 'Financials',        fallbackBn: 'হিসাব নিকাশ ও অডিট',  icon: IndianRupee },
+const PUJA_LINKS = [
+  { href: '/',             labelBn: 'হোম ও শারদীয়া উৎসব',      labelEn: 'Home & Durga Puja',   icon: Home },
+  { href: '/puja',         labelBn: 'সময়সূচি ও নির্ঘণ্ট',        labelEn: 'Schedule & Calendar', icon: Calendar },
+  { href: '/committee',    labelBn: 'পুজো কমিটি সদস্যবৃন্দ',     labelEn: 'Committee Members',   icon: Users },
+  { href: '/gallery',      labelBn: 'ছবি গ্যালারি',              labelEn: 'Photo Gallery',       icon: ImageIcon },
+  { href: '/transparency', labelBn: 'হিসাব নিকাশ ও অডিট',      labelEn: 'Accounts & Audit',    icon: IndianRupee },
+];
+
+const CLUB_LINKS = [
+  { href: '/club#club-overview',  labelBn: 'ক্লাব পরিচিতি',             labelEn: 'Club Overview',      icon: Trophy },
+  { href: '/club#club-notices',   labelBn: 'ক্লাব নোটিশ বোর্ড',          labelEn: 'Club Notice Board',  icon: Megaphone },
+  { href: '/club#club-committee', labelBn: 'ক্লাব কমিটি পরিষদ',          labelEn: 'Club Committee',     icon: Users },
+  { href: '/club#club-gallery',   labelBn: 'ক্রীড়া ও সাংস্কৃতিক গ্যালারি', labelEn: 'Sports & Culture Gallery', icon: ImageIcon },
+  { href: '/club#club-finance',   labelBn: 'ক্লাব হিসাব নিকাশ ও অডিট',   labelEn: 'Club Accounts & Audit', icon: IndianRupee },
+];
+
+const SAMITI_LINKS = [
+  { href: '/samiti#samiti-charter',   labelBn: 'নাগরিক সনদ ও সমিতি',        labelEn: 'Civic Charter',       icon: Building },
+  { href: '/samiti#samiti-notices',   labelBn: 'নাগরিক নোটিশ ও বিজ্ঞপ্তি',   labelEn: 'Civic Notice Board',  icon: Megaphone },
+  { href: '/samiti#samiti-committee', labelBn: 'পরিচালনা কমিটি',            labelEn: 'Management Committee', icon: Users },
+  { href: '/samiti#samiti-gallery',   labelBn: 'উন্নয়ন কাজের গ্যালারি',      labelEn: 'Civic Works Gallery', icon: ImageIcon },
+  { href: '/samiti#samiti-finance',   labelBn: 'নাগরিক তহবিল ও অডিট',       labelEn: 'Civic Accounts & Audit', icon: IndianRupee },
 ];
 
 export default function Navbar() {
   const { lang, changeLanguage, t, b } = useLanguage();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notifDrawerOpen, setNotifDrawerOpen] = useState(false);
+  const [unreadNotifs, setUnreadNotifs] = useState(0);
 
-  const isHome = pathname === '/';
-  const isActive = (href) => href === '/' ? pathname === '/' : pathname.startsWith(href);
+  const isPuja = pathname === '/' || pathname === '/puja';
+  const isClub = pathname.startsWith('/club');
+  const isSamiti = pathname.startsWith('/samiti');
+  const isHome = isPuja;
+  const hasDarkHero = pathname === '/' || pathname === '/puja' || pathname.startsWith('/club') || pathname.startsWith('/samiti');
+  const currentNavItems = isClub ? CLUB_LINKS : isSamiti ? SAMITI_LINKS : PUJA_LINKS;
+
+  const handleItemClick = (e, href) => {
+    setMenuOpen(false);
+    if (href.includes('#')) {
+      const [targetPath, hash] = href.split('#');
+      if (pathname === targetPath || (!targetPath && pathname === '/')) {
+        const el = document.getElementById(hash);
+        if (el) {
+          e.preventDefault();
+          el.scrollIntoView({ behavior: 'smooth' });
+          window.history.pushState(null, '', `#${hash}`);
+        }
+      }
+    }
+  };
 
   // Close menu on outside click
   useEffect(() => {
@@ -38,53 +73,97 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ═══ TOP-LEFT: Fixed Club Logo & Name Badge (Hackspire style) ═══ */}
-      <div className="fixed top-3 sm:top-5 left-3 sm:left-5 z-50 flex items-center gap-2.5">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-lg group-hover:scale-105 transition-all shrink-0 ${
-            isHome
-              ? 'bg-[#11192E]/80 backdrop-blur-md border border-white/20 text-white shadow-md'
-              : 'bg-white/95 backdrop-blur-md border border-brand-maroon/20 text-brand-maroon shadow-md'
-          }`}>
-            <span className="text-base font-bold leading-none">ॐ</span>
-          </div>
-          <div className="hidden sm:flex flex-col leading-tight">
-            <span className={`font-black tracking-wide text-[11px] uppercase transition-colors ${
-              isHome
-                ? 'text-white'
-                : 'text-brand-dark'
-            }`} style={{ textShadow: isHome ? '0 1px 8px rgba(0,0,0,0.8)' : 'none' }}>
-              {b('বাঁশদ্রোণী সোনালী পার্ক', 'Bansdroni Sonali Park')}
-            </span>
-            <span className={`text-[9px] font-medium tracking-wider transition-colors ${
-              isHome
-                ? 'text-white/70'
-                : 'text-brand-maroon font-semibold'
-            }`} style={{ textShadow: isHome ? '0 1px 6px rgba(0,0,0,0.7)' : 'none' }}>
-              {b('ক্লাব, পূজা ও উন্নয়ন সমিতি', 'CLUB, PUJA & CIVIC RWA')}
-            </span>
-          </div>
-        </Link>
+      {/* ═══ TOP-LEFT: Contextual Identity Badge Per Pillar (Crisp Proper Colors, No Black Text On Dark Hero) ═══ */}
+      <div className="fixed top-3 sm:top-4 left-3 sm:left-5 z-50 flex items-center gap-2.5">
+        {isClub ? (
+          /* Club Dedicated Brand Badge */
+          <Link href="/club" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-amber-300 text-amber-600">
+              <Trophy className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-amber-600" />
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className={`font-black tracking-wide text-xs sm:text-sm uppercase transition-colors ${
+                hasDarkHero ? 'text-white' : 'text-stone-900'
+              }`}>
+                {b('সোনালী সঙ্ঘ ক্লাব', 'Sonali Sangha Club')}
+              </span>
+              <span className={`text-[10px] sm:text-[11px] font-bold tracking-wider transition-colors ${
+                hasDarkHero ? 'text-amber-400' : 'text-amber-700'
+              }`}>
+                {b('ক্রীড়া, সংস্কৃতি ও যুব শাখা', 'SPORTS, CULTURE & YOUTH')}
+              </span>
+            </div>
+          </Link>
+        ) : isSamiti ? (
+          /* Samiti Dedicated Brand Badge */
+          <Link href="/samiti" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-emerald-300 text-emerald-600">
+              <Building className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-emerald-600" />
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className={`font-black tracking-wide text-xs sm:text-sm uppercase transition-colors ${
+                hasDarkHero ? 'text-white' : 'text-stone-900'
+              }`}>
+                {b('উন্নয়ন সমিতি', 'Unnayan Samiti')}
+              </span>
+              <span className={`text-[10px] sm:text-[11px] font-bold tracking-wider transition-colors ${
+                hasDarkHero ? 'text-emerald-400' : 'text-emerald-700'
+              }`}>
+                {b('নাগরিক কল্যাণ ও নিরাপত্তা (RWA)', 'CIVIC WELFARE & RWA')}
+              </span>
+            </div>
+          </Link>
+        ) : (
+          /* Original Sacred Durga Puja / Master Community Badge */
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-brand-maroon/20 text-brand-maroon">
+              <span className="text-base sm:text-lg font-black leading-none text-brand-maroon">ॐ</span>
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className={`font-black tracking-wide text-xs sm:text-sm uppercase transition-colors ${
+                hasDarkHero ? 'text-white' : 'text-stone-900'
+              }`}>
+                {b('বাঁশদ্রোণী সোনালী সঙ্ঘ', 'Bansdroni Sonali Sangha')}
+              </span>
+              <span className={`text-[10px] sm:text-[11px] font-bold tracking-wider transition-colors ${
+                hasDarkHero ? 'text-amber-400' : 'text-brand-maroon'
+              }`}>
+                {b('রেজিস্ট্রেশন নম্বর: SO067242', 'Registration: SO067242')}
+              </span>
+            </div>
+          </Link>
+        )}
       </div>
 
-      {/* ═══ TOP-CENTER: Fixed 3-Pillar Quick Switcher (Desktop) ═══ */}
-      <div className="fixed top-2 sm:top-2.5 left-1/2 -translate-x-1/2 z-50 hidden md:block pointer-events-auto">
-        <PillarSwitcher variant="compact" />
-      </div>
+      {/* ═══ TOP-RIGHT: Bell Icon (No Background) + Lang Switcher + Menu Button ═══ */}
+      <div className="fixed top-3 sm:top-4 right-3 sm:right-5 z-50 flex items-center gap-2 sm:gap-3">
+        {/* Bell Notification Icon Only */}
+        <button
+          id="notif-btn"
+          type="button"
+          onClick={() => setNotifDrawerOpen(true)}
+          title={b('বিজ্ঞপ্তি ও নোটিফিকেশন', 'Notifications')}
+          className={`relative p-1.5 sm:p-2 transition-transform hover:scale-110 cursor-pointer ${
+            hasDarkHero ? 'text-amber-400 hover:text-amber-300' : 'text-stone-700 hover:text-amber-600'
+          }`}
+          aria-label="Notifications"
+        >
+          <Bell className="w-5 h-5 sm:w-5.5 sm:h-5.5" />
+          {unreadNotifs > 0 && (
+            <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 min-w-[17px] h-[17px] px-1 bg-rose-600 text-white text-[9px] font-black rounded-full flex items-center justify-center ring-2 ring-white animate-pulse">
+              {unreadNotifs > 9 ? '9+' : unreadNotifs}
+            </span>
+          )}
+        </button>
 
-      {/* ═══ TOP-RIGHT: Fixed Lang Switcher & Hamburger Button ═══ */}
-      <div className="fixed top-3 sm:top-5 right-3 sm:right-5 z-50 flex items-center gap-1.5 sm:gap-2">
-        <div className={`flex items-center p-0.5 rounded-full backdrop-blur-md shadow-md text-[11px] font-bold transition-all ${
-          isHome
-            ? 'bg-[#11192E]/80 border border-white/20 text-white'
-            : 'bg-white/95 border border-stone-200 text-stone-700'
-        }`}>
+        {/* Language Switcher */}
+        <div className="flex items-center p-0.5 rounded-full backdrop-blur-md shadow-sm text-[11px] font-bold transition-all bg-white/95 border border-stone-200 text-stone-700">
           <button
             onClick={() => changeLanguage('bn')}
             className={`px-2 sm:px-2.5 py-1 rounded-full transition-all cursor-pointer ${
               lang === 'bn'
                 ? 'bg-brand-maroon text-white shadow-xs'
-                : isHome ? 'text-white/70 hover:text-white' : 'text-stone-500 hover:text-brand-maroon'
+                : 'text-stone-600 hover:text-stone-900'
             }`}
           >
             বাংলা
@@ -94,24 +173,21 @@ export default function Navbar() {
             className={`px-2 sm:px-2.5 py-1 rounded-full transition-all cursor-pointer ${
               lang === 'en'
                 ? 'bg-brand-maroon text-white shadow-xs'
-                : isHome ? 'text-white/70 hover:text-white' : 'text-stone-500 hover:text-brand-maroon'
+                : 'text-stone-600 hover:text-stone-900'
             }`}
           >
             EN
           </button>
         </div>
 
+        {/* Menu Toggle Button */}
         <button
           id="menu-btn"
           onClick={() => setMenuOpen(!menuOpen)}
-          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-105 cursor-pointer ${
-            isHome
-              ? 'bg-[#11192E]/80 backdrop-blur-md border border-white/20 text-white hover:bg-[#11192E]'
-              : 'bg-white/95 backdrop-blur-md border border-brand-maroon/20 text-brand-dark hover:bg-brand-saffron/20 shadow-md'
-          }`}
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-sm transition-all hover:scale-105 cursor-pointer bg-white/95 hover:bg-stone-50 backdrop-blur-md border border-stone-200 text-stone-800 hover:text-brand-maroon"
           aria-label="Open menu"
         >
-          {menuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          {menuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4 text-stone-800" />}
         </button>
       </div>
 
@@ -123,7 +199,7 @@ export default function Navbar() {
         />
       )}
 
-      {/* ═══ CORNER POPUP MENU (Fixed & Adaptive) ═══ */}
+      {/* ═══ CORNER POPUP MENU (Fixed & Adaptive per Pillar) ═══ */}
       <div
         id="corner-menu"
         className={`fixed top-[56px] sm:top-[70px] right-3 sm:right-5 z-50 w-[calc(100vw-24px)] max-w-[280px] sm:w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 ${
@@ -134,7 +210,13 @@ export default function Navbar() {
           <span className="text-brand-maroon text-base">ॐ</span>
           <div>
             <p className="text-[11px] font-black tracking-wider text-brand-dark uppercase">{b('সোনালী পার্ক', 'Sonali Park')}</p>
-            <p className="text-[9px] text-brand-dark/40 tracking-wide">{b('বাঁশদ্রোণী • ক্লাব, পূজা ও সমিতি', 'Bansdroni • Club, Puja & Samiti')}</p>
+            <p className="text-[9px] text-brand-dark/40 tracking-wide">
+              {isClub
+                ? b('সোনালী সঙ্ঘ ক্লাব শাখা', 'Sonali Sangha Club Wing')
+                : isSamiti
+                ? b('উন্নয়ন সমিতি পরিষদ', 'Unnayan Samiti Wing')
+                : b('শারদীয়া দুর্গোৎসব ও ঐতিহ্য', 'Sharadiya Durga Puja & Traditions')}
+            </p>
           </div>
         </div>
 
@@ -148,7 +230,7 @@ export default function Navbar() {
               href="/"
               onClick={() => setMenuOpen(false)}
               className={`p-2 rounded-xl text-center border transition-all ${
-                pathname === '/' || pathname === '/puja'
+                !isClub && !isSamiti
                   ? 'bg-rose-50 border-rose-200 text-brand-maroon font-bold shadow-xs'
                   : 'bg-white border-stone-200 text-stone-700 hover:border-brand-maroon/30'
               }`}
@@ -160,7 +242,7 @@ export default function Navbar() {
               href="/club"
               onClick={() => setMenuOpen(false)}
               className={`p-2 rounded-xl text-center border transition-all ${
-                pathname.startsWith('/club')
+                isClub
                   ? 'bg-amber-50 border-amber-200 text-amber-900 font-bold shadow-xs'
                   : 'bg-white border-stone-200 text-stone-700 hover:border-amber-500/30'
               }`}
@@ -172,7 +254,7 @@ export default function Navbar() {
               href="/samiti"
               onClick={() => setMenuOpen(false)}
               className={`p-2 rounded-xl text-center border transition-all ${
-                pathname.startsWith('/samiti')
+                isSamiti
                   ? 'bg-emerald-50 border-emerald-200 text-emerald-900 font-bold shadow-xs'
                   : 'bg-white border-stone-200 text-stone-700 hover:border-emerald-500/30'
               }`}
@@ -184,30 +266,58 @@ export default function Navbar() {
         </div>
 
         <nav className="py-1.5">
-          {NAV_LINKS.map(({ href, labelKey, fallbackBn, icon: Icon }) => {
-            const active = isActive(href);
+          {currentNavItems.map(({ href, labelBn, labelEn, icon: Icon }) => {
+            const active = href.includes('#')
+              ? false
+              : (href === '/' ? pathname === '/' : pathname === href);
+
             return (
-              <Link
+              <a
                 key={href}
                 href={href}
-                onClick={() => setMenuOpen(false)}
-                className={`flex items-center gap-3 px-4 py-2.5 text-[13px] font-semibold transition-colors group ${
+                onClick={(e) => handleItemClick(e, href)}
+                className={`flex items-center gap-3 px-4 py-2.5 text-[13px] font-semibold transition-colors group cursor-pointer ${
                   active
-                    ? 'bg-brand-maroon text-white font-bold'
-                    : 'text-brand-dark hover:bg-brand-saffron/30 hover:text-brand-maroon'
+                    ? isClub
+                      ? 'bg-amber-600 text-white font-bold'
+                      : isSamiti
+                      ? 'bg-emerald-600 text-white font-bold'
+                      : 'bg-brand-maroon text-white font-bold'
+                    : isClub
+                    ? 'text-stone-800 hover:bg-amber-50 hover:text-amber-900'
+                    : isSamiti
+                    ? 'text-stone-800 hover:bg-emerald-50 hover:text-emerald-900'
+                    : 'text-stone-800 hover:bg-rose-50 hover:text-brand-maroon'
                 }`}
               >
                 <Icon className={`w-3.5 h-3.5 transition-colors ${
-                  active ? 'text-white' : 'text-brand-maroon/70 group-hover:text-brand-maroon'
+                  active
+                    ? 'text-white'
+                    : isClub
+                    ? 'text-amber-600 group-hover:text-amber-800'
+                    : isSamiti
+                    ? 'text-emerald-600 group-hover:text-emerald-800'
+                    : 'text-brand-maroon/70 group-hover:text-brand-maroon'
                 }`} />
-                <span>{lang === 'bn' ? fallbackBn : t(labelKey)}</span>
+                <span>{lang === 'bn' ? labelBn : labelEn}</span>
                 <ChevronRight className={`w-3 h-3 ml-auto transition-colors ${
-                  active ? 'text-white/70' : 'text-gray-300 group-hover:text-brand-maroon'
+                  active ? 'text-white/70' : 'text-gray-300 group-hover:text-stone-500'
                 }`} />
-              </Link>
+              </a>
             );
           })}
         </nav>
+
+        <div className="p-2.5 border-t border-gray-100 bg-stone-50/80">
+          <Link
+            href="/admin"
+            onClick={() => setMenuOpen(false)}
+            className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold transition-all shadow-xs"
+          >
+            <Shield className="w-3.5 h-3.5 text-amber-400" />
+            <span>{b('অ্যাডমিন প্যানেল প্রবেশ করুন', 'Access Admin Panel')}</span>
+          </Link>
+        </div>
 
         <div className="px-4 py-2.5 border-t border-gray-100 flex items-center gap-1.5 bg-gray-50/50">
           <span className="text-[10px] text-gray-400 font-medium mr-1">{b('ভাষা:', 'Lang:')}</span>
@@ -229,6 +339,13 @@ export default function Navbar() {
           </button>
         </div>
       </div>
+
+      {/* ═══ UNIVERSAL NOTIFICATION DRAWER ═══ */}
+      <NotificationDrawer
+        isOpen={notifDrawerOpen}
+        onClose={() => setNotifDrawerOpen(false)}
+        onUnreadCountChange={setUnreadNotifs}
+      />
     </>
   );
 }

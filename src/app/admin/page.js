@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import {
   Megaphone, Camera, Users, CalendarDays,
   ArrowUpRight, Clock, RefreshCw, Sparkles,
-  Plus, ImageIcon, FileText, ChevronRight
+  Plus, ImageIcon, FileText, ChevronRight, Bell
 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
@@ -17,7 +17,16 @@ export default function AdminDashboard() {
     eventCount: 0,
     recentPhotos: [],
     recentNotices: [],
-    settings: {}
+    settings: {},
+    pujaNotices: 0,
+    clubNotices: 0,
+    samitiNotices: 0,
+    pujaMembers: 0,
+    clubMembers: 0,
+    samitiMembers: 0,
+    pujaPhotos: 0,
+    clubPhotos: 0,
+    samitiPhotos: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -30,6 +39,19 @@ export default function AdminDashboard() {
         const notices = json.notices || [];
         const members = json.members || [];
         const events = json.events || [];
+
+        const clubNotices = notices.filter(n => n.title?.startsWith('[Club]')).length;
+        const samitiNotices = notices.filter(n => n.title?.startsWith('[Samiti]')).length;
+        const pujaNotices = notices.length - clubNotices - samitiNotices;
+
+        const clubMembers = members.filter(m => m.role?.startsWith('[Club]')).length;
+        const samitiMembers = members.filter(m => m.role?.startsWith('[Samiti]')).length;
+        const pujaMembers = members.length - clubMembers - samitiMembers;
+
+        const clubPhotos = gallery.filter(g => g.program === 'Club & Sports' || g.program === 'Annual Sports' || g.category === 'Sports').length;
+        const samitiPhotos = gallery.filter(g => g.program === 'Unnayan Samiti' || g.category === 'Roads').length;
+        const pujaPhotos = gallery.length - clubPhotos - samitiPhotos;
+
         setData({
           photoCount: gallery.length,
           noticeCount: notices.length,
@@ -37,7 +59,16 @@ export default function AdminDashboard() {
           eventCount: events.length,
           recentPhotos: gallery.slice(-4).reverse(),
           recentNotices: notices.slice(-4).reverse(),
-          settings: json.settings || {}
+          settings: json.settings || {},
+          pujaNotices,
+          clubNotices,
+          samitiNotices,
+          pujaMembers,
+          clubMembers,
+          samitiMembers,
+          pujaPhotos,
+          clubPhotos,
+          samitiPhotos
         });
       }
     } catch (err) {
@@ -160,6 +191,178 @@ export default function AdminDashboard() {
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-brand-maroon' : 'text-stone-400'}`} />
             <span>{b('রিফ্রেশ', 'Refresh')}</span>
           </button>
+        </div>
+      </div>
+
+      {/* ═══ 3-PILLAR DEDICATED CONTROL DECK ═══ */}
+      <div className="bg-white rounded-2xl border border-stone-200/90 shadow-xs p-5 sm:p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-3">
+          <div>
+            <h2 className="text-sm sm:text-base font-bold text-stone-900 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-brand-maroon inline-block animate-pulse" />
+              <span>{b('৩টি মূল শাখার পৃথক নিয়ন্ত্রণ কেন্দ্র', '3 Community Pillars Control Hub')}</span>
+            </h2>
+            <p className="text-xs text-stone-500">
+              {b('পূজা, ক্লাব ও সমিতি — প্রতিটি বিভাগের তথ্য ও নথি স্বতন্ত্রভাবে পরিচালিত হয়', 'Manage content independently for Durga Puja, Club, and Samiti')}
+            </p>
+          </div>
+
+          <Link
+            href="/admin/notifications"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-maroon/10 hover:bg-brand-maroon text-brand-maroon hover:text-white border border-brand-maroon/20 text-xs font-bold transition-all shadow-2xs self-start sm:self-center"
+          >
+            <Bell className="w-3.5 h-3.5" />
+            <span>{b('সরাসরি ব্রডকাস্ট নোটিফিকেশন পাঠান', 'Broadcast Live Alert')}</span>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Card 1: Durga Puja */}
+          <div className="p-4 rounded-xl border border-rose-200/80 bg-rose-50/30 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1">
+                  <span>🌺</span>
+                  <span>{b('শারদীয়া দুর্গাপূজা', 'Durga Puja')}</span>
+                </span>
+                <span className="text-xs font-bold text-rose-700">২০২৬ • ৭৪তম বর্ষ</span>
+              </div>
+              <h3 className="text-sm font-bold text-stone-900 leading-snug">
+                {b('পূজা পরিচালনা শাখা', 'Durga Puja Wing')}
+              </h3>
+              <p className="text-xs text-stone-500 mt-1">
+                {b('পূজা নির্ঘণ্ট, থিম, আলোকসজ্জা, অঞ্জলি ও সাংস্কৃতিক সূচি।', 'Schedule, rituals, theme, pandal art & puja committee.')}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 py-2 border-y border-rose-100 text-center text-xs">
+              <div>
+                <span className="text-[10px] text-stone-400 font-bold uppercase block">{b('নোটিশ', 'Notices')}</span>
+                <span className="font-extrabold text-stone-800">{data.pujaNotices}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-stone-400 font-bold uppercase block">{b('সদস্য', 'Members')}</span>
+                <span className="font-extrabold text-stone-800">{data.pujaMembers}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-stone-400 font-bold uppercase block">{b('ছবি', 'Photos')}</span>
+                <span className="font-extrabold text-stone-800">{data.pujaPhotos}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 flex-wrap pt-1">
+              <Link href="/admin/timeline" className="px-2 py-1 rounded-lg bg-white border border-rose-200 text-[11px] font-bold text-rose-800 hover:bg-rose-50 transition-colors">
+                {b('পূজা নির্ঘণ্ট', 'Schedule')}
+              </Link>
+              <Link href="/admin/notices" className="px-2 py-1 rounded-lg bg-white border border-rose-200 text-[11px] font-bold text-rose-800 hover:bg-rose-50 transition-colors">
+                {b('পূজা নোটিশ', 'Notices')}
+              </Link>
+              <Link href="/admin/committee" className="px-2 py-1 rounded-lg bg-white border border-rose-200 text-[11px] font-bold text-rose-800 hover:bg-rose-50 transition-colors">
+                {b('কমিটি', 'Committee')}
+              </Link>
+              <Link href="/admin/settings" className="px-2 py-1 rounded-lg bg-white border border-rose-200 text-[11px] font-bold text-rose-800 hover:bg-rose-50 transition-colors">
+                {b('থিম ও বাজেট', 'Theme & Budget')}
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 2: Club Wing */}
+          <div className="p-4 rounded-xl border border-amber-200/80 bg-amber-50/30 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1">
+                  <span>🏆</span>
+                  <span>{b('সোনালী সঙ্ঘ', 'Sonali Sangha')}</span>
+                </span>
+                <span className="text-xs font-bold text-amber-700">ESTD 1952</span>
+              </div>
+              <h3 className="text-sm font-bold text-stone-900 leading-snug">
+                {b('ক্লাব ও ক্রীড়া পরিষদ', 'Club & Sports Wing')}
+              </h3>
+              <p className="text-xs text-stone-500 mt-1">
+                {b('ক্রীড়া প্রতিযোগিতা, রক্তদান শিবির, যুবকল্যাণ ও ক্লাব পরিষদ।', 'Sports tournaments, blood donation & youth affairs.')}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 py-2 border-y border-amber-100 text-center text-xs">
+              <div>
+                <span className="text-[10px] text-stone-400 font-bold uppercase block">{b('নোটিশ', 'Notices')}</span>
+                <span className="font-extrabold text-stone-800">{data.clubNotices}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-stone-400 font-bold uppercase block">{b('পরিষদ', 'Members')}</span>
+                <span className="font-extrabold text-stone-800">{data.clubMembers}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-stone-400 font-bold uppercase block">{b('ছবি', 'Photos')}</span>
+                <span className="font-extrabold text-stone-800">{data.clubPhotos}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 flex-wrap pt-1">
+              <Link href="/admin/notices" className="px-2 py-1 rounded-lg bg-white border border-amber-200 text-[11px] font-bold text-amber-800 hover:bg-amber-50 transition-colors">
+                {b('ক্লাব নোটিশ', 'Club Notices')}
+              </Link>
+              <Link href="/admin/committee" className="px-2 py-1 rounded-lg bg-white border border-amber-200 text-[11px] font-bold text-amber-800 hover:bg-amber-50 transition-colors">
+                {b('ক্লাব পরিষদ', 'Executive')}
+              </Link>
+              <Link href="/admin/media" className="px-2 py-1 rounded-lg bg-white border border-amber-200 text-[11px] font-bold text-amber-800 hover:bg-amber-50 transition-colors">
+                {b('ক্লাব ব্যানার', 'Hero Banner')}
+              </Link>
+              <Link href="/admin/settings" className="px-2 py-1 rounded-lg bg-white border border-amber-200 text-[11px] font-bold text-amber-800 hover:bg-amber-50 transition-colors">
+                {b('ক্লাব বাজেট', 'Club Budget')}
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 3: Samiti Wing */}
+          <div className="p-4 rounded-xl border border-emerald-200/80 bg-emerald-50/30 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                  <span>🏛️</span>
+                  <span>{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
+                </span>
+                <span className="text-xs font-bold text-emerald-700">REG: SO067242</span>
+              </div>
+              <h3 className="text-sm font-bold text-stone-900 leading-snug">
+                {b('নাগরিক কল্যাণ ও সমিতি', 'Civic Welfare & RWA')}
+              </h3>
+              <p className="text-xs text-stone-500 mt-1">
+                {b('পাড়ার রাস্তা, জলনিকাশি, নিরাপত্তা, পরিচ্ছন্নতা ও নাগরিক সনদের তদারকি।', 'Civic works, security, roads & sanitation.')}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 py-2 border-y border-emerald-100 text-center text-xs">
+              <div>
+                <span className="text-[10px] text-stone-400 font-bold uppercase block">{b('নোটিশ', 'Notices')}</span>
+                <span className="font-extrabold text-stone-800">{data.samitiNotices}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-stone-400 font-bold uppercase block">{b('পরিচালনা', 'Members')}</span>
+                <span className="font-extrabold text-stone-800">{data.samitiMembers}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-stone-400 font-bold uppercase block">{b('ছবি', 'Photos')}</span>
+                <span className="font-extrabold text-stone-800">{data.samitiPhotos}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 flex-wrap pt-1">
+              <Link href="/admin/notices" className="px-2 py-1 rounded-lg bg-white border border-emerald-200 text-[11px] font-bold text-emerald-800 hover:bg-emerald-50 transition-colors">
+                {b('নাগরিক নোটিশ', 'Samiti Notices')}
+              </Link>
+              <Link href="/admin/committee" className="px-2 py-1 rounded-lg bg-white border border-emerald-200 text-[11px] font-bold text-emerald-800 hover:bg-emerald-50 transition-colors">
+                {b('পরিচালনা কমিটি', 'Management')}
+              </Link>
+              <Link href="/admin/media" className="px-2 py-1 rounded-lg bg-white border border-emerald-200 text-[11px] font-bold text-emerald-800 hover:bg-emerald-50 transition-colors">
+                {b('সমিতি ব্যানার', 'Hero Banner')}
+              </Link>
+              <Link href="/admin/settings" className="px-2 py-1 rounded-lg bg-white border border-emerald-200 text-[11px] font-bold text-emerald-800 hover:bg-emerald-50 transition-colors">
+                {b('নাগরিক তহবিল', 'Civic Accounts')}
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
