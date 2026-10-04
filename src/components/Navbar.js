@@ -73,123 +73,131 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ═══ TOP-LEFT: Contextual Identity Badge Per Pillar (Crisp Proper Colors, No Black Text On Dark Hero) ═══ */}
-      <div className="fixed top-3 sm:top-4 left-3 sm:left-5 z-50 flex items-center gap-2.5">
-        {isClub ? (
-          /* Club Dedicated Brand Badge */
-          <Link href="/club" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-amber-300 text-amber-600">
-              <Trophy className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-amber-600" />
-            </div>
-            <div className="flex flex-col leading-tight">
-              <span className={`font-black tracking-wide text-xs sm:text-sm uppercase transition-colors ${
-                hasDarkHero ? 'text-white' : 'text-stone-900'
-              }`}>
-                {b('সোনালী সঙ্ঘ ক্লাব', 'Sonali Sangha Club')}
-              </span>
-              <span className={`text-[10px] sm:text-[11px] font-bold tracking-wider transition-colors ${
-                hasDarkHero ? 'text-amber-400' : 'text-amber-700'
-              }`}>
-                {b('ক্রীড়া, সংস্কৃতি ও যুব শাখা', 'SPORTS, CULTURE & YOUTH')}
-              </span>
-            </div>
-          </Link>
-        ) : isSamiti ? (
-          /* Samiti Dedicated Brand Badge */
-          <Link href="/samiti" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-emerald-300 text-emerald-600">
-              <Building className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-emerald-600" />
-            </div>
-            <div className="flex flex-col leading-tight">
-              <span className={`font-black tracking-wide text-xs sm:text-sm uppercase transition-colors ${
-                hasDarkHero ? 'text-white' : 'text-stone-900'
-              }`}>
-                {b('উন্নয়ন সমিতি', 'Unnayan Samiti')}
-              </span>
-              <span className={`text-[10px] sm:text-[11px] font-bold tracking-wider transition-colors ${
-                hasDarkHero ? 'text-emerald-400' : 'text-emerald-700'
-              }`}>
-                {b('নাগরিক কল্যাণ ও নিরাপত্তা (RWA)', 'CIVIC WELFARE & RWA')}
-              </span>
-            </div>
-          </Link>
-        ) : (
-          /* Original Sacred Durga Puja / Master Community Badge */
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-brand-maroon/20 text-brand-maroon">
-              <span className="text-base sm:text-lg font-black leading-none text-brand-maroon">ॐ</span>
-            </div>
-            <div className="flex flex-col leading-tight">
-              <span className={`font-black tracking-wide text-xs sm:text-sm uppercase transition-colors ${
-                hasDarkHero ? 'text-white' : 'text-stone-900'
-              }`}>
-                {b('বাঁশদ্রোণী সোনালী সঙ্ঘ', 'Bansdroni Sonali Sangha')}
-              </span>
-              <span className={`text-[10px] sm:text-[11px] font-bold tracking-wider transition-colors ${
-                hasDarkHero ? 'text-amber-400' : 'text-brand-maroon'
-              }`}>
-                {b('রেজিস্ট্রেশন নম্বর: SO067242', 'Registration: SO067242')}
-              </span>
-            </div>
-          </Link>
-        )}
-      </div>
+      {/* ═══ UNIFIED RESPONSIVE TOP BAR (Zero Overlap, Proportionate Scaling & Clean Spacing) ═══ */}
+      <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none w-full">
+        <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-4 md:px-6 pt-2.5 sm:pt-4 flex items-center justify-between gap-1.5 sm:gap-3">
 
-      {/* ═══ TOP-RIGHT: Bell Icon (No Background) + Lang Switcher + Menu Button ═══ */}
-      <div className="fixed top-3 sm:top-4 right-3 sm:right-5 z-50 flex items-center gap-2 sm:gap-3">
-        {/* Bell Notification Icon Only */}
-        <button
-          id="notif-btn"
-          type="button"
-          onClick={() => setNotifDrawerOpen(true)}
-          title={b('বিজ্ঞপ্তি ও নোটিফিকেশন', 'Notifications')}
-          className={`relative p-1.5 sm:p-2 transition-transform hover:scale-110 cursor-pointer ${
-            hasDarkHero ? 'text-amber-400 hover:text-amber-300' : 'text-stone-700 hover:text-amber-600'
-          }`}
-          aria-label="Notifications"
-        >
-          <Bell className="w-5 h-5 sm:w-5.5 sm:h-5.5" />
-          {unreadNotifs > 0 && (
-            <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 min-w-[17px] h-[17px] px-1 bg-rose-600 text-white text-[9px] font-black rounded-full flex items-center justify-center ring-2 ring-white animate-pulse">
-              {unreadNotifs > 9 ? '9+' : unreadNotifs}
-            </span>
-          )}
-        </button>
+          {/* ═══ LEFT: Contextual Identity Badge (Responsive Sizing, No Screen Overflow) ═══ */}
+          <div className="pointer-events-auto min-w-0 flex items-center flex-1 max-w-[calc(100vw-170px)] sm:max-w-none">
+            {isClub ? (
+              /* Club Dedicated Brand Badge */
+              <Link href="/club" className="flex items-center gap-2 sm:gap-2.5 group min-w-0">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-amber-300 text-amber-600">
+                  <Trophy className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-amber-600" />
+                </div>
+                <div className="flex flex-col min-w-0 leading-tight">
+                  <span className={`font-black uppercase tracking-tight sm:tracking-normal text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm transition-colors truncate ${
+                    hasDarkHero ? 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]' : 'text-stone-900'
+                  }`}>
+                    {b('সোনালী সঙ্ঘ ক্লাব', 'Sonali Sangha Club')}
+                  </span>
+                  <span className={`text-[8.5px] xs:text-[9.5px] sm:text-[10px] md:text-[11px] font-bold tracking-wider transition-colors truncate ${
+                    hasDarkHero ? 'text-amber-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]' : 'text-amber-700'
+                  }`}>
+                    {b('ক্রীড়া ও যুব শাখা', 'Sports & Youth Wing')}
+                  </span>
+                </div>
+              </Link>
+            ) : isSamiti ? (
+              /* Samiti Dedicated Brand Badge */
+              <Link href="/samiti" className="flex items-center gap-2 sm:gap-2.5 group min-w-0">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-emerald-300 text-emerald-600">
+                  <Building className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-emerald-600" />
+                </div>
+                <div className="flex flex-col min-w-0 leading-tight">
+                  <span className={`font-black uppercase tracking-tight sm:tracking-normal text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm transition-colors truncate ${
+                    hasDarkHero ? 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]' : 'text-stone-900'
+                  }`}>
+                    {b('উন্নয়ন সমিতি', 'Unnayan Samiti')}
+                  </span>
+                  <span className={`text-[8.5px] xs:text-[9.5px] sm:text-[10px] md:text-[11px] font-bold tracking-wider transition-colors truncate ${
+                    hasDarkHero ? 'text-emerald-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]' : 'text-emerald-700'
+                  }`}>
+                    {b('নাগরিক কল্যাণ (RWA)', 'Civic Welfare & RWA')}
+                  </span>
+                </div>
+              </Link>
+            ) : (
+              /* Original Sacred Durga Puja / Master Community Badge */
+              <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group min-w-0">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-brand-maroon/20 text-brand-maroon">
+                  <span className="text-sm sm:text-base md:text-lg font-black leading-none text-brand-maroon">ॐ</span>
+                </div>
+                <div className="flex flex-col min-w-0 leading-tight">
+                  <span className={`font-black uppercase tracking-tight sm:tracking-normal text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm transition-colors truncate ${
+                    hasDarkHero ? 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]' : 'text-stone-900'
+                  }`}>
+                    {b('বাঁশদ্রোণী সোনালী সঙ্ঘ', 'Bansdroni Sonali Sangha')}
+                  </span>
+                  <span className={`text-[8.5px] xs:text-[9.5px] sm:text-[10px] md:text-[11px] font-bold tracking-wider transition-colors truncate ${
+                    hasDarkHero ? 'text-amber-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]' : 'text-brand-maroon'
+                  }`}>
+                    {b('রেজি: SO067242', 'Reg: SO067242')}
+                  </span>
+                </div>
+              </Link>
+            )}
+          </div>
 
-        {/* Language Switcher */}
-        <div className="flex items-center p-0.5 rounded-full backdrop-blur-md shadow-sm text-[11px] font-bold transition-all bg-white/95 border border-stone-200 text-stone-700">
-          <button
-            onClick={() => changeLanguage('bn')}
-            className={`px-2 sm:px-2.5 py-1 rounded-full transition-all cursor-pointer ${
-              lang === 'bn'
-                ? 'bg-brand-maroon text-white shadow-xs'
-                : 'text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            বাংলা
-          </button>
-          <button
-            onClick={() => changeLanguage('en')}
-            className={`px-2 sm:px-2.5 py-1 rounded-full transition-all cursor-pointer ${
-              lang === 'en'
-                ? 'bg-brand-maroon text-white shadow-xs'
-                : 'text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            EN
-          </button>
+          {/* ═══ RIGHT: Bell Icon + Lang Switcher + Menu Button (Shrink-0, Never Covered) ═══ */}
+          <div className="pointer-events-auto shrink-0 flex items-center gap-1.5 sm:gap-2.5">
+            {/* Bell Notification Icon (Clean, No Box Background, Soft Amber Glow Fill & Crisp Contrast) */}
+            <button
+              id="notif-btn"
+              type="button"
+              onClick={() => setNotifDrawerOpen(true)}
+              title={b('বিজ্ঞপ্তি ও নোটিফিকেশন', 'Notifications')}
+              className={`relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-transform active:scale-95 hover:scale-110 cursor-pointer ${
+                hasDarkHero
+                  ? 'text-amber-300 hover:text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)]'
+                  : 'text-stone-700 hover:text-amber-600'
+              }`}
+              aria-label="Notifications"
+            >
+              <Bell className="w-4.5 h-4.5 sm:w-5 sm:h-5 fill-amber-400/25" />
+              {unreadNotifs > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 sm:top-0 sm:right-0 min-w-[15px] h-[15px] sm:min-w-[17px] sm:h-[17px] px-0.5 bg-rose-600 text-white text-[8.5px] sm:text-[9.5px] font-black rounded-full flex items-center justify-center ring-2 ring-white shadow-xs animate-pulse">
+                  {unreadNotifs > 9 ? '9+' : unreadNotifs}
+                </span>
+              )}
+            </button>
+
+            {/* Language Switcher Pill */}
+            <div className="flex items-center p-0.5 rounded-full backdrop-blur-md shadow-xs text-[10px] sm:text-[11px] font-bold transition-all bg-white/95 border border-stone-200/90 text-stone-700">
+              <button
+                onClick={() => changeLanguage('bn')}
+                className={`px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full transition-all cursor-pointer ${
+                  lang === 'bn'
+                    ? 'bg-brand-maroon text-white shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                বাংলা
+              </button>
+              <button
+                onClick={() => changeLanguage('en')}
+                className={`px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full transition-all cursor-pointer ${
+                  lang === 'en'
+                    ? 'bg-brand-maroon text-white shadow-xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                EN
+              </button>
+            </div>
+
+            {/* Menu Toggle Button */}
+            <button
+              id="menu-btn"
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-xs transition-all active:scale-95 hover:scale-105 cursor-pointer bg-white/95 hover:bg-stone-50 backdrop-blur-md border border-stone-200/90 text-stone-800 hover:text-brand-maroon"
+              aria-label="Open menu"
+            >
+              {menuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4 text-stone-800" />}
+            </button>
+          </div>
         </div>
-
-        {/* Menu Toggle Button */}
-        <button
-          id="menu-btn"
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-sm transition-all hover:scale-105 cursor-pointer bg-white/95 hover:bg-stone-50 backdrop-blur-md border border-stone-200 text-stone-800 hover:text-brand-maroon"
-          aria-label="Open menu"
-        >
-          {menuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4 text-stone-800" />}
-        </button>
-      </div>
+      </header>
 
       {/* ═══ MOBILE BACKDROP DIMMING OVERLAY ═══ */}
       {menuOpen && (
@@ -202,7 +210,7 @@ export default function Navbar() {
       {/* ═══ CORNER POPUP MENU (Fixed & Adaptive per Pillar) ═══ */}
       <div
         id="corner-menu"
-        className={`fixed top-[56px] sm:top-[70px] right-3 sm:right-5 z-50 w-[calc(100vw-24px)] max-w-[280px] sm:w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 ${
+        className={`fixed top-[52px] sm:top-[64px] right-2.5 sm:right-5 z-50 w-[calc(100vw-20px)] max-w-[280px] sm:w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 ${
           menuOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
         }`}
       >
