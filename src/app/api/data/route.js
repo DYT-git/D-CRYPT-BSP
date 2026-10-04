@@ -7,11 +7,11 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const events = await prisma.event.findMany();
-    const members = await prisma.member.findMany();
-    const notices = await prisma.notice.findMany();
-    const gallery = await prisma.gallery.findMany();
-    const finances = await prisma.finance.findMany();
+    const events = await prisma.event.findMany({ orderBy: { id: 'asc' } });
+    const members = await prisma.member.findMany({ orderBy: { id: 'asc' } });
+    const notices = await prisma.notice.findMany({ orderBy: { id: 'desc' } });
+    const gallery = await prisma.gallery.findMany({ orderBy: { id: 'desc' } });
+    const finances = await prisma.finance.findMany({ orderBy: { id: 'desc' } });
     const settingsList = await prisma.siteSetting.findMany();
 
     const settings = {};
@@ -40,6 +40,9 @@ export async function GET() {
     } catch (e) {
       console.warn("Could not merge seed members:", e);
     }
+
+    // Always guarantee sequential order by member ID
+    allMembers.sort((a, b) => (a.id || 0) - (b.id || 0));
 
     return NextResponse.json({
       events,

@@ -199,7 +199,10 @@ const FALLBACK_CLUB_MEMBERS = [
       rawClubMembers = FALLBACK_CLUB_MEMBERS;
     }
 
-    const mapped = rawClubMembers.map(m => {
+    // Always sort by id ascending so President (Rabi Jana) is strictly #1
+    const sortedMembers = [...rawClubMembers].sort((a, b) => (a.id || 0) - (b.id || 0));
+
+    const mapped = sortedMembers.map(m => {
       const parsedRole = parseMemberRole(m.role);
       const parsedName = parseMemberNameDetails(m.name);
       return {

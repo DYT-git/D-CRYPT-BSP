@@ -85,7 +85,9 @@ export default function CommitteePage() {
   const [activeWing, setActiveWing] = useState('Puja');
 
   const allYearMembers = useMemo(() => {
-    return (data.members || []).filter(m => m.year === selectedYear);
+    return (data.members || [])
+      .filter(m => m.year === selectedYear)
+      .sort((a, b) => (a.id || 0) - (b.id || 0));
   }, [data.members, selectedYear]);
 
   const filteredMembers = useMemo(() => {
@@ -94,7 +96,7 @@ export default function CommitteePage() {
       return parsed.wing === activeWing;
     });
 
-    if (list.length > 0) return list;
+    if (list.length > 0) return [...list].sort((a, b) => (a.id || 0) - (b.id || 0));
 
     // Resilient fallback so committee tabs are never blank during initial load
     if (activeWing === 'Puja') return FALLBACK_PUJA_MEMBERS;

@@ -110,7 +110,7 @@ export default function CommitteeManagerPage() {
       const res = await fetch('/api/data');
       const data = await res.json();
       if (data.members) {
-        setMembers(data.members);
+        setMembers([...data.members].sort((a, b) => (a.id || 0) - (b.id || 0)));
       }
     } catch (err) {
       console.error('Failed to load committee members', err);
