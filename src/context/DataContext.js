@@ -10,8 +10,8 @@ export function DataProvider({ children }) {
     events: [], members: [], notices: [], gallery: [], finances: []
   });
   const [settings, setSettings] = useState({
-    heroHeading: 'শারদ প্রাতে মায়ের আগমন...',
-    heroSubHeading: 'আনন্দ আর আলোয় সাজুক ভুবন।',
+    heroHeading: '',
+    heroSubHeading: '',
     heroTagline: '🍁 শরতের নীল আকাশ আর শিউলির গন্ধে মেতেছে বাঁশদ্রোণী... সোনালী পার্কে মা আসছেন বছর ঘুরে! ৭৪তম বর্ষের মহা উৎসবে আপনাদের সাদর আমন্ত্রণ 🙏',
     countdownDate: '2026-10-16T06:00:00+05:30',
     countdownHeading: 'মা আসছেন...',

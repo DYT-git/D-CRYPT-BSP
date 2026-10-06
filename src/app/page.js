@@ -170,7 +170,7 @@ export default function HomePage() {
       <section className="relative w-full overflow-hidden transition-colors duration-700" style={{ backgroundColor: curr.pageBg }}>
 
         {/* Sacred Festival Deity Frame — 100% Uncropped, Zero Text Obstruction on Any Device */}
-        <div className="relative w-full aspect-[4/3.4] sm:aspect-[16/10] lg:aspect-[16/9] min-h-[310px] sm:min-h-0 overflow-hidden">
+        <div className="relative w-full aspect-[4/3.8] sm:aspect-[16/10] lg:aspect-[16/9] min-h-[350px] sm:min-h-0 overflow-hidden">
           {(['morning', 'afternoon', 'evening']).map((tod) => (
             <div
               key={tod}
@@ -189,11 +189,14 @@ export default function HomePage() {
           {/* Time-Aware Atmospheric Floating Particles */}
           <HeroParticles timeOfDay={timeOfDay} />
 
-          {/* Atmospheric Left-Wing Scrim (Guarantees 100% contrast on mobile & desktop without darkening Maa Durga) */}
-          <div className="absolute inset-y-0 left-0 w-[78%] sm:w-3/5 lg:w-1/2 bg-gradient-to-r from-stone-950/80 via-stone-950/35 to-transparent pointer-events-none z-10" />
+          {/* Desktop Left-Wing Scrim (Hidden on mobile to keep top 100% radiant) */}
+          <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-stone-950/80 via-stone-950/35 to-transparent pointer-events-none z-10 hidden lg:block" />
 
-          {/* ════ HERO SACRED INVOCATION WING (RESPONSIVE: MOBILE & DESKTOP) ════ */}
-          <div className="absolute top-4 sm:top-6 md:top-8 lg:top-36 xl:top-40 left-3.5 sm:left-6 lg:left-14 z-20 max-w-[76vw] sm:max-w-sm lg:max-w-md pointer-events-none">
+          {/* Mobile Atmospheric Downside Scrim (Protects text at bottom, leaves top 100% bright & clear) */}
+          <div className="absolute inset-x-0 bottom-0 h-48 sm:h-56 bg-gradient-to-t from-stone-950/95 via-stone-950/50 to-transparent pointer-events-none z-10 lg:hidden" />
+
+          {/* ════ HERO SACRED INVOCATION WING (MOBILE: DOWNSIDE / DESKTOP: LEFT WING) ════ */}
+          <div className="absolute bottom-6 sm:bottom-8 left-3.5 sm:left-6 right-3.5 sm:right-auto lg:top-36 xl:top-40 lg:bottom-auto lg:left-14 lg:max-w-md z-20 max-w-[85vw] sm:max-w-sm pointer-events-none">
             {/* Symmetrical Header Greeting Badge */}
             <div className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs font-bold tracking-wider uppercase backdrop-blur-md pointer-events-auto shadow-md ${curr.badgeClass}`}>
               <PanjikaSealBadge className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300" />
@@ -203,8 +206,10 @@ export default function HomePage() {
             </div>
 
             {/* Dynamic Symmetrical Headline */}
-            <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-black tracking-tight text-white leading-[1.2] mt-1.5 sm:mt-3 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
-              {settings.heroHeading ? (
+            <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-black tracking-tight text-white leading-[1.2] mt-1 sm:mt-3 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+              {settings.heroHeading &&
+              settings.heroHeading !== 'শারদ প্রাতে মায়ের আগমন...' &&
+              settings.heroHeading !== 'শারদ প্রাতে মায়ের আগমন...' ? (
                 settings.heroHeading
               ) : (
                 <>
@@ -215,12 +220,19 @@ export default function HomePage() {
                 </>
               )}
             </h1>
+
+            {/* Subline */}
             <p className="text-[11px] sm:text-sm md:text-base lg:text-lg text-rose-100/95 font-serif italic mt-0.5 sm:mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
-              {settings.heroSubHeading || curr.subline}
+              {settings.heroSubHeading &&
+              settings.heroSubHeading !== 'আনন্দ আর আলোয় সাজুক ভুবন।' &&
+              settings.heroSubHeading !== 'আনন্দ আর আলোয় সাজুক ভুবন।' &&
+              settings.heroSubHeading !== 'আনন্দ আর আলোয় সাজুক ভুবন'
+                ? settings.heroSubHeading
+                : curr.subline}
             </p>
 
             {/* Dynamic Poetic Bengali Quote Inscribed Plaque ("a small line on left side") */}
-            <div className="mt-2 sm:mt-3.5 pl-2.5 sm:pl-3.5 pr-3 sm:pr-4 py-1 sm:py-1.5 rounded-r-xl sm:rounded-r-2xl bg-gradient-to-r from-stone-950/85 via-stone-950/55 to-transparent backdrop-blur-md border-l-[3px] sm:border-l-4 border-rose-500 shadow-md pointer-events-auto max-w-[270px] sm:max-w-fit">
+            <div className="mt-1.5 sm:mt-3 pl-2.5 sm:pl-3.5 pr-3 sm:pr-4 py-1 sm:py-1.5 rounded-r-xl sm:rounded-r-2xl bg-gradient-to-r from-stone-950/85 via-stone-950/55 to-transparent backdrop-blur-md border-l-[3px] sm:border-l-4 border-rose-500 shadow-md pointer-events-auto max-w-[280px] sm:max-w-fit">
               <span className="text-[10px] sm:text-xs md:text-sm lg:text-base font-serif italic leading-relaxed text-[#FFF5F6] drop-shadow-sm line-clamp-2 sm:line-clamp-none">
                 &ldquo;{curr.quote}&rdquo;
               </span>
