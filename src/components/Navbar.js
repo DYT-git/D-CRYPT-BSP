@@ -31,11 +31,32 @@ const SAMITI_LINKS = [
 ];
 
 export default function Navbar() {
-  const { lang, changeLanguage, t, b } = useLanguage();
+  const { lang, changeLanguage, t, b, toDigits } = useLanguage();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifDrawerOpen, setNotifDrawerOpen] = useState(false);
   const [unreadNotifs, setUnreadNotifs] = useState(0);
+
+  // Gentle audio chime feedback on bell interaction
+  const playChime = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, now); // D5
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
+      gain.gain.setValueAtTime(0.05, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    } catch {}
+  };
 
   const isPuja = pathname === '/' || pathname === '/puja';
   const isClub = pathname.startsWith('/club');
@@ -141,23 +162,35 @@ export default function Navbar() {
 
           {/* ═══ RIGHT: Bell Icon + Lang Switcher + Menu Button (Shrink-0, Never Covered) ═══ */}
           <div className="pointer-events-auto shrink-0 flex items-center gap-1.5 sm:gap-2.5">
-            {/* Bell Notification Icon (Clean, No Box Background, Soft Amber Glow Fill & Crisp Contrast) */}
+            {/* Bell Notification Icon (Periodic Ring Animation, Radar Ping Halo & Chime on Click) */}
             <button
               id="notif-btn"
               type="button"
-              onClick={() => setNotifDrawerOpen(true)}
-              title={b('বিজ্ঞপ্তি ও নোটিফিকেশন', 'Notifications')}
-              className={`relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-transform active:scale-95 hover:scale-110 cursor-pointer ${
+              onClick={() => {
+                if (!notifDrawerOpen) playChime();
+                setNotifDrawerOpen(!notifDrawerOpen);
+              }}
+              title={
+                unreadNotifs > 0
+                  ? b(`${toDigits(unreadNotifs)}টি নতুন বিজ্ঞপ্তি`, `${unreadNotifs} new notifications`)
+                  : b('বিজ্ঞপ্তি ও নোটিফিকেশন', 'Notifications')
+              }
+              className={`group relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-transform active:scale-95 hover:scale-105 cursor-pointer group-hover-bell ${
                 hasDarkHero
                   ? 'text-amber-300 hover:text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)]'
                   : 'text-stone-700 hover:text-amber-600'
               }`}
               aria-label="Notifications"
             >
-              <Bell className="w-4.5 h-4.5 sm:w-5 sm:h-5 fill-amber-400/25" />
+              <Bell className={`w-4.5 h-4.5 sm:w-5 sm:h-5 fill-amber-400/25 transition-transform ${
+                unreadNotifs > 0 ? 'animate-bell-periodic text-amber-300' : ''
+              }`} />
               {unreadNotifs > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 sm:top-0 sm:right-0 min-w-[15px] h-[15px] sm:min-w-[17px] sm:h-[17px] px-0.5 bg-rose-600 text-white text-[8.5px] sm:text-[9.5px] font-black rounded-full flex items-center justify-center ring-2 ring-white shadow-xs animate-pulse">
-                  {unreadNotifs > 9 ? '9+' : unreadNotifs}
+                <span className="absolute -top-0.5 -right-0.5 sm:top-0 sm:right-0 flex items-center justify-center">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative min-w-[15px] h-[15px] sm:min-w-[17px] sm:h-[17px] px-0.5 bg-rose-600 text-white text-[8.5px] sm:text-[9.5px] font-black rounded-full flex items-center justify-center ring-2 ring-white shadow-xs">
+                    {unreadNotifs > 9 ? '9+' : (lang === 'bn' ? toDigits(unreadNotifs) : unreadNotifs)}
+                  </span>
                 </span>
               )}
             </button>

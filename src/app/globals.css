@@ -141,3 +141,29 @@ h1, h2, h3, h4, h5, h6 {
   scrollbar-width: none !important; /* Firefox */
 }
 
+/* ═══ NOTIFICATION BELL CHIME & RING ANIMATIONS ═══ */
+@keyframes bellRing {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(-14deg); }
+  20%, 40% { transform: rotate(14deg); }
+  50% { transform: rotate(-6deg); }
+  60% { transform: rotate(6deg); }
+  70% { transform: rotate(0deg); }
+}
+
+@keyframes bellPeriodicSwing {
+  0%, 80%, 100% { transform: rotate(0deg); }
+  84%, 92% { transform: rotate(-13deg); }
+  88%, 96% { transform: rotate(13deg); }
+}
+
+.animate-bell-periodic {
+  animation: bellPeriodicSwing 6s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+.group-hover-bell:hover svg {
+  animation: bellRing 0.75s ease-in-out;
+  transform-origin: top center;
+}
+
