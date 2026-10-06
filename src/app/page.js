@@ -170,7 +170,7 @@ export default function HomePage() {
       <section className="relative w-full overflow-hidden transition-colors duration-700" style={{ backgroundColor: curr.pageBg }}>
 
         {/* Sacred Festival Deity Frame — 100% Uncropped, Zero Text Obstruction on Any Device */}
-        <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] lg:aspect-[16/9] overflow-hidden">
+        <div className="relative w-full aspect-[4/3.4] sm:aspect-[16/10] lg:aspect-[16/9] min-h-[310px] sm:min-h-0 overflow-hidden">
           {(['morning', 'afternoon', 'evening']).map((tod) => (
             <div
               key={tod}
@@ -189,42 +189,45 @@ export default function HomePage() {
           {/* Time-Aware Atmospheric Floating Particles */}
           <HeroParticles timeOfDay={timeOfDay} />
 
-          {/* ════ DESKTOP WIDE-SCREEN ONLY (>= lg: 1024px+): LEFT WING ════ */}
-          <div className="absolute top-24 sm:top-28 md:top-32 lg:top-36 xl:top-40 left-6 sm:left-8 lg:left-14 z-20 hidden lg:block max-w-md pointer-events-none">
+          {/* Atmospheric Left-Wing Scrim (Guarantees 100% contrast on mobile & desktop without darkening Maa Durga) */}
+          <div className="absolute inset-y-0 left-0 w-[78%] sm:w-3/5 lg:w-1/2 bg-gradient-to-r from-stone-950/80 via-stone-950/35 to-transparent pointer-events-none z-10" />
+
+          {/* ════ HERO SACRED INVOCATION WING (RESPONSIVE: MOBILE & DESKTOP) ════ */}
+          <div className="absolute top-4 sm:top-6 md:top-8 lg:top-36 xl:top-40 left-3.5 sm:left-6 lg:left-14 z-20 max-w-[76vw] sm:max-w-sm lg:max-w-md pointer-events-none">
             {/* Symmetrical Header Greeting Badge */}
-            <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-bold tracking-wider uppercase backdrop-blur-md pointer-events-auto shadow-md ${curr.badgeClass}`}>
-              <PanjikaSealBadge className="w-3.5 h-3.5 text-amber-300" />
+            <div className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs font-bold tracking-wider uppercase backdrop-blur-md pointer-events-auto shadow-md ${curr.badgeClass}`}>
+              <PanjikaSealBadge className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300" />
               <span>{curr.timeGreeting}</span>
               <span className="opacity-40">·</span>
               <span className="font-serif normal-case tracking-normal text-amber-200 font-bold">{toDigits(2026)}</span>
             </div>
 
             {/* Dynamic Symmetrical Headline */}
-            <h1 className="text-3xl md:text-4xl xl:text-5xl font-serif font-black tracking-tight text-white leading-tight mt-3 sm:mt-4 drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">
+            <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-black tracking-tight text-white leading-[1.2] mt-1.5 sm:mt-3 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
               {settings.heroHeading ? (
                 settings.heroHeading
               ) : (
                 <>
                   <span>{curr.headlinePrefix}</span>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-rose-200 to-amber-200 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-rose-200 to-amber-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
                     {curr.headlineHighlight}
                   </span>
                 </>
               )}
             </h1>
-            <p className="text-base md:text-lg text-rose-100/95 font-serif italic mt-1.5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
+            <p className="text-[11px] sm:text-sm md:text-base lg:text-lg text-rose-100/95 font-serif italic mt-0.5 sm:mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
               {settings.heroSubHeading || curr.subline}
             </p>
 
-            {/* Dynamic Poetic Bengali Quote Inscribed Plaque */}
-            <div className="mt-3 sm:mt-4 pl-3.5 pr-4 py-2 rounded-r-2xl bg-gradient-to-r from-stone-950/85 via-stone-950/60 to-transparent backdrop-blur-md border-l-4 border-rose-500 shadow-lg pointer-events-auto max-w-fit">
-              <span className="text-xs sm:text-sm md:text-base font-serif italic leading-relaxed text-[#FFF5F6] drop-shadow-sm">
+            {/* Dynamic Poetic Bengali Quote Inscribed Plaque ("a small line on left side") */}
+            <div className="mt-2 sm:mt-3.5 pl-2.5 sm:pl-3.5 pr-3 sm:pr-4 py-1 sm:py-1.5 rounded-r-xl sm:rounded-r-2xl bg-gradient-to-r from-stone-950/85 via-stone-950/55 to-transparent backdrop-blur-md border-l-[3px] sm:border-l-4 border-rose-500 shadow-md pointer-events-auto max-w-[270px] sm:max-w-fit">
+              <span className="text-[10px] sm:text-xs md:text-sm lg:text-base font-serif italic leading-relaxed text-[#FFF5F6] drop-shadow-sm line-clamp-2 sm:line-clamp-none">
                 &ldquo;{curr.quote}&rdquo;
               </span>
             </div>
 
-            {/* CTA Action Buttons (Inspired by Image 1: Pill Button with Circular Arrow Badge) */}
-            <div className="flex flex-wrap items-center gap-3 mt-4 sm:mt-6 pointer-events-auto">
+            {/* CTA Action Buttons (Desktop Only Inside Frame — On Mobile Shifted Down Before Timer) */}
+            <div className="hidden lg:flex flex-wrap items-center gap-3 mt-4 sm:mt-6 pointer-events-auto">
               <Link
                 href="/puja"
                 className="btn-tactile-crimson text-white pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 sm:py-2 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-3 group shadow-[0_4px_16px_rgba(190,18,60,0.45)]"
@@ -314,72 +317,39 @@ export default function HomePage() {
         </div>
 
         {/* ════ MOBILE & TABLET CONNECTED CULTURAL DASHBOARD (< lg: 1024px) ════
-            Standard Native Mobile App Layout: Zero Deity Obstruction, 100% Readable, High-Contrast
+            Zero Duplicate Text: Poetic Invocations Live Inside Hero Banner, Fast Actions & Countdown Below
             ═══════════════════════════════════════════════════════════════════════════ */}
         <div className="block lg:hidden px-4 sm:px-6 pt-3 pb-6 max-w-2xl mx-auto">
-          {/* Greeting Badge */}
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] font-bold tracking-wider uppercase backdrop-blur-md ${curr.badgeClass}`}>
-              <ShankhaIcon className="w-3 h-3 text-amber-300" />
-              <span>{curr.timeGreeting}</span>
-              <span className="opacity-40">·</span>
-              <span className="font-serif normal-case tracking-normal text-amber-200 font-bold">{toDigits(2026)}</span>
-            </div>
-            {curr.taglineSub && (
-              <span className="text-[10px] text-stone-500 font-serif italic truncate max-w-[150px] sm:max-w-xs">
-                &ldquo;{curr.taglineSub}&rdquo;
-              </span>
-            )}
-          </div>
-
-          {/* Main Headline */}
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold leading-tight text-stone-900 tracking-tight">
-            {settings.heroHeading ? (
-              settings.heroHeading
-            ) : (
-              <>
-                <span>{curr.headlinePrefix}</span>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#BE123C] to-[#881337]">
-                  {curr.headlineHighlight}
-                </span>
-              </>
-            )}
-          </h1>
-          <p className="text-xs sm:text-sm text-stone-600 font-serif italic mt-1">
-            {settings.heroSubHeading || curr.subline}
-          </p>
-
-          {/* Poetic Bengali Quote Plaque */}
-          <div className="mt-3 pl-3.5 pr-3 py-2 rounded-r-2xl bg-[#FFFDF9] border border-[#E8DFD1]/80 border-l-4 border-l-brand-maroon shadow-2xs">
-            <span className="text-xs sm:text-sm font-serif italic leading-relaxed text-stone-800">
-              &ldquo;{curr.quote}&rdquo;
-            </span>
-          </div>
-
-          {/* Full-width Touch Friendly Action Buttons (Tactile 3D Buttons with Image 1 Arrow Coin) */}
-          <div className="grid grid-cols-2 gap-2 mt-4 w-full">
+          {/* Full-width Touch Friendly Action Buttons (Positioned directly before countdown timer) */}
+          <div className="grid grid-cols-2 gap-2.5 mb-3.5 w-full">
             <Link
               href="/puja"
-              className="btn-tactile-crimson text-white py-2.5 px-2.5 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-between text-center whitespace-nowrap group shadow-[0_4px_14px_rgba(190,18,60,0.35)]"
+              className="btn-tactile-crimson text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-between text-center whitespace-nowrap group shadow-[0_4px_16px_rgba(190,18,60,0.35)]"
             >
-              <span className="truncate">{b('দুর্গাপূজা ২০২৬', 'Durga Puja 2026')}</span>
-              <span className="w-5 h-5 rounded-full bg-white text-brand-maroon flex items-center justify-center shadow-xs font-bold text-xs shrink-0 group-hover:translate-x-0.5 transition-transform">
+              <div className="flex items-center gap-1.5 truncate">
+                <DurgaDeviEmblemIcon className="w-3.5 h-3.5 text-amber-200 shrink-0" />
+                <span className="truncate">{b('দুর্গাপূজা ২০২৬', 'Durga Puja 2026')}</span>
+              </div>
+              <span className="w-5 h-5 rounded-full bg-white text-brand-maroon flex items-center justify-center shadow-xs font-bold text-xs shrink-0 group-hover:translate-x-0.5 transition-transform ml-1">
                 →
               </span>
             </Link>
             <Link
               href="/transparency"
-              className="btn-tactile-parchment py-2.5 px-2.5 rounded-2xl font-semibold text-xs sm:text-sm text-stone-800 hover:text-brand-maroon flex items-center justify-between text-center whitespace-nowrap group"
+              className="btn-tactile-parchment py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl font-semibold text-xs sm:text-sm text-stone-800 hover:text-brand-maroon flex items-center justify-between text-center whitespace-nowrap border border-[#E5DAC8] group shadow-2xs"
             >
-              <span className="truncate">{b('হিসাব নিকাশ', 'Accounts')}</span>
-              <span className="w-5 h-5 rounded-full bg-stone-200/80 group-hover:bg-brand-maroon group-hover:text-white text-stone-700 flex items-center justify-center text-xs shrink-0 transition-colors">
+              <div className="flex items-center gap-1.5 truncate">
+                <NoticeScrollIcon className="w-3.5 h-3.5 text-brand-maroon shrink-0" />
+                <span className="truncate">{b('হিসাব নিকাশ', 'Accounts')}</span>
+              </div>
+              <span className="w-5 h-5 rounded-full bg-stone-200/80 group-hover:bg-brand-maroon group-hover:text-white text-stone-700 flex items-center justify-center text-xs shrink-0 transition-colors ml-1">
                 →
               </span>
             </Link>
           </div>
 
           {/* Countdown Container Card */}
-          <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-[#FFFDF9] border border-[#E8DFD1] shadow-xs relative overflow-hidden flex flex-col items-center justify-center text-center">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#FFFDF9] border border-[#E8DFD1] shadow-xs relative overflow-hidden flex flex-col items-center justify-center text-center">
             {/* Top Alta Seam */}
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#BE123C]/50 to-transparent" />
 
