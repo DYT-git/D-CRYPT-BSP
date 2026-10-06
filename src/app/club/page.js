@@ -10,6 +10,16 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { triggerDownload } from '@/utils/download';
+import { 
+  ClubCrestIcon, 
+  SportsBadgeIcon, 
+  BloodDonationBadgeIcon, 
+  CulturalStageBadgeIcon, 
+  FestiveWaveAccent, 
+  WashiTapePin, 
+  BinderHoles, 
+  TornDeckleEdge 
+} from '@/components/HeritageIcons';
 
 function parseMemberRole(role) {
   if (!role) return { wing: 'Club', cleanRole: '', phone: '' };
@@ -280,14 +290,17 @@ const FALLBACK_CLUB_MEMBERS = [
           <div className="relative z-10 px-6 py-14 sm:py-20 md:py-24 lg:px-12 flex flex-col items-center text-center max-w-4xl mx-auto">
             {/* Club Registration / Identity Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-sm backdrop-blur-md">
-              <Trophy className="w-4 h-4 text-amber-400" />
+              <ClubCrestIcon className="w-4 h-4 text-amber-400" />
               <span>{b('সোনালী সঙ্ঘ • ক্রীড়া, সংস্কৃতি ও যুবকল্যাণ শাখা', 'Sonali Sangha • Sports, Cultural & Youth Wing')}</span>
             </div>
 
             {/* Club Main Title */}
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-tight text-white mb-4 leading-tight drop-shadow-md">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-tight text-white mb-2 leading-tight drop-shadow-md">
               {settings.clubHeroTitle || b('সোনালী সঙ্ঘ', 'Sonali Sangha')} <span className="text-amber-400">{b('ক্লাব', 'Club')}</span>
             </h1>
+            <div className="flex justify-center mb-4">
+              <FestiveWaveAccent className="w-16 h-2 text-amber-400/90" />
+            </div>
 
             {/* Club Subtitle & Tagline */}
             <p className="text-base sm:text-lg md:text-xl text-stone-200 font-normal max-w-2xl leading-relaxed drop-shadow-sm">
@@ -402,33 +415,54 @@ const FALLBACK_CLUB_MEMBERS = [
             </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid md:grid-cols-3 gap-6 pt-5">
             {clubNotices.map((notice, idx) => (
               <div
                 key={notice.id || idx}
-                className="group relative p-5 sm:p-6 rounded-2xl bg-[#FAF7F2] border border-stone-200/80 hover:border-amber-500/40 hover:shadow-md transition-all flex flex-col justify-between"
+                className="group relative pt-8 pb-5 pl-8 sm:pl-10 pr-6 rounded-3xl bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_6px_20px_rgba(28,13,19,0.04)] hover:shadow-[0_16px_32px_rgba(217,119,6,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
               >
+                {/* Top Pinned Washi Tape Header */}
+                <div className="absolute -top-3.5 left-6 sm:left-8 z-20">
+                  <WashiTapePin text={b(`ক্লাব সার্কুলার নং ০${idx + 1}`, `Club Circular #${idx + 1}`)} variant="amber" />
+                </div>
+
+                {/* Left Spiral Binder Holes */}
+                <div className="absolute left-2.5 top-8 bottom-8 flex flex-col justify-around pointer-events-none">
+                  <BinderHoles count={4} />
+                </div>
+
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-500/25">
-                      🏆 {b('ক্লাব বিজ্ঞপ্তি', 'Club Notice')}
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-900 border border-amber-500/20 font-serif shadow-2xs">
+                      <ClubCrestIcon className="w-3.5 h-3.5 text-amber-700" />
+                      <span>{b('ক্লাব বিজ্ঞপ্তি', 'Club Notice')}</span>
                     </span>
                     {notice.isUrgent && (
-                      <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold animate-pulse">
+                      <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold shadow-2xs">
                         {b('জরুরি', 'Urgent')}
                       </span>
                     )}
                   </div>
-                  <h3 className="font-serif font-bold text-stone-900 text-base mb-2 group-hover:text-amber-900 transition-colors leading-snug">
+                  <h3 className="font-serif font-bold text-stone-900 text-base mb-1.5 group-hover:text-amber-900 transition-colors leading-snug">
                     {notice.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-stone-600 leading-relaxed whitespace-pre-line">
+                  <div className="mb-2.5">
+                    <FestiveWaveAccent className="w-12 h-1.5 text-amber-500/80" />
+                  </div>
+                  <p className="text-xs sm:text-sm text-stone-600 leading-relaxed whitespace-pre-line mb-3">
                     {notice.text}
                   </p>
                 </div>
-                <div className="pt-4 mt-4 border-t border-stone-200/60 flex items-center justify-between text-[11px] text-stone-400">
-                  <span>{b('সাল:', 'Year:')} {toDigits(notice.year, lang)}</span>
-                  <span className="text-amber-800 font-semibold">{b('সোনালী সঙ্ঘ', 'Sonali Sangha')}</span>
+
+                <div>
+                  <div className="pt-3 border-t border-[#E8DFD1] flex items-center justify-between text-[11px] text-stone-400">
+                    <span>{b('সাল:', 'Year:')} {toDigits(notice.year, lang)}</span>
+                    <span className="text-amber-800 font-bold font-serif">{b('সোনালী সঙ্ঘ', 'Sonali Sangha')}</span>
+                  </div>
+                  {/* Deckle bottom edge */}
+                  <div className="-mx-6 -mb-5 mt-2 opacity-80">
+                    <TornDeckleEdge className="w-full text-stone-200/90 h-2 block" />
+                  </div>
                 </div>
               </div>
             ))}

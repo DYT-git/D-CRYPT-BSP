@@ -10,6 +10,16 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { triggerDownload } from '@/utils/download';
+import { 
+  SamitiEmblemIcon, 
+  CivicShieldBadgeIcon, 
+  CivicLightBadgeIcon, 
+  CivicGreeneryBadgeIcon, 
+  FestiveWaveAccent, 
+  WashiTapePin, 
+  BinderHoles, 
+  TornDeckleEdge 
+} from '@/components/HeritageIcons';
 
 export default function SamitiPage() {
   const { data, settings, selectedYear } = useData();
@@ -225,14 +235,17 @@ export default function SamitiPage() {
           <div className="relative z-10 px-6 py-14 sm:py-20 md:py-24 lg:px-12 flex flex-col items-center text-center max-w-4xl mx-auto">
             {/* Samiti RWA Registration Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-400/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-sm backdrop-blur-md">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <SamitiEmblemIcon className="w-4 h-4 text-emerald-400" />
               <span>{b('সোনালী পার্ক উন্নয়ন সমিতি • নাগরিক ও আবাসিক পরিষদ (RWA)', 'Sonali Park Unnayan Samiti • Residents Welfare Association')}</span>
             </div>
 
             {/* Samiti Main Title */}
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-tight text-white mb-4 leading-tight drop-shadow-md">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-tight text-white mb-2 leading-tight drop-shadow-md">
               {settings.samitiHeroTitle || b('সোনালী পার্ক', 'Sonali Park')} <span className="text-emerald-400">{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
             </h1>
+            <div className="flex justify-center mb-4">
+              <FestiveWaveAccent className="w-16 h-2 text-emerald-400/90" />
+            </div>
 
             {/* Samiti Subtitle & Tagline */}
             <p className="text-base sm:text-lg md:text-xl text-stone-200 font-normal max-w-2xl leading-relaxed mb-4 drop-shadow-sm">
@@ -327,8 +340,13 @@ export default function SamitiPage() {
       </section>
 
       {/* ═══ 2. RESIDENT EMERGENCY DIRECTORY & HELPLINES ═══ */}
-      <section id="samiti-helplines" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="bg-gradient-to-r from-stone-900 via-stone-950 to-stone-900 rounded-3xl p-6 sm:p-10 text-white border border-stone-800 shadow-2xl">
+      <section id="samiti-helplines" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20 pt-4">
+        <div className="group relative bg-gradient-to-r from-stone-900 via-stone-950 to-stone-900 rounded-3xl p-6 sm:p-10 text-white border border-stone-800 shadow-2xl">
+          {/* Top Pinned Washi Tape */}
+          <div className="absolute -top-3.5 left-7 sm:left-10 z-20">
+            <WashiTapePin text={b('জরুরি হেল্পলাইন • সার্বক্ষণিক সেবা', 'Emergency Helplines • 24x7 Direct')} variant="rose" />
+          </div>
+
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-stone-800 mb-6">
             <div className="flex items-center gap-3.5">
               <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
@@ -451,33 +469,54 @@ export default function SamitiPage() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid md:grid-cols-3 gap-6 pt-5">
             {samitiNotices.map((notice, idx) => (
               <div
                 key={notice.id || idx}
-                className="group relative p-5 sm:p-6 rounded-2xl bg-[#FAF7F2] border border-stone-200/80 hover:border-emerald-500/40 hover:shadow-md transition-all flex flex-col justify-between"
+                className="group relative pt-8 pb-5 pl-8 sm:pl-10 pr-6 rounded-3xl bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_6px_20px_rgba(28,13,19,0.04)] hover:shadow-[0_16px_32px_rgba(5,150,105,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
               >
+                {/* Top Pinned Washi Tape Header */}
+                <div className="absolute -top-3.5 left-6 sm:left-8 z-20">
+                  <WashiTapePin text={b(`নাগরিক সার্কুলার নং ০${idx + 1}`, `Civic Circular #${idx + 1}`)} variant="emerald" />
+                </div>
+
+                {/* Left Spiral Binder Holes */}
+                <div className="absolute left-2.5 top-8 bottom-8 flex flex-col justify-around pointer-events-none">
+                  <BinderHoles count={4} />
+                </div>
+
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-900 border border-emerald-500/25">
-                      🏛️ {b('নাগরিক বিজ্ঞপ্তি', 'Civic Notice')}
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-900 border border-emerald-500/20 font-serif shadow-2xs">
+                      <SamitiEmblemIcon className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>{b('নাগরিক বিজ্ঞপ্তি', 'Civic Notice')}</span>
                     </span>
                     {notice.isUrgent && (
-                      <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold animate-pulse">
+                      <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold shadow-2xs">
                         {b('জরুরি', 'Urgent')}
                       </span>
                     )}
                   </div>
-                  <h3 className="font-serif font-bold text-stone-900 text-base mb-2 group-hover:text-emerald-900 transition-colors leading-snug">
+                  <h3 className="font-serif font-bold text-stone-900 text-base mb-1.5 group-hover:text-emerald-900 transition-colors leading-snug">
                     {notice.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-stone-600 leading-relaxed whitespace-pre-line">
+                  <div className="mb-2.5">
+                    <FestiveWaveAccent className="w-12 h-1.5 text-emerald-600/80" />
+                  </div>
+                  <p className="text-xs sm:text-sm text-stone-600 leading-relaxed whitespace-pre-line mb-3">
                     {notice.text}
                   </p>
                 </div>
-                <div className="pt-4 mt-4 border-t border-stone-200/60 flex items-center justify-between text-[11px] text-stone-400">
-                  <span>{b('সাল:', 'Year:')} {toDigits(notice.year, lang)}</span>
-                  <span className="text-emerald-800 font-semibold">{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
+
+                <div>
+                  <div className="pt-3 border-t border-[#E8DFD1] flex items-center justify-between text-[11px] text-stone-400">
+                    <span>{b('সাল:', 'Year:')} {toDigits(notice.year, lang)}</span>
+                    <span className="text-emerald-800 font-bold font-serif">{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
+                  </div>
+                  {/* Deckle bottom edge */}
+                  <div className="-mx-6 -mb-5 mt-2 opacity-80">
+                    <TornDeckleEdge className="w-full text-stone-200/90 h-2 block" />
+                  </div>
                 </div>
               </div>
             ))}

@@ -5,6 +5,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import YearSelector from "@/components/YearSelector";
 import { Download, X, ZoomIn, Image as ImageIcon } from 'lucide-react';
 import { triggerDownload } from "@/utils/download";
+import { FestiveWaveAccent } from '@/components/HeritageIcons';
 
 const PROGRAMS = [
   { key: 'Durga Puja',       labelBn: 'শারদীয়া দুর্গাপূজা', labelEn: 'Durga Puja' },
@@ -56,9 +57,12 @@ export default function GalleryPage() {
           <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon animate-pulse" />
           {b('স্মৃতি ও ঐতিহ্য', 'Memories & Archives')} • {toDigits(selectedYear, lang)}
         </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-4 tracking-tight leading-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-2 tracking-tight leading-tight">
           {b('স্মৃতির', 'Moments &')} <span className="text-brand-maroon">{b('গ্যালারি', 'Photo Gallery')}</span>
         </h1>
+        <div className="flex justify-center mb-4">
+          <FestiveWaveAccent className="w-16 h-2 text-amber-500/80" />
+        </div>
         <p className="text-sm sm:text-base md:text-lg text-stone-600 font-light leading-relaxed">
           {b(
             'বাঁশদ্রোণী সোনালী পার্কের উৎসব, ধুনুচি নাচ, আনন্দ ও সমাজসেবামূলক কর্মকাণ্ডের রঙিন অ্যালবাম।',

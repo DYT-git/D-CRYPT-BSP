@@ -7,15 +7,43 @@ import { triggerDownload } from "@/utils/download";
 import Link from "next/link";
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
+import {
+  DiyaIcon,
+  ShankhaIcon,
+  MandapIcon,
+  SculptorIcon,
+  IlluminationIcon,
+  CalendarPlaqueIcon,
+  MetroTransitIcon,
+  PandalWorkIcon,
+  ShashtiBilvaIcon,
+  SaptamiNabapatrikaIcon,
+  AshtamiDhunuchiIcon,
+  NavamiHomaIcon,
+  DashamiTrishulIcon,
+  ClubCrestIcon,
+  SamitiEmblemIcon,
+  NoticeScrollIcon,
+  SportsBadgeIcon,
+  BloodDonationBadgeIcon,
+  CulturalStageBadgeIcon,
+  CivicShieldBadgeIcon,
+  CivicLightBadgeIcon,
+  CivicGreeneryBadgeIcon,
+  CornerKolka,
+  FestiveWaveAccent,
+  WashiTapePin,
+  BinderHoles,
+  TornDeckleEdge,
+  DurgaDeviEmblemIcon,
+  PanjikaSealBadge,
+  CornerFiligree
+} from "@/components/HeritageIcons";
 
 export default function HomePage() {
   const { data, settings, selectedYear } = useData();
   const { lang, changeLanguage, t, b, toDigits, formatDate } = useLanguage();
   const [openFaq, setOpenFaq] = useState(null);
-
-  // Audio state
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef(null);
 
   // Time of Day & Mount state
   const [timeOfDay, setTimeOfDay] = useState('morning');
@@ -54,7 +82,7 @@ export default function HomePage() {
       heroBg: '#FAF7F2',
       photo: settings?.heroImageMorning || '/assets/durga-morning.png',
       photoFallback: settings?.heroImageFallback || '/assets/durga-hero.png',
-      timeGreeting: b('✨ শুভ শারদ প্রভাত', '✨ Auspicious Autumn Morning'),
+      timeGreeting: b('শুভ শারদ প্রভাত', 'Auspicious Autumn Morning'),
       headlinePrefix: b('শারদ প্রাতে ', 'With the Autumn Dawn '),
       headlineHighlight: b('মায়ের আগমন...', "Mother's Divine Arrival..."),
       headline: b('শারদ প্রাতে মায়ের আগমন...', "With the Autumn Dawn Mother's Divine Arrival..."),
@@ -69,7 +97,7 @@ export default function HomePage() {
       counterGlass: 'bg-[#12070D]/75 border-rose-400/30 text-white',
       isDark: false,
       sectionGalleryBg: 'bg-[#FAF7F2] border-stone-200/70',
-      cardBg: 'bg-white border border-stone-200/80 shadow-sm',
+      cardBg: 'bg-[#FFFDF9] border border-[#E8DFD1] hover:border-brand-maroon/40 shadow-[0_2px_12px_rgba(28,13,19,0.03)] hover:shadow-[0_8px_24px_rgba(159,18,57,0.09)]',
       textHead: 'text-stone-900',
       textSub: 'text-stone-600',
       textMuted: 'text-stone-500',
@@ -79,7 +107,7 @@ export default function HomePage() {
       heroBg: '#FAF7F2',
       photo: settings?.heroImageAfternoon || '/assets/durga-afternoon.png',
       photoFallback: settings?.heroImageFallback || '/assets/durga-hero.png',
-      timeGreeting: b('✨ শারদীয়ার শুভ অপরাহ্ন', '✨ Blessed Festive Afternoon'),
+      timeGreeting: b('শারদীয়ার শুভ অপরাহ্ন', 'Blessed Festive Afternoon'),
       headlinePrefix: b('কাশফুলের দোলায় ', 'In the Sway of Kash Flowers '),
       headlineHighlight: b('পুজোর গন্ধ...', 'Festivity Fills the Air...'),
       headline: b('কাশফুলের দোলায় পুজোর গন্ধ...', 'In the Sway of Kash Flowers Festivity Fills the Air...'),
@@ -94,7 +122,7 @@ export default function HomePage() {
       counterGlass: 'bg-[#12070D]/75 border-rose-400/30 text-white',
       isDark: false,
       sectionGalleryBg: 'bg-[#FAF7F2] border-stone-200/70',
-      cardBg: 'bg-white border border-stone-200/80 shadow-sm',
+      cardBg: 'bg-[#FFFDF9] border border-[#E8DFD1] hover:border-brand-maroon/40 shadow-[0_2px_12px_rgba(28,13,19,0.03)] hover:shadow-[0_8px_24px_rgba(159,18,57,0.09)]',
       textHead: 'text-stone-900',
       textSub: 'text-stone-600',
       textMuted: 'text-stone-500',
@@ -104,7 +132,7 @@ export default function HomePage() {
       heroBg: '#FAF7F2',
       photo: settings?.heroImageEvening || '/assets/durga-evening.png',
       photoFallback: settings?.heroImageFallback || '/assets/durga-hero.png',
-      timeGreeting: b('✨ শারদ সান্ধ্য বন্দনা', '✨ Divine Evening Invocation'),
+      timeGreeting: b('শারদ সান্ধ্য বন্দনা', 'Divine Evening Invocation'),
       headlinePrefix: b('সন্ধ্যা আরতিতে ', 'In the Evening Arati '),
       headlineHighlight: b('আলোর উৎসব...', 'Festival of Sacred Lights...'),
       headline: b('সন্ধ্যা আরতিতে আলোর উৎসব...', 'In the Evening Arati Festival of Sacred Lights...'),
@@ -119,7 +147,7 @@ export default function HomePage() {
       counterGlass: 'bg-[#12070D]/75 border-rose-400/30 text-white',
       isDark: false,
       sectionGalleryBg: 'bg-[#FAF7F2] border-stone-200/70',
-      cardBg: 'bg-white border border-stone-200/80 shadow-sm',
+      cardBg: 'bg-[#FFFDF9] border border-[#E8DFD1] hover:border-brand-maroon/40 shadow-[0_2px_12px_rgba(28,13,19,0.03)] hover:shadow-[0_8px_24px_rgba(159,18,57,0.09)]',
       textHead: 'text-stone-900',
       textSub: 'text-stone-600',
       textMuted: 'text-stone-500',
@@ -128,13 +156,7 @@ export default function HomePage() {
 
   const curr = themes[timeOfDay];
 
-  const toggleAudio = () => {
-    if (audioRef.current) {
-      if (isPlaying) audioRef.current.pause();
-      else audioRef.current.play();
-      setIsPlaying(!isPlaying);
-    }
-  };
+
 
   const notices = data.notices.filter(n => n.year === selectedYear && !n.title?.startsWith('[Club]') && !n.title?.startsWith('[Samiti]'));
 
@@ -148,7 +170,7 @@ export default function HomePage() {
       <section className="relative w-full overflow-hidden transition-colors duration-700" style={{ backgroundColor: curr.pageBg }}>
 
         {/* Sacred Festival Deity Frame — 100% Uncropped, Zero Text Obstruction on Any Device */}
-        <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] lg:aspect-[16/9] overflow-hidden">
+        <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] lg:aspect-[16/9] overflow-hidden">
           {(['morning', 'afternoon', 'evening']).map((tod) => (
             <div
               key={tod}
@@ -171,6 +193,7 @@ export default function HomePage() {
           <div className="absolute top-24 sm:top-28 md:top-32 lg:top-36 xl:top-40 left-6 sm:left-8 lg:left-14 z-20 hidden lg:block max-w-md pointer-events-none">
             {/* Symmetrical Header Greeting Badge */}
             <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-bold tracking-wider uppercase backdrop-blur-md pointer-events-auto shadow-md ${curr.badgeClass}`}>
+              <PanjikaSealBadge className="w-3.5 h-3.5 text-amber-300" />
               <span>{curr.timeGreeting}</span>
               <span className="opacity-40">·</span>
               <span className="font-serif normal-case tracking-normal text-amber-200 font-bold">{toDigits(2026)}</span>
@@ -183,7 +206,7 @@ export default function HomePage() {
               ) : (
                 <>
                   <span>{curr.headlinePrefix}</span>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-200 via-rose-300 to-amber-200 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-rose-200 to-amber-200 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
                     {curr.headlineHighlight}
                   </span>
                 </>
@@ -194,25 +217,31 @@ export default function HomePage() {
             </p>
 
             {/* Dynamic Poetic Bengali Quote Inscribed Plaque */}
-            <div className="mt-3 sm:mt-4 pl-3.5 pr-4 py-2 rounded-r-2xl bg-gradient-to-r from-stone-950/80 via-stone-950/50 to-transparent backdrop-blur-md border-l-4 border-rose-500 shadow-lg pointer-events-auto max-w-fit">
+            <div className="mt-3 sm:mt-4 pl-3.5 pr-4 py-2 rounded-r-2xl bg-gradient-to-r from-stone-950/85 via-stone-950/60 to-transparent backdrop-blur-md border-l-4 border-rose-500 shadow-lg pointer-events-auto max-w-fit">
               <span className="text-xs sm:text-sm md:text-base font-serif italic leading-relaxed text-[#FFF5F6] drop-shadow-sm">
                 &ldquo;{curr.quote}&rdquo;
               </span>
             </div>
 
-            {/* CTA Action Buttons */}
-            <div className="flex flex-wrap items-center gap-2.5 mt-4 sm:mt-6 pointer-events-auto">
+            {/* CTA Action Buttons (Inspired by Image 1: Pill Button with Circular Arrow Badge) */}
+            <div className="flex flex-wrap items-center gap-3 mt-4 sm:mt-6 pointer-events-auto">
               <Link
                 href="/puja"
-                className="bg-gradient-to-r from-[#BE123C] to-[#881337] hover:from-[#E11D48] hover:to-[#9F1239] text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm transition-all shadow-[0_4px_20px_rgba(190,18,60,0.45)] hover:shadow-[0_6px_25px_rgba(225,29,72,0.6)] hover:-translate-y-0.5 border border-rose-300/30 whitespace-nowrap"
+                className="btn-tactile-crimson text-white pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 sm:py-2 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-3 group shadow-[0_4px_16px_rgba(190,18,60,0.45)]"
               >
-                {b('দুর্গাপূজা ২০২৬ →', 'Durga Puja 2026 →')}
+                <span>{b('দুর্গাপূজা ২০২৬', 'Durga Puja 2026')}</span>
+                <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white text-brand-maroon flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5 font-bold text-xs sm:text-sm">
+                  →
+                </span>
               </Link>
               <Link
                 href="/transparency"
-                className="px-5 sm:px-6 py-2 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm bg-stone-950/60 hover:bg-white text-rose-100 hover:text-stone-900 border border-white/25 transition-all shadow-xl hover:-translate-y-0.5 backdrop-blur-md whitespace-nowrap"
+                className="btn-tactile-parchment pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 rounded-full font-semibold text-xs sm:text-sm text-stone-800 hover:text-brand-maroon whitespace-nowrap inline-flex items-center gap-2.5 group"
               >
-                {b('হিসাব নিকাশ', 'Financial Accounts')}
+                <span>{b('হিসাব নিকাশ', 'Financial Accounts')}</span>
+                <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-stone-200/80 group-hover:bg-brand-maroon group-hover:text-white text-stone-700 flex items-center justify-center shadow-2xs transition-all duration-200 text-xs">
+                  →
+                </span>
               </Link>
             </div>
           </div>
@@ -242,15 +271,12 @@ export default function HomePage() {
 
             <div className="flex flex-wrap items-center justify-center gap-2.5 mt-2.5">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-950/80 backdrop-blur-md border border-amber-400/35 text-xs text-amber-100 font-serif font-medium shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
-                <span className="text-amber-300 text-xs">📅</span>
+                <CalendarPlaqueIcon className="w-3.5 h-3.5 text-amber-300" />
                 <span>{curr.counterSub}</span>
               </span>
 
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-950/80 backdrop-blur-md border border-emerald-400/35 text-xs text-emerald-200 font-medium shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-950/80 backdrop-blur-md border border-emerald-400/35 text-xs text-emerald-200 font-medium shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
+                <PandalWorkIcon className="w-3.5 h-3.5 text-emerald-400" />
                 <span>{b('মণ্ডপ প্রস্তুতি চলছে', 'Pandal Work in Progress')}</span>
               </span>
 
@@ -260,7 +286,7 @@ export default function HomePage() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-950/80 backdrop-blur-md border border-rose-300/30 text-xs text-rose-100 hover:bg-white hover:text-stone-900 hover:border-white transition-all duration-200 shadow-[0_2px_8px_rgba(0,0,0,0.5)] group"
               >
-                <span className="text-xs group-hover:scale-110 transition-transform">📍</span>
+                <MetroTransitIcon className="w-3.5 h-3.5 text-rose-300 group-hover:scale-110 transition-transform" />
                 <span>{b('বাঁশদ্রোণী মেট্রো থেকে ৫ মিনিট', '5 mins from Bansdroni Metro')}</span>
               </a>
             </div>
@@ -294,6 +320,7 @@ export default function HomePage() {
           {/* Greeting Badge */}
           <div className="flex items-center justify-between gap-2 mb-2">
             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] font-bold tracking-wider uppercase backdrop-blur-md ${curr.badgeClass}`}>
+              <ShankhaIcon className="w-3 h-3 text-amber-300" />
               <span>{curr.timeGreeting}</span>
               <span className="opacity-40">·</span>
               <span className="font-serif normal-case tracking-normal text-amber-200 font-bold">{toDigits(2026)}</span>
@@ -323,53 +350,60 @@ export default function HomePage() {
           </p>
 
           {/* Poetic Bengali Quote Plaque */}
-          <div className="mt-3 pl-3 pr-3 py-2 rounded-r-2xl bg-stone-900/5 border-l-4 border-brand-maroon shadow-2xs">
+          <div className="mt-3 pl-3.5 pr-3 py-2 rounded-r-2xl bg-[#FFFDF9] border border-[#E8DFD1]/80 border-l-4 border-l-brand-maroon shadow-2xs">
             <span className="text-xs sm:text-sm font-serif italic leading-relaxed text-stone-800">
               &ldquo;{curr.quote}&rdquo;
             </span>
           </div>
 
-          {/* Full-width Touch Friendly Action Buttons */}
-          <div className="grid grid-cols-2 gap-2.5 mt-4 w-full">
+          {/* Full-width Touch Friendly Action Buttons (Tactile 3D Buttons with Image 1 Arrow Coin) */}
+          <div className="grid grid-cols-2 gap-2 mt-4 w-full">
             <Link
               href="/puja"
-              className="bg-gradient-to-r from-[#BE123C] to-[#881337] hover:from-[#E11D48] hover:to-[#9F1239] active:scale-[0.98] text-white py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-[0_4px_14px_rgba(190,18,60,0.35)] border border-rose-300/30 flex items-center justify-center text-center whitespace-nowrap"
+              className="btn-tactile-crimson text-white py-2.5 px-2.5 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-between text-center whitespace-nowrap group shadow-[0_4px_14px_rgba(190,18,60,0.35)]"
             >
-              {b('দুর্গাপূজা ২০২৬ →', 'Durga Puja 2026 →')}
+              <span className="truncate">{b('দুর্গাপূজা ২০২৬', 'Durga Puja 2026')}</span>
+              <span className="w-5 h-5 rounded-full bg-white text-brand-maroon flex items-center justify-center shadow-xs font-bold text-xs shrink-0 group-hover:translate-x-0.5 transition-transform">
+                →
+              </span>
             </Link>
             <Link
               href="/transparency"
-              className="py-2.5 px-3 rounded-xl font-semibold text-xs sm:text-sm bg-white hover:bg-stone-50 active:scale-[0.98] text-stone-800 border border-stone-300/80 transition-all shadow-2xs flex items-center justify-center text-center whitespace-nowrap"
+              className="btn-tactile-parchment py-2.5 px-2.5 rounded-2xl font-semibold text-xs sm:text-sm text-stone-800 hover:text-brand-maroon flex items-center justify-between text-center whitespace-nowrap group"
             >
-              {b('হিসাব নিকাশ', 'Financial Accounts')}
+              <span className="truncate">{b('হিসাব নিকাশ', 'Accounts')}</span>
+              <span className="w-5 h-5 rounded-full bg-stone-200/80 group-hover:bg-brand-maroon group-hover:text-white text-stone-700 flex items-center justify-center text-xs shrink-0 transition-colors">
+                →
+              </span>
             </Link>
           </div>
 
           {/* Countdown Container Card */}
-          <div className="mt-4 p-4 rounded-2xl bg-white border border-stone-200/80 shadow-xs flex flex-col items-center justify-center text-center">
-            <h2 className="text-sm sm:text-base font-serif font-bold text-stone-900 mb-2">
-              {(!settings.countdownHeading || settings.countdownHeading === 'মা আসছেন...' || settings.countdownHeading === 'মহাষ্টমী আসতে আর মাত্র')
-                ? curr.counterHeading
-                : settings.countdownHeading}
+          <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-[#FFFDF9] border border-[#E8DFD1] shadow-xs relative overflow-hidden flex flex-col items-center justify-center text-center">
+            {/* Top Alta Seam */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#BE123C]/50 to-transparent" />
+
+            <h2 className="text-sm sm:text-base font-serif font-bold text-stone-900 mb-2.5 flex items-center justify-center gap-1.5">
+              <DiyaIcon className="w-4 h-4 text-amber-600 inline-block animate-gentle-float" />
+              <span>
+                {(!settings.countdownHeading || settings.countdownHeading === 'মা আসছেন...' || settings.countdownHeading === 'মহাষ্টমী আসতে আর মাত্র')
+                  ? curr.counterHeading
+                  : settings.countdownHeading}
+              </span>
             </h2>
 
-            {/* Live Countdown Pill */}
-            <div className={`inline-flex items-center gap-1.5 ${curr.counterGlass} border border-amber-400/25 ring-1 ring-white/10 backdrop-blur-xl px-4 sm:px-6 py-2 rounded-full shadow-md max-w-full overflow-hidden`}>
-              <Countdown targetDate={settings.countdownDate || '2026-10-16T06:00:00+05:30'} variant="pill" />
-            </div>
+            {/* Live Countdown Festive Boxes */}
+            <Countdown targetDate={settings.countdownDate || '2026-10-16T06:00:00+05:30'} variant="festive-boxes" />
 
             {/* Symmetrical Clustered Status Chips */}
             <div className="flex flex-wrap items-center justify-center gap-2 mt-3 w-full">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-50 border border-amber-400/50 text-[11px] text-stone-800 font-serif font-medium shadow-2xs">
-                <span className="text-amber-500 text-xs">📅</span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF7F2] border border-amber-500/30 text-[11px] text-stone-800 font-serif font-medium shadow-2xs">
+                <CalendarPlaqueIcon className="w-3 h-3 text-amber-600" />
                 <span>{curr.counterSub}</span>
               </span>
 
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-50 border border-emerald-500/40 text-[11px] text-emerald-800 font-medium shadow-2xs">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF7F2] border border-emerald-500/30 text-[11px] text-emerald-800 font-medium shadow-2xs">
+                <PandalWorkIcon className="w-3 h-3 text-emerald-600" />
                 <span>{b('মণ্ডপ প্রস্তুতি চলছে', 'Pandal Work in Progress')}</span>
               </span>
 
@@ -377,9 +411,9 @@ export default function HomePage() {
                 href="https://maps.google.com/?q=Bansdroni+Sonali+Park+Kolkata"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-50 border border-stone-200 text-[11px] text-stone-700 hover:text-brand-maroon transition-colors shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF7F2] border border-[#E8DFD1] text-[11px] text-stone-700 hover:text-brand-maroon transition-colors shadow-2xs group"
               >
-                <span className="text-xs">📍</span>
+                <MetroTransitIcon className="w-3 h-3 text-stone-600 group-hover:text-brand-maroon transition-colors" />
                 <span>{b('মেট্রো থেকে ৫ মিনিট', '5 mins from Metro')}</span>
               </a>
             </div>
@@ -387,12 +421,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      <audio ref={audioRef} loop src={settings?.dhakAudio || '/assets/dhak.mp3'} />
+
 
       {/* ══════════════════════════════════════════════════════════════
           TRADITIONAL BENGALI CALLIGRAPHIC KOLKA ALPANA SEAM
           ══════════════════════════════════════════════════════════════ */}
-      <div className="relative w-full pt-2 pb-8 sm:pt-3 sm:pb-10 z-20 pointer-events-none overflow-hidden px-4 select-none">
+      <div className="relative w-full pt-1 pb-6 sm:pt-3 sm:pb-8 z-20 pointer-events-none overflow-hidden px-2 sm:px-4 select-none">
         <div className="max-w-5xl mx-auto flex items-center justify-center">
           <svg
             width="100%"
@@ -400,7 +434,7 @@ export default function HomePage() {
             viewBox="0 0 1000 72"
             fill="none"
             preserveAspectRatio="xMidYMid meet"
-            className="w-full max-w-5xl transition-all duration-700 filter drop-shadow-[0_2px_8px_rgba(159,18,57,0.14)]"
+            className="w-full max-w-5xl h-10 sm:h-14 md:h-16 transition-all duration-700 filter drop-shadow-[0_2px_8px_rgba(159,18,57,0.14)]"
           >
             <defs>
               <linearGradient id="alpanaLineLeftDay" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -516,149 +550,328 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ═══ DEV: Time switcher (desktop only) ═══ */}
-      <div className="fixed bottom-6 left-6 z-40 hidden md:flex gap-1.5 bg-[#11192E]/85 backdrop-blur-md border border-white/20 p-1.5 rounded-full shadow-lg" title="Theme Tester">
-        <button onClick={() => setTimeOfDay('morning')} className={`p-1.5 rounded-full transition-colors ${timeOfDay === 'morning' ? 'bg-orange-400 text-white shadow' : 'text-white/60 hover:bg-white/15'}`}><Sun className="w-3.5 h-3.5" /></button>
-        <button onClick={() => setTimeOfDay('afternoon')} className={`p-1.5 rounded-full transition-colors ${timeOfDay === 'afternoon' ? 'bg-brand-maroon text-white shadow' : 'text-white/60 hover:bg-white/15'}`}><Sunset className="w-3.5 h-3.5" /></button>
-        <button onClick={() => setTimeOfDay('evening')} className={`p-1.5 rounded-full transition-colors ${timeOfDay === 'evening' ? 'bg-indigo-500 text-white shadow' : 'text-white/60 hover:bg-white/15'}`}><Moon className="w-3.5 h-3.5" /></button>
-      </div>
+      {/* ═══ DEV: Time switcher (desktop only, dev only) ═══ */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-6 left-6 z-40 hidden md:flex gap-1.5 bg-[#11192E]/85 backdrop-blur-md border border-white/20 p-1.5 rounded-full shadow-lg" title="Theme Tester">
+          <button onClick={() => setTimeOfDay('morning')} className={`p-1.5 rounded-full transition-colors ${timeOfDay === 'morning' ? 'bg-orange-400 text-white shadow' : 'text-white/60 hover:bg-white/15'}`}><Sun className="w-3.5 h-3.5" /></button>
+          <button onClick={() => setTimeOfDay('afternoon')} className={`p-1.5 rounded-full transition-colors ${timeOfDay === 'afternoon' ? 'bg-brand-maroon text-white shadow' : 'text-white/60 hover:bg-white/15'}`}><Sunset className="w-3.5 h-3.5" /></button>
+          <button onClick={() => setTimeOfDay('evening')} className={`p-1.5 rounded-full transition-colors ${timeOfDay === 'evening' ? 'bg-indigo-500 text-white shadow' : 'text-white/60 hover:bg-white/15'}`}><Moon className="w-3.5 h-3.5" /></button>
+        </div>
+      )}
 
-      {/* ═══ 1. THEME SHOWCASE (Bento Hero Card with Authentic Ruby Depth) ═══ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-6 mb-16 sm:mb-20 relative z-10">
-        <div className="rounded-3xl overflow-hidden relative bg-gradient-to-br from-brand-maroon via-[#A01135] to-[#7D0925] text-white shadow-2xl border border-white/15 group">
-          {/* Subtle Ambient Mandala Background */}
-          <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
-            <svg viewBox="0 0 400 200" className="w-full h-full" fill="white">
-              {[...Array(8)].map((_, i) => (
-                <ellipse key={i} cx={i * 60 - 10} cy="100" rx="25" ry="80" opacity="0.5" transform={`rotate(${i * 22} ${i * 60 - 10} 100)`} />
+      {/* ═══ 1. THEME SHOWCASE (Compact Sandalwood Ivory Pavilion) ═══ */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-5 sm:mt-7 mb-12 sm:mb-16 relative z-10">
+        <div className="rounded-3xl bg-[#FFFDF9] text-stone-900 shadow-[0_8px_28px_rgba(28,13,19,0.06)] hover:shadow-[0_14px_36px_rgba(159,18,57,0.08)] border border-[#E5DAC8] relative overflow-hidden group transition-all duration-300">
+          {/* Top Fine Alta & Gold Ribbon Seam */}
+          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-brand-maroon via-amber-400 to-brand-maroon" />
+
+          {/* Subtle Ambient Watermark in Gold Tint */}
+          <div className="absolute -right-10 -bottom-10 w-72 h-72 opacity-[0.035] pointer-events-none text-stone-900">
+            <svg viewBox="0 0 200 200" className="w-full h-full" fill="currentColor">
+              {[...Array(6)].map((_, i) => (
+                <ellipse key={i} cx="100" cy="100" rx="40" ry="90" transform={`rotate(${i * 30} 100 100)`} />
               ))}
             </svg>
           </div>
-          {/* Top Subtle Highlight */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-rose-400/40 to-transparent" />
 
-          <div className="relative z-10 p-5 sm:p-8 md:p-12 flex flex-col md:flex-row items-center gap-6 sm:gap-8 justify-between">
-            <div className="flex-1 text-center md:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-bold uppercase tracking-widest mb-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                {b('শারদ থিম ২০২৬', 'Festive Theme 2026')}
+          <div className="relative z-10 p-5 sm:p-7 lg:p-8">
+            {/* Top Header Row with Badge & Sub-label */}
+            <div className="flex flex-wrap items-center justify-between gap-2.5 mb-3 sm:mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-800 text-[11px] font-bold tracking-wider uppercase shadow-2xs">
+                <DurgaDeviEmblemIcon className="w-3.5 h-3.5 text-rose-700" />
+                <span>{b('শারদ থিম পরিক্রমা ২০২৬ • ৭৪তম বর্ষ', 'Curated Theme 2026 • 74th Year')}</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-serif font-bold text-white leading-tight mb-2 tracking-tight">
-                {settings.themeTitle || b('"অতীতের আয়নায় আগামী"', '"Reflections of the Past, Visions of the Future"')}
-              </h2>
-              <p className="text-rose-100/90 text-sm sm:text-base italic mb-6">
-                {settings.themeSubtitle || b('(Reflections of the Past, Visions of the Future)', '(Reflections of the Past, Visions of the Future)')}
-              </p>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-900 font-serif font-medium shadow-2xs">
+                <DiyaIcon className="w-3.5 h-3.5 text-amber-700" />
+                <span>{b('বাঁশদ্রোণী সোনালী পার্ক প্যাভিলিয়ন', 'Bansdroni Sonali Park Pavilion')}</span>
+              </span>
+            </div>
 
-              {/* Artist Squircles */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
-                <div className="flex items-center gap-3 p-3 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-sm">
-                  <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-base shrink-0">🏛️</div>
-                  <div>
-                    <span className="text-[11px] uppercase tracking-wider text-rose-200 font-bold block">{b('মণ্ডপ শিল্পী', 'Pandal Artist')}</span>
-                    <span className="text-sm font-semibold text-white/95">{settings.pandalArtist || b('শিল্প নিকেতন', 'Shilpa Niketan')}</span>
-                  </div>
+            {/* Center Display: Theme Title & Concept */}
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5 mb-5 sm:mb-6">
+              <div className="max-w-2xl">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-black text-stone-900 leading-[1.2] tracking-tight">
+                  <span className="text-brand-maroon">&ldquo;</span>
+                  {settings.themeTitle ? (
+                    <span className="text-stone-900">{settings.themeTitle.replace(/^["'“]/, '').replace(/["'”]$/, '')}</span>
+                  ) : (
+                    <span className="text-stone-900">{b('অতীতের আয়নায় আগামী', 'Reflections of the Past, Visions of the Future')}</span>
+                  )}
+                  <span className="text-brand-maroon">&rdquo;</span>
+                </h2>
+                <div className="my-2">
+                  <FestiveWaveAccent className="w-16 h-1.5 text-amber-500" />
                 </div>
-                <div className="flex items-center gap-3 p-3 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-sm">
-                  <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-base shrink-0">🎨</div>
-                  <div>
-                    <span className="text-[11px] uppercase tracking-wider text-rose-200 font-bold block">{b('প্রতিমা শিল্পী', 'Idol Sculptor')}</span>
-                    <span className="text-sm font-semibold text-white/95">{settings.idolArtist || b('সৌমেন পাল', 'Soumen Paul')}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-sm">
-                  <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-base shrink-0">💡</div>
-                  <div>
-                    <span className="text-[11px] uppercase tracking-wider text-rose-200 font-bold block">{b('আলোকসজ্জা', 'Illumination')}</span>
-                    <span className="text-sm font-semibold text-white/95">{settings.lightingArtist || b('রয়েল লাইটস', 'Royal Lights')}</span>
-                  </div>
-                </div>
+                <p className="text-stone-600 text-xs sm:text-sm font-serif italic leading-relaxed">
+                  {b(
+                    'ঐতিহ্যের শিকড় ছুঁয়ে আধুনিক শিল্পকলার দিগন্তে — বাঁশদ্রোণী সোনালী পার্কের ৭৪তম বর্ষের এক অনন্য নান্দনিক স্থাপত্য ভাবনা ও সৃষ্টিশীল মেলবন্ধন।',
+                    'Bridging ancestral heritage with visionary contemporary architecture — a sacred artistic tribute in our 74th glorious year.'
+                  )}
+                </p>
+              </div>
+
+              <div className="shrink-0">
+                <Link
+                  href="/puja"
+                  className="btn-tactile-crimson text-white pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-2.5 group shadow-md"
+                >
+                  <span>{b('সম্পূর্ণ থিম পরিক্রমা ও দর্শন', 'Explore Full Theme & Pandal')}</span>
+                  <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white text-brand-maroon flex items-center justify-center text-xs sm:text-sm font-bold shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5">
+                    →
+                  </span>
+                </Link>
               </div>
             </div>
 
-            <Link
-              href="/puja"
-              className="w-full md:w-auto shrink-0 bg-white hover:bg-stone-900 text-brand-maroon hover:text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl font-bold transition-all duration-300 shadow-xl hover:-translate-y-1 text-center text-sm sm:text-base border border-white/20 whitespace-nowrap"
-            >
-              {b('সম্পূর্ণ থিম পরিক্রমা →', 'Explore Full Theme →')}
-            </Link>
+            {/* 3 Artisan Dossier Plaques (Sleek, Compact Museum Cameos) */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 sm:pt-5 border-t border-stone-200/80">
+              <div className="group/art flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-[#FAF7F2] hover:bg-white border border-[#E8DFD1] hover:border-amber-400/70 shadow-2xs hover:shadow-xs transition-all duration-200">
+                <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200/90 flex items-center justify-center shrink-0 shadow-2xs group-hover/art:scale-105 group-hover/art:bg-amber-100 transition-all text-amber-700">
+                  <MandapIcon className="w-5 h-5 text-amber-700" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-brand-maroon font-bold font-serif block">
+                    {b('মণ্ডপ শিল্পী', 'Pandal Architect')}
+                  </span>
+                  <span className="text-xs sm:text-sm font-serif font-black text-stone-900 tracking-tight block truncate">
+                    {settings.pandalArtist || b('শিল্প নিকেতন', 'Shilpa Niketan')}
+                  </span>
+                </div>
+              </div>
+
+              <div className="group/art flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-[#FAF7F2] hover:bg-white border border-[#E8DFD1] hover:border-amber-400/70 shadow-2xs hover:shadow-xs transition-all duration-200">
+                <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200/90 flex items-center justify-center shrink-0 shadow-2xs group-hover/art:scale-105 group-hover/art:bg-amber-100 transition-all text-amber-700">
+                  <SculptorIcon className="w-5 h-5 text-amber-700" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-brand-maroon font-bold font-serif block">
+                    {b('প্রতিমা শিল্পী', 'Divine Sculptor')}
+                  </span>
+                  <span className="text-xs sm:text-sm font-serif font-black text-stone-900 tracking-tight block truncate">
+                    {settings.idolArtist || b('সনাতন রুদ্র পাল', 'Sanatan Rudra Paul')}
+                  </span>
+                </div>
+              </div>
+
+              <div className="group/art flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-[#FAF7F2] hover:bg-white border border-[#E8DFD1] hover:border-amber-400/70 shadow-2xs hover:shadow-xs transition-all duration-200">
+                <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200/90 flex items-center justify-center shrink-0 shadow-2xs group-hover/art:scale-105 group-hover/art:bg-amber-100 transition-all text-amber-700">
+                  <IlluminationIcon className="w-5 h-5 text-amber-700" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-brand-maroon font-bold font-serif block">
+                    {b('আলোকসজ্জা', 'Illumination')}
+                  </span>
+                  <span className="text-xs sm:text-sm font-serif font-black text-stone-900 tracking-tight block truncate">
+                    {settings.lightingArtist || b('দাস ইলেকট্রিক', 'Das Electric')}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ═══ 2. FESTIVAL SCHEDULE PREVIEW (Left-Right Editorial Flow) ═══ */}
+      {/* ═══ 2. FESTIVAL CALENDAR PREVIEW (Authentic Panjika Calendar Leaves) ═══ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-14 sm:my-20">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-800 text-xs font-bold uppercase tracking-widest mb-2.5 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
-              Festival Calendar • {toDigits(selectedYear)}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-800 text-xs font-bold uppercase tracking-wider mb-2.5 shadow-2xs">
+              <DiyaIcon className="w-3.5 h-3.5 text-rose-700" />
+              <span>{b('শারদীয়া পঞ্জিকা ক্যালেন্ডার ২০২৬', 'Sharad Panjika Calendar 2026')}</span>
             </div>
             <h2 className={`text-2xl sm:text-3xl lg:text-5xl font-serif font-bold ${curr.textHead} tracking-tight leading-tight`}>
-              {b('শারদীয়া দুর্গোৎসব', 'Sharadiya Durga Puja')} <span className="text-brand-maroon">{b('সময়সূচি', 'Schedule')}</span>
+              {b('শারদীয়া দুর্গোৎসব', 'Sharadiya Durga Puja')} <span className="text-brand-maroon">{b('দিনপঞ্জি ও নির্ঘণ্ট', 'Calendar')}</span>
             </h2>
             <p className={`text-sm sm:text-base ${curr.textSub} mt-2 leading-relaxed max-w-2xl`}>
               {b(
-                'মহাষষ্ঠী থেকে বিজয়া দশমী — পুজোর প্রতিটি দিন আনন্দ আর ভক্তিতে মুখরিত সোনালী পার্কে',
-                'From Maha Shashti to Bijoya Dashami — Celebrate each day with joy and devotion at Sonali Park.'
+                'মহাষষ্ঠী থেকে বিজয়া দশমী — প্রতিটি পূজাদিনের বিশেষ আচার, শুভ সময় ও প্রধান উৎসব সূচি',
+                'From Maha Shashti to Bijoya Dashami — Daily auspicious ritual timings and festive schedule.'
               )}
             </p>
           </div>
           <Link
             href="/puja"
-            className="w-full sm:w-auto justify-center shrink-0 inline-flex items-center gap-2 px-5 sm:px-6 py-3 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-brand-maroon text-brand-maroon hover:text-white border border-brand-maroon/30 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap"
+            className="w-full sm:w-auto justify-center shrink-0 inline-flex items-center gap-3 pl-5 sm:pl-6 pr-2.5 py-2 rounded-full text-xs sm:text-sm font-bold btn-tactile-parchment text-stone-800 hover:text-brand-maroon whitespace-nowrap group shadow-xs"
           >
-            {b('সম্পূর্ণ নির্ঘণ্ট ও সূচি →', 'Full Schedule & Rituals →')}
+            <span>{b('সম্পূর্ণ নির্ঘণ্ট ও সূচি', 'Full Schedule & Rituals')}</span>
+            <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-xs font-bold transition-colors">
+              →
+            </span>
           </Link>
         </div>
 
+        {/* 5 Authentic Panjika Calendar Leaves */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-          {(data.events.filter(e => e.year === selectedYear).length > 0
-            ? data.events.filter(e => e.year === selectedYear)
-            : data.events).slice(0, 5).map((event, i) => {
-            const eventDate = new Date(event.date + (event.date.includes('T') ? '' : 'T00:00:00'));
-            return (
-              <div
-                key={i}
-                className={`group relative ${curr.cardBg} rounded-2xl p-4 sm:p-6 transition-all duration-300 overflow-hidden hover:-translate-y-1.5 hover:shadow-lg border border-stone-200/80 hover:border-brand-maroon/30 flex flex-col justify-between`}
-              >
-                {/* Radiant Top Highlight */}
-                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {[
+            {
+              tithiBn: 'মহাষষ্ঠী',
+              tithiEn: 'Maha Shashti',
+              weekdayBn: 'শুক্রবার',
+              weekdayEn: 'Friday',
+              dateNumBn: '১৬',
+              dateNumEn: '16',
+              monthBn: 'অক্টোবর ২০২৬',
+              monthEn: 'Oct 2026',
+              ceremonyBn: 'কল্পারম্ভ, দেবীর বোধন ও অধিবাস',
+              ceremonyEn: 'Kalparambha, Bodhon & Adhibas',
+              rituals: [
+                { timeBn: 'সকাল ৮:০০', timeEn: '8:00 AM', labelBn: 'কল্পারম্ভ ও বিহিত পূজা', labelEn: 'Kalparambha & Puja' },
+                { timeBn: 'সন্ধ্যা ৬:৩০', timeEn: '6:30 PM', labelBn: 'দেবীর বোধন ও আমন্ত্রণ', labelEn: 'Bodhon & Adhibas' },
+              ],
+              headerGrad: 'from-[#9F1239] to-[#881337]',
+              dateColor: 'text-[#9F1239]',
+              Icon: ShashtiBilvaIcon,
+            },
+            {
+              tithiBn: 'মহাসপ্তমী',
+              tithiEn: 'Maha Saptami',
+              weekdayBn: 'শনিবার',
+              weekdayEn: 'Saturday',
+              dateNumBn: '১৭',
+              dateNumEn: '17',
+              monthBn: 'অক্টোবর ২০২৬',
+              monthEn: 'Oct 2026',
+              ceremonyBn: 'নবপত্রিকা স্নান ও সপ্তমী বিহিত পূজা',
+              ceremonyEn: 'Nabapatrika Snan & Puja',
+              rituals: [
+                { timeBn: 'ভোর ৬:৩০', timeEn: '6:30 AM', labelBn: 'গঙ্গায় নবপত্রিকা স্নান', labelEn: 'Nabapatrika Holy Snan' },
+                { timeBn: 'সকাল ১০:০০', timeEn: '10:00 AM', labelBn: 'সার্বজনীন পুষ্পাঞ্জলি', labelEn: 'Community Pushpanjali' },
+              ],
+              headerGrad: 'from-emerald-700 to-emerald-900',
+              dateColor: 'text-emerald-800',
+              Icon: SaptamiNabapatrikaIcon,
+            },
+            {
+              tithiBn: 'মহাষ্টমী',
+              tithiEn: 'Maha Ashtami',
+              weekdayBn: 'রবিবার',
+              weekdayEn: 'Sunday',
+              dateNumBn: '১৮',
+              dateNumEn: '18',
+              monthBn: 'অক্টোবর ২০২৬',
+              monthEn: 'Oct 2026',
+              ceremonyBn: 'পুষ্পাঞ্জলি, কুমারী পূজা ও সন্ধিপূজা',
+              ceremonyEn: 'Pushpanjali, Kumari & Sandhi Puja',
+              rituals: [
+                { timeBn: 'সকাল ৯:৪৫', timeEn: '9:45 AM', labelBn: 'মহাষ্টমীর পুষ্পাঞ্জলি', labelEn: 'Maha Ashtami Anjali' },
+                { timeBn: 'সন্ধ্যা', timeEn: 'Evening', labelBn: 'সন্ধিপূজা ও ১০৮ প্রদীপ', labelEn: 'Sandhi Puja & 108 Lamps' },
+              ],
+              headerGrad: 'from-amber-700 to-amber-900',
+              dateColor: 'text-amber-800',
+              Icon: AshtamiDhunuchiIcon,
+            },
+            {
+              tithiBn: 'মহানবমী',
+              tithiEn: 'Maha Navami',
+              weekdayBn: 'সোমবার',
+              weekdayEn: 'Monday',
+              dateNumBn: '১৯',
+              dateNumEn: '19',
+              monthBn: 'অক্টোবর ২০২৬',
+              monthEn: 'Oct 2026',
+              ceremonyBn: 'মহাহোম, যজ্ঞ ও মহাভোগ বিতরণ',
+              ceremonyEn: 'Maha Homa & Bhog Distribution',
+              rituals: [
+                { timeBn: 'সকাল ১১:০০', timeEn: '11:00 AM', labelBn: 'মহাহোম ও নবমী যজ্ঞ', labelEn: 'Maha Homa & Yajna' },
+                { timeBn: 'দুপুর ১:০০', timeEn: '1:00 PM', labelBn: 'সার্বজনীন মহাভোগ বিতরণ', labelEn: 'Community Mahabhog' },
+              ],
+              headerGrad: 'from-orange-700 to-orange-900',
+              dateColor: 'text-orange-800',
+              Icon: NavamiHomaIcon,
+            },
+            {
+              tithiBn: 'বিজয়া দশমী',
+              tithiEn: 'Bijoya Dashami',
+              weekdayBn: 'মঙ্গলবার',
+              weekdayEn: 'Tuesday',
+              dateNumBn: '২০',
+              dateNumEn: '20',
+              monthBn: 'অক্টোবর ২০২৬',
+              monthEn: 'Oct 2026',
+              ceremonyBn: 'দর্পণ বিসর্জন, সিঁদুর খেলা ও বরণ',
+              ceremonyEn: 'Darpan Bisarjan & Sindoor Khela',
+              rituals: [
+                { timeBn: 'সকাল ৯:৪৫', timeEn: '9:45 AM', labelBn: 'দর্পণ বিসর্জন ও সমাপন', labelEn: 'Darpan Bisarjan' },
+                { timeBn: 'সকাল ১০:৩০', timeEn: '10:30 AM', labelBn: 'সিঁদুর খেলা ও দেবী বরণ', labelEn: 'Sindoor Khela & Baran' },
+              ],
+              headerGrad: 'from-rose-900 to-[#500619]',
+              dateColor: 'text-rose-900',
+              Icon: DashamiTrishulIcon,
+            },
+          ].map((c, i) => (
+            <Link
+              key={i}
+              href="/puja"
+              className="group relative bg-[#FFFDF9] rounded-2xl border border-[#E5DAC8] shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+            >
+              {/* 1. TOP CALENDAR BINDING HEADER BAR */}
+              <div className={`px-3.5 py-2.5 bg-gradient-to-r ${c.headerGrad} text-white flex items-center justify-between shadow-xs`}>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-white/40 border border-white/60" />
+                  <span className="font-serif font-bold text-xs tracking-wide">
+                    {b(c.tithiBn, c.tithiEn)}
+                  </span>
+                </div>
+                <span className="text-[11px] font-sans font-medium text-amber-200">
+                  {b(c.weekdayBn, c.weekdayEn)}
+                </span>
+              </div>
 
+              {/* 2. CALENDAR DATE LEAF BODY */}
+              <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
                 <div>
-                  {/* Floating Date Squircle */}
-                  <div className="flex items-center justify-between mb-3 sm:mb-4">
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-brand-maroon/10 border border-brand-maroon/20 flex flex-col items-center justify-center text-brand-maroon group-hover:scale-105 group-hover:bg-brand-maroon group-hover:text-white transition-all duration-300">
-                      <span className="text-lg sm:text-xl font-black leading-none">{toDigits(eventDate.getDate())}</span>
-                      <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mt-0.5">
-                        {eventDate.toLocaleString(lang === 'bn' ? 'bn-IN' : 'en-US', { month: 'short' })}
+                  {/* Date Display */}
+                  <div className="flex items-baseline justify-between gap-2 border-b border-stone-200/60 pb-3 mb-3">
+                    <div>
+                      <span className={`text-3xl sm:text-4xl font-serif font-black ${c.dateColor} leading-none block tabular-nums`}>
+                        {b(c.dateNumBn, c.dateNumEn)}
+                      </span>
+                      <span className="text-[11px] font-serif font-semibold text-stone-500 uppercase tracking-wider block mt-1">
+                        {b(c.monthBn, c.monthEn)}
                       </span>
                     </div>
-                    <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-stone-100 text-stone-600 border border-stone-200">
-                      {b('দিন', 'Day')} {toDigits(i + 1)}
-                    </span>
+                    <div className="w-9 h-9 rounded-xl bg-stone-100/90 border border-stone-200/80 flex items-center justify-center text-stone-700 group-hover:scale-105 transition-transform shrink-0">
+                      <c.Icon className="w-5 h-5" />
+                    </div>
                   </div>
 
-                  <h3 className={`text-sm sm:text-base font-bold ${curr.textHead} leading-snug mb-1.5 sm:mb-2 group-hover:text-brand-maroon transition-colors`}>
-                    {t(event.title)}
+                  {/* Occasion / Ceremony Title (NON-REPETITIVE!) */}
+                  <h3 className="text-sm sm:text-base font-serif font-bold text-stone-900 group-hover:text-brand-maroon transition-colors leading-snug line-clamp-2">
+                    {b(c.ceremonyBn, c.ceremonyEn)}
                   </h3>
-                  <p className={`${curr.textSub} text-xs leading-relaxed line-clamp-3 mb-3 sm:mb-4`}>
-                    {event.text}
-                  </p>
+
+                  <div className="my-2">
+                    <FestiveWaveAccent className="w-12 h-1.5 text-amber-500/80" />
+                  </div>
+
+                  {/* 2 Clean Timing Highlights (100% visible, ZERO truncation!) */}
+                  <div className="space-y-1.5 my-3">
+                    {c.rituals.map((r, rIdx) => (
+                      <div key={rIdx} className="flex items-center gap-2 text-xs text-stone-700 bg-stone-50/90 px-2.5 py-1.5 rounded-lg border border-stone-200/60">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                        <span className="font-bold text-stone-900 shrink-0 font-serif">{b(r.timeBn, r.timeEn)}</span>
+                        <span className="text-stone-400">·</span>
+                        <span className="truncate text-stone-600">{b(r.labelBn, r.labelEn)}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="pt-3 border-t border-stone-200/60 flex items-center justify-between text-[11px] font-semibold text-brand-maroon">
-                  <span>{b('সময়সূচি দেখুন', 'View Timings')}</span>
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                {/* 3. CALENDAR FOOTER LINK */}
+                <div className="pt-3 border-t border-dashed border-stone-200 flex items-center justify-between text-xs font-bold text-brand-maroon group-hover:translate-x-0.5 transition-transform">
+                  <span>{b('পূজা নির্ঘণ্ট দেখুন', 'Full Rituals')}</span>
+                  <span className="w-5 h-5 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-xs transition-colors">
+                    →
+                  </span>
                 </div>
               </div>
-            );
-          })}
-          {data.events.length === 0 && (
-            <div className={`col-span-full text-center py-12 ${curr.cardBg} rounded-2xl border border-dashed border-stone-300`}>
-              <p className={curr.textMuted}>{b('সূচি শীঘ্রই আপডেট করা হবে...', 'Schedule will be updated shortly...')}</p>
-            </div>
-          )}
+
+              {/* Perforated bottom tear-off deckle edge */}
+              <div className="w-full opacity-60">
+                <TornDeckleEdge className="w-full text-stone-200 h-1.5 block" />
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -666,9 +879,9 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-14 sm:my-20">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 sm:gap-5 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-900 text-xs font-bold uppercase tracking-widest mb-2.5 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse" />
-              Moments & Archives • {toDigits(selectedYear)}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-900 text-xs font-bold uppercase tracking-wider mb-2.5 shadow-2xs">
+              <DiyaIcon className="w-3.5 h-3.5 text-amber-700" />
+              <span>Moments & Archives • {toDigits(selectedYear)}</span>
             </div>
             <h2 className={`text-2xl sm:text-3xl lg:text-5xl font-serif font-bold ${curr.textHead} tracking-tight leading-tight`}>
               {b('স্মৃতির পাতা থেকে', 'Memories & Moments')} <span className="text-brand-maroon">{b('ফটোগ্রাফি', 'Gallery')}</span>
@@ -700,16 +913,22 @@ export default function HomePage() {
             </div>
             <Link
               href="/gallery"
-              className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold bg-white hover:bg-brand-maroon text-brand-maroon hover:text-white border border-brand-maroon/30 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap"
+              className="inline-flex items-center gap-2 pl-4 sm:pl-5 pr-2 py-1.5 rounded-full text-xs sm:text-sm font-bold btn-tactile-parchment text-stone-800 hover:text-brand-maroon whitespace-nowrap group shadow-xs"
             >
-              {b('পুরো অ্যালবাম →', 'View All Photos →')}
+              <span>{b('পুরো অ্যালবাম', 'View All Photos')}</span>
+              <span className="w-6 h-6 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-xs font-bold transition-colors">
+                →
+              </span>
             </Link>
           </div>
         </div>
 
         {data.gallery.length === 0 ? (
-          <div className={`text-center py-12 ${curr.textMuted} ${curr.cardBg} rounded-2xl border border-dashed border-stone-300`}>
-            {b('গ্যালারিতে এখনো কোনো ছবি যোগ করা হয়নি।', 'No gallery photos uploaded yet.')}
+          <div className={`text-center py-14 ${curr.cardBg} rounded-2xl border border-dashed border-stone-300 flex flex-col items-center justify-center gap-2.5`}>
+            <DiyaIcon className="w-8 h-8 text-amber-500" />
+            <p className={`font-serif text-sm sm:text-base ${curr.textSub}`}>
+              {b('গ্যালারিতে এখনো কোনো ছবি যোগ করা হয়নি। উৎসবের সুন্দর মুহূর্তগুলো শীঘ্রই যোগ করা হবে।', 'No gallery photos uploaded yet. Festive moments will be added soon.')}
+            </p>
           </div>
         ) : (
           <div
@@ -731,6 +950,11 @@ export default function HomePage() {
                 }`}
                 onClick={() => setSelectedImage(img)}
               >
+                {/* Pinned Moment Badge */}
+                <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none">
+                  <WashiTapePin text={b(`স্মৃতি #${toDigits(i + 1)}`, `Moment #${i + 1}`)} variant="amber" className="text-[9px]" />
+                </div>
+
                 <img
                   src={img.src}
                   alt={img.title || 'Durga Puja Moment'}
@@ -785,9 +1009,9 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-14 sm:my-20">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-800 text-xs font-bold uppercase tracking-widest mb-2.5 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
-              {b('শারদীয়া বুলেটিন', 'Puja Bulletins')}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-800 text-xs font-bold uppercase tracking-wider mb-2.5 shadow-2xs">
+              <NoticeScrollIcon className="w-3.5 h-3.5 text-rose-700" />
+              <span>{b('শারদীয়া বুলেটিন', 'Puja Bulletins')}</span>
             </div>
             <h2 className={`text-2xl sm:text-3xl lg:text-5xl font-serif font-bold ${curr.textHead} tracking-tight leading-tight`}>
               {b('পূজা নোটিশ ও', 'Puja')} <span className="text-brand-maroon">{b('বিজ্ঞপ্তি', 'Notices')}</span>
@@ -804,28 +1028,65 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
-          {notices.length > 0 ? notices.map(notice => (
+        <div className="grid md:grid-cols-2 gap-7 sm:gap-9 pt-5 sm:pt-6">
+          {notices.length > 0 ? notices.map((notice, idx) => (
             <div
-              key={notice.id}
-              className={`group relative ${curr.cardBg} p-5 sm:p-7 rounded-3xl shadow-sm hover:shadow-lg transition-all duration-300 border border-stone-200/80 hover:border-brand-maroon/30 overflow-hidden hover:-translate-y-1`}
+              key={notice.id || idx}
+              className="group relative bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_8px_24px_rgba(28,13,19,0.05)] hover:shadow-[0_18px_38px_rgba(159,18,57,0.12)] rounded-3xl pt-8 pb-5 pl-9 sm:pl-12 pr-6 sm:pr-8 transition-all duration-300 hover:-translate-y-1"
             >
+              {/* Image 3: Pinned Textured Washi Tape on Top Center (Zero clipping) */}
+              <div className="absolute -top-3.5 left-8 sm:left-10 z-20">
+                <WashiTapePin text={b(`বিজ্ঞপ্তি নং ০${idx + 1} • ২০২৬`, `Notice #${idx + 1} • 2026`)} variant="amber" />
+              </div>
+
+              {/* Image 3: Left Perforated Spiral Binder Margin */}
+              <div className="absolute left-2.5 sm:left-3 top-8 bottom-8 flex flex-col justify-around pointer-events-none">
+                <BinderHoles count={5} />
+              </div>
+
+              {/* Top Alta Seam */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-              <div className="flex items-center justify-between gap-2 mb-3.5 sm:mb-4">
-                <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 sm:px-3 py-1 rounded-full bg-brand-maroon/10 text-brand-maroon border border-brand-maroon/20">
-                  📌 {b('বিজ্ঞপ্তি', 'Notice')}
+              {/* Header Badges */}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-brand-maroon/10 text-brand-maroon border border-brand-maroon/20 font-serif shadow-2xs">
+                  <NoticeScrollIcon className="w-3.5 h-3.5 text-brand-maroon" />
+                  <span>{b('জরুরি ঘোষণা', 'Official Circular')}</span>
                 </span>
-                <span className="text-xs font-medium text-stone-500 bg-stone-100 px-2.5 sm:px-3 py-1 rounded-full border border-stone-200">
+                <span className="text-[11px] font-medium text-stone-600 bg-stone-100/90 px-2.5 py-0.5 rounded-full border border-stone-200">
                   {formatDate(notice.date, lang)}
                 </span>
               </div>
-              <h3 className={`text-lg sm:text-xl font-bold ${curr.textHead} mb-2 leading-snug group-hover:text-brand-maroon transition-colors`}>{t(notice.title?.replace(/^\[Puja\]\s*/, ''))}</h3>
-              <p className={`${curr.textSub} text-xs sm:text-sm leading-relaxed`}>{notice.text}</p>
+
+              {/* Title */}
+              <h3 className={`text-base sm:text-lg font-bold ${curr.textHead} mb-1 leading-snug group-hover:text-brand-maroon transition-colors`}>
+                {t(notice.title?.replace(/^\[Puja\]\s*/, ''))}
+              </h3>
+
+              {/* Image 2 Wave Accent */}
+              <div className="mb-2.5">
+                <FestiveWaveAccent className="w-12 h-1.5 text-amber-500/80" />
+              </div>
+
+              {/* Body */}
+              <p className={`${curr.textSub} text-xs sm:text-sm leading-relaxed mb-4`}>
+                {notice.text}
+              </p>
+
+              {/* Image 3: Torn Paper Deckle Bottom Edge */}
+              <div className="pt-2 -mx-4 -mb-3 opacity-80">
+                <TornDeckleEdge className="w-full text-stone-200/90 h-2 block" />
+              </div>
             </div>
           )) : (
-            <div className={`col-span-2 text-center py-12 ${curr.textMuted} ${curr.cardBg} rounded-3xl border border-dashed border-stone-300`}>
-              {b('এই বছরের কোনো নোটিশ নেই।', 'No active notices published for this year.')}
+            <div className="col-span-2 relative text-center py-14 px-6 bg-[#FFFDF9] rounded-3xl border border-dashed border-[#E5DAC8] flex flex-col items-center justify-center gap-3">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+                <WashiTapePin text={b("শারদীয়া বুলেটিন বোর্ড", "Notice Board")} />
+              </div>
+              <NoticeScrollIcon className="w-9 h-9 text-brand-maroon" />
+              <p className={`font-serif text-sm sm:text-base ${curr.textSub} max-w-md`}>
+                {b('এই বছরের কোনো নতুন নোটিশ প্রকাশিত হয়নি। সমস্ত নিয়মিত আপডেট এখানে দেখতে পাবেন।', 'No new notices published for this year yet. All regular circulars will appear here.')}
+              </p>
             </div>
           )}
         </div>
@@ -835,9 +1096,9 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-14 sm:my-20">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-900 text-xs font-bold uppercase tracking-widest mb-2.5 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse" />
-              {b('অন্যান্য পোর্টাল ও বিভাগ', 'Sister Portals & Wings')}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-900 text-xs font-bold uppercase tracking-wider mb-2.5 shadow-2xs">
+              <ShankhaIcon className="w-3.5 h-3.5 text-amber-700" />
+              <span>{b('অন্যান্য পোর্টাল ও বিভাগ', 'Sister Portals & Wings')}</span>
             </div>
             <h2 className={`text-2xl sm:text-3xl lg:text-5xl font-serif font-bold ${curr.textHead} tracking-tight leading-tight`}>
               {b('আমাদের অন্যান্য বিভাগ', 'Explore Our Other')} <span className="text-brand-maroon">{b('দেখুন', 'Portals')}</span>
@@ -851,24 +1112,36 @@ export default function HomePage() {
           </div>
           <Link
             href="/committee"
-            className="shrink-0 text-xs font-bold px-4 py-2 rounded-full bg-white hover:bg-stone-900 text-stone-700 hover:text-white border border-stone-200 shadow-sm transition-all duration-200 flex items-center gap-1.5"
+            className="shrink-0 text-xs font-bold pl-4 sm:pl-5 pr-2 py-1.5 rounded-full btn-tactile-parchment text-stone-800 hover:text-brand-maroon transition-all duration-200 flex items-center gap-2 group shadow-xs"
           >
             <span>{b('সকল কমিটির তালিকা', 'View All Committees')}</span>
-            <span>→</span>
+            <span className="w-5 h-5 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-xs font-bold transition-colors">
+              →
+            </span>
           </Link>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-5 sm:gap-6 lg:gap-8">
+        <div className="grid md:grid-cols-2 gap-7 sm:gap-9 pt-5 sm:pt-6">
           {/* Wing 1: Bansdroni Sonali Sangha (Club) */}
-          <div className={`group relative ${curr.cardBg} rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-stone-200/80 hover:border-brand-maroon/30 flex flex-col justify-between`}>
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="group relative bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_8px_24px_rgba(28,13,19,0.05)] hover:shadow-[0_18px_38px_rgba(159,18,57,0.12)] rounded-3xl pt-8 pb-5 pl-9 sm:pl-12 pr-6 sm:pr-8 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between">
+            {/* Pinned Textured Washi Tape on Top Center */}
+            <div className="absolute -top-3.5 left-8 sm:left-10 z-20">
+              <WashiTapePin text={b("ক্লাব ও ক্রীড়া পরিষদ • রেজি: SO067242", "Club & Sports Wing • Reg: SO067242")} variant="amber" />
+            </div>
+
+            {/* Left Perforated Spiral Binder Margin */}
+            <div className="absolute left-2.5 sm:left-3 top-8 bottom-8 flex flex-col justify-around pointer-events-none">
+              <BinderHoles count={5} />
+            </div>
+
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
             <div>
               {/* Header Badge */}
               <div className="flex items-center justify-between gap-3 mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-700 font-bold text-lg shrink-0 group-hover:scale-105 transition-transform">
-                    🏆
+                  <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-600 shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                    <ClubCrestIcon className="w-6 h-6 text-amber-600" />
                   </div>
                   <div>
                     <h3 className={`text-lg sm:text-xl font-bold ${curr.textHead} leading-tight group-hover:text-brand-maroon transition-colors`}>
@@ -879,9 +1152,11 @@ export default function HomePage() {
                     </span>
                   </div>
                 </div>
-                <span className="hidden sm:inline-block text-[10px] font-mono font-semibold text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200">
-                  SO067242
-                </span>
+              </div>
+
+              {/* Image 2 Wave Accent */}
+              <div className="mb-3">
+                <FestiveWaveAccent className="w-14 h-1.5 text-amber-500" />
               </div>
 
               <p className={`${curr.textSub} text-xs sm:text-sm leading-relaxed mb-4`}>
@@ -893,37 +1168,58 @@ export default function HomePage() {
 
               {/* Compact Highlight Tags */}
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-5">
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
-                  ⚽ {b('বার্ষিক ক্রীড়া প্রতিযোগিতা', 'Annual Sports')}
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FAF7F2] text-stone-700 text-[11px] font-medium border border-[#E8DFD1]">
+                  <SportsBadgeIcon className="w-3.5 h-3.5 text-stone-600" />
+                  <span>{b('বার্ষিক ক্রীড়া প্রতিযোগিতা', 'Annual Sports')}</span>
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
-                  🩸 {b('রক্তদান শিবির', 'Blood Donation')}
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FAF7F2] text-stone-700 text-[11px] font-medium border border-[#E8DFD1]">
+                  <BloodDonationBadgeIcon className="w-3.5 h-3.5 text-rose-600" />
+                  <span>{b('রক্তদান শিবির', 'Blood Donation')}</span>
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
-                  🎭 {b('সাংস্কৃতিক সন্ধ্যা', 'Cultural Evenings')}
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FAF7F2] text-stone-700 text-[11px] font-medium border border-[#E8DFD1]">
+                  <CulturalStageBadgeIcon className="w-3.5 h-3.5 text-amber-700" />
+                  <span>{b('সাংস্কৃতিক সন্ধ্যা', 'Cultural Evenings')}</span>
                 </span>
               </div>
             </div>
 
-            <Link
-              href="/club"
-              className="inline-flex items-center justify-between w-full py-2.5 sm:py-3 px-4 sm:px-5 rounded-xl bg-stone-50 hover:bg-brand-maroon text-stone-800 hover:text-white font-bold text-xs sm:text-sm transition-all duration-200 border border-stone-200/80 hover:border-brand-maroon shadow-sm group/btn"
-            >
-              <span>{b('সোনালী সঙ্ঘ পেজ দেখুন', 'Visit Sonali Sangha Portal')}</span>
-              <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
-            </Link>
+            <div>
+              <Link
+                href="/club"
+                className="btn-tactile-parchment inline-flex items-center justify-between w-full py-2.5 sm:py-3 pl-4 sm:pl-5 pr-2.5 sm:pr-3 rounded-2xl text-stone-800 hover:text-brand-maroon font-bold text-xs sm:text-sm transition-all duration-200 group/btn shadow-xs mb-3"
+              >
+                <span>{b('সোনালী সঙ্ঘ পেজ দেখুন', 'Visit Sonali Sangha Portal')}</span>
+                <span className="w-6 h-6 rounded-full bg-brand-maroon/10 group-hover/btn:bg-brand-maroon text-brand-maroon group-hover/btn:text-white flex items-center justify-center text-xs font-bold transition-colors">
+                  →
+                </span>
+              </Link>
+              {/* Torn Deckle Edge */}
+              <div className="-mx-4 -mb-3 opacity-80">
+                <TornDeckleEdge className="w-full text-stone-200/90 h-2 block" />
+              </div>
+            </div>
           </div>
 
           {/* Wing 2: Sonali Park Unnayan Samiti */}
-          <div className={`group relative ${curr.cardBg} rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-stone-200/80 hover:border-brand-maroon/30 flex flex-col justify-between`}>
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="group relative bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_8px_24px_rgba(28,13,19,0.05)] hover:shadow-[0_18px_38px_rgba(159,18,57,0.12)] rounded-3xl pt-8 pb-5 pl-9 sm:pl-12 pr-6 sm:pr-8 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between">
+            {/* Pinned Textured Washi Tape on Top Center */}
+            <div className="absolute -top-3.5 left-8 sm:left-10 z-20">
+              <WashiTapePin text={b("নাগরিক উন্নয়ন ও সেবা • রেজিস্টার্ড RWA", "Civic Welfare & Registered RWA")} variant="emerald" />
+            </div>
+
+            {/* Left Perforated Spiral Binder Margin */}
+            <div className="absolute left-2.5 sm:left-3 top-8 bottom-8 flex flex-col justify-around pointer-events-none">
+              <BinderHoles count={5} />
+            </div>
+
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
             <div>
               {/* Header Badge */}
               <div className="flex items-center justify-between gap-3 mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-700 font-bold text-lg shrink-0 group-hover:scale-105 transition-transform">
-                    🏛️
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-700 shadow-sm shrink-0 group-hover:scale-105 transition-transform">
+                    <SamitiEmblemIcon className="w-6 h-6 text-emerald-700" />
                   </div>
                   <div>
                     <h3 className={`text-lg sm:text-xl font-bold ${curr.textHead} leading-tight group-hover:text-brand-maroon transition-colors`}>
@@ -934,9 +1230,11 @@ export default function HomePage() {
                     </span>
                   </div>
                 </div>
-                <span className="hidden sm:inline-block text-[10px] font-semibold text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200">
-                  {b('রেজিস্টার্ড RWA', 'Registered RWA')}
-                </span>
+              </div>
+
+              {/* Image 2 Wave Accent */}
+              <div className="mb-3">
+                <FestiveWaveAccent className="w-14 h-1.5 text-emerald-600" />
               </div>
 
               <p className={`${curr.textSub} text-xs sm:text-sm leading-relaxed mb-4`}>
@@ -948,25 +1246,36 @@ export default function HomePage() {
 
               {/* Compact Highlight Tags */}
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-5">
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
-                  🛡️ {b('নাগরিক নিরাপত্তা ও সিসিটিভি', 'Security & CCTV')}
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FAF7F2] text-stone-700 text-[11px] font-medium border border-[#E8DFD1]">
+                  <CivicShieldBadgeIcon className="w-3.5 h-3.5 text-stone-600" />
+                  <span>{b('নাগরিক নিরাপত্তা ও সিসিটিভি', 'Security & CCTV')}</span>
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
-                  💡 {b('রাস্তাঘাট ও আলোক পরিকাঠামো', 'Roads & Lights')}
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FAF7F2] text-stone-700 text-[11px] font-medium border border-[#E8DFD1]">
+                  <CivicLightBadgeIcon className="w-3.5 h-3.5 text-amber-600" />
+                  <span>{b('রাস্তাঘাট ও আলোক পরিকাঠামো', 'Roads & Lights')}</span>
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 text-stone-700 text-[11px] font-medium border border-stone-200">
-                  🌳 {b('পরিবেশ পরিচ্ছন্নতা ও বৃক্ষরোপণ', 'Sanitation & Greenery')}
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FAF7F2] text-stone-700 text-[11px] font-medium border border-[#E8DFD1]">
+                  <CivicGreeneryBadgeIcon className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{b('পরিবেশ পরিচ্ছন্নতা ও বৃক্ষরোপণ', 'Sanitation & Greenery')}</span>
                 </span>
               </div>
             </div>
 
-            <Link
-              href="/samiti"
-              className="inline-flex items-center justify-between w-full py-2.5 sm:py-3 px-4 sm:px-5 rounded-xl bg-stone-50 hover:bg-brand-maroon text-stone-800 hover:text-white font-bold text-xs sm:text-sm transition-all duration-200 border border-stone-200/80 hover:border-brand-maroon shadow-sm group/btn"
-            >
-              <span>{b('উন্নয়ন সমিতি পেজ দেখুন', 'Visit Unnayan Samiti Portal')}</span>
-              <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
-            </Link>
+            <div>
+              <Link
+                href="/samiti"
+                className="btn-tactile-parchment inline-flex items-center justify-between w-full py-2.5 sm:py-3 pl-4 sm:pl-5 pr-2.5 sm:pr-3 rounded-2xl text-stone-800 hover:text-brand-maroon font-bold text-xs sm:text-sm transition-all duration-200 group/btn shadow-xs mb-3"
+              >
+                <span>{b('উন্নয়ন সমিতি পেজ দেখুন', 'Visit Unnayan Samiti Portal')}</span>
+                <span className="w-6 h-6 rounded-full bg-emerald-600/10 group-hover/btn:bg-emerald-600 text-emerald-700 group-hover/btn:text-white flex items-center justify-center text-xs font-bold transition-colors">
+                  →
+                </span>
+              </Link>
+              {/* Torn Deckle Edge */}
+              <div className="-mx-4 -mb-3 opacity-80">
+                <TornDeckleEdge className="w-full text-stone-200/90 h-2 block" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -974,9 +1283,9 @@ export default function HomePage() {
       {/* ═══ 6. VISITOR INFORMATION / FAQ (Stately Center with Emerald Accent) ═══ */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 my-14 sm:my-20">
         <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 text-xs font-bold uppercase tracking-widest mb-3 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-            {b('দর্শনার্থীদের সহায়তা ও তথ্য', 'Visitor Information & Assistance')}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-3 shadow-2xs">
+            <DiyaIcon className="w-3.5 h-3.5 text-emerald-700" />
+            <span>{b('দর্শনার্থীদের সহায়তা ও তথ্য', 'Visitor Information & Assistance')}</span>
           </div>
           <h2 className={`text-2xl sm:text-3xl lg:text-5xl font-serif font-bold ${curr.textHead} tracking-tight leading-tight`}>
             {b('দর্শনার্থীদের সাধারণ', 'Frequently Asked')} <span className="text-brand-maroon">{b('জিজ্ঞাসা ও FAQ', 'Questions (FAQ)')}</span>
@@ -1026,14 +1335,14 @@ export default function HomePage() {
           ].map((faq, i) => (
             <div
               key={i}
-              className={`group ${curr.cardBg} rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 border ${openFaq === i ? 'border-brand-maroon/30 shadow-brand-maroon/5' : 'border-stone-200/80 hover:border-stone-300'}`}
+              className={`group card-tactile-parchment rounded-2xl overflow-hidden transition-all duration-200 ${openFaq === i ? 'border-brand-maroon/40 ring-1 ring-brand-maroon/25' : 'border-[#E8DFD1] hover:border-brand-maroon/30'}`}
             >
               <button
                 className={`w-full px-4 sm:px-6 py-3.5 sm:py-5 text-left flex justify-between items-center gap-3 sm:gap-4 font-bold ${curr.textHead} focus:outline-none cursor-pointer`}
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
               >
-                <span className="flex items-center gap-2.5 sm:gap-3 text-sm sm:text-lg">
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-stone-100 text-stone-600 border border-stone-200 shrink-0">
+                <span className="flex items-center gap-2.5 sm:gap-3 text-sm sm:text-base md:text-lg">
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-[#FAF7F2] text-stone-700 border border-[#E8DFD1] shrink-0 font-serif">
                     {faq.tag}
                   </span>
                   <span className="group-hover:text-brand-maroon transition-colors">{faq.q}</span>
@@ -1043,7 +1352,7 @@ export default function HomePage() {
                 </span>
               </button>
               {openFaq === i && (
-                <div className={`px-4 sm:px-6 pb-4 sm:pb-6 ${curr.textSub} leading-relaxed border-t ${curr.isDark ? 'border-white/10' : 'border-stone-100'} pt-3.5 sm:pt-4 text-xs sm:text-base`}>
+                <div className={`px-4 sm:px-6 pb-4 sm:pb-6 ${curr.textSub} leading-relaxed border-t ${curr.isDark ? 'border-white/10' : 'border-stone-100'} pt-3.5 sm:pt-4 text-xs sm:text-sm md:text-base`}>
                   {faq.a}
                 </div>
               )}

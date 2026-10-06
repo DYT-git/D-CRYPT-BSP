@@ -4,6 +4,15 @@ import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { User, ShieldCheck, Phone } from 'lucide-react';
 import YearSelector from "@/components/YearSelector";
+import { 
+  DurgaDeviEmblemIcon, 
+  ClubCrestIcon, 
+  SamitiEmblemIcon, 
+  FestiveWaveAccent, 
+  WashiTapePin, 
+  BinderHoles, 
+  TornDeckleEdge 
+} from '@/components/HeritageIcons';
 
 function parseMemberRole(role) {
   if (!role) return { wing: 'Puja', cleanRole: '', phone: '' };
@@ -157,7 +166,7 @@ export default function CommitteePage() {
               : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-rose-50 hover:text-rose-700'
           }`}
         >
-          <span>🌺</span>
+          <DurgaDeviEmblemIcon className={`w-3.5 h-3.5 ${activeWing === 'Puja' ? 'text-white' : 'text-rose-700'}`} />
           <span>{b('শারদীয়া দুর্গোৎসব', 'Durga Puja')}</span>
         </button>
         <button
@@ -168,7 +177,7 @@ export default function CommitteePage() {
               : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-amber-50 hover:text-amber-700'
           }`}
         >
-          <span>🏆</span>
+          <ClubCrestIcon className={`w-3.5 h-3.5 ${activeWing === 'Club' ? 'text-white' : 'text-amber-600'}`} />
           <span>{b('সোনালী সঙ্ঘ ক্লাব', 'Sonali Club')}</span>
         </button>
         <button
@@ -179,7 +188,7 @@ export default function CommitteePage() {
               : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-emerald-50 hover:text-emerald-700'
           }`}
         >
-          <span>🏛️</span>
+          <SamitiEmblemIcon className={`w-3.5 h-3.5 ${activeWing === 'Samiti' ? 'text-white' : 'text-emerald-700'}`} />
           <span>{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
         </button>
       </div>
@@ -199,7 +208,7 @@ export default function CommitteePage() {
                   </h2>
                 </div>
 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8 max-w-5xl mx-auto">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto pt-4">
                   {leaders.map((member, i) => {
                     const parsed = parseMemberRole(member.role);
                     const nameDetails = parseMemberNameDetails(member.name);
@@ -207,8 +216,16 @@ export default function CommitteePage() {
                     return (
                       <div
                         key={i}
-                        className="group relative bg-white rounded-3xl p-5 sm:p-7 text-center shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden border border-stone-200/80 hover:border-brand-maroon/30"
+                        className="group relative bg-[#FFFDF9] rounded-3xl pt-8 pb-6 px-5 sm:px-7 text-center shadow-[0_6px_20px_rgba(28,13,19,0.04)] hover:shadow-[0_16px_32px_rgba(159,18,57,0.1)] hover:-translate-y-1.5 transition-all duration-300 border border-[#E5DAC8] flex flex-col justify-between"
                       >
+                        {/* Top Pinned Washi Tape with Officer Portfolio */}
+                        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20">
+                          <WashiTapePin 
+                            text={t(parsed.cleanRole)} 
+                            variant={isClubMember ? 'amber' : (parsed.wing === 'Samiti' ? 'emerald' : 'rose')} 
+                          />
+                        </div>
+
                         {/* Top Subtle Highlight */}
                         <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${
                           isClubMember 
@@ -216,51 +233,59 @@ export default function CommitteePage() {
                             : 'from-transparent via-brand-maroon/40 to-transparent'
                         }`} />
 
-                        {/* Responsive Portrait Avatar Frame (No Hardcoded Pixels, Adaptive 4:5 Ratio) */}
-                        <div className={`relative w-full max-w-[220px] sm:max-w-[240px] aspect-[4/5] mx-auto rounded-2xl overflow-hidden border-2 bg-stone-50 shadow-sm mb-4 sm:mb-5 flex items-center justify-center transition-all duration-300 ${
-                          isClubMember ? 'border-amber-200/80 group-hover:border-amber-400' : 'border-stone-200/80 group-hover:border-brand-maroon/40'
-                        }`}>
-                          {member.image ? (
-                            <img
-                              src={member.image}
-                              alt={nameDetails.mainName}
-                              className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <User className="w-16 h-16 text-stone-300" />
+                        <div>
+                          {/* Responsive Portrait Avatar Frame (Adaptive 4:5 Ratio) */}
+                          <div className={`relative w-full max-w-[200px] sm:max-w-[220px] aspect-[4/5] mx-auto rounded-2xl overflow-hidden border-2 bg-stone-50 shadow-sm mb-4 flex items-center justify-center transition-all duration-300 ${
+                            isClubMember ? 'border-amber-200/80 group-hover:border-amber-400' : 'border-[#E5DAC8] group-hover:border-brand-maroon/40'
+                          }`}>
+                            {member.image ? (
+                              <img
+                                src={member.image}
+                                alt={nameDetails.mainName}
+                                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <User className="w-16 h-16 text-stone-300" />
+                            )}
+                          </div>
+
+                          {/* Name */}
+                          <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 mb-1 group-hover:text-brand-maroon transition-colors leading-snug">
+                            {nameDetails.mainName}
+                          </h3>
+
+                          {/* Decorative Wave Accent */}
+                          <div className="flex justify-center my-1.5">
+                            <FestiveWaveAccent className="w-12 h-1.5 text-amber-500/70" />
+                          </div>
+
+                          {/* Nickname & English Transliteration */}
+                          {(nameDetails.nickname || nameDetails.englishName) && (
+                            <div className="flex items-center justify-center gap-1.5 mb-2 flex-wrap">
+                              {nameDetails.nickname && (
+                                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
+                                  {b('ডাকনাম:', 'Nickname:')} “{nameDetails.nickname}”
+                                </span>
+                              )}
+                              {nameDetails.englishName && (
+                                <span className="text-[11px] font-mono text-stone-500 font-semibold uppercase tracking-wider">
+                                  {nameDetails.englishName}
+                                </span>
+                              )}
+                            </div>
                           )}
                         </div>
 
-                        {/* Name */}
-                        <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 mb-1 group-hover:text-brand-maroon transition-colors leading-snug">
-                          {nameDetails.mainName}
-                        </h3>
-
-                        {/* Nickname & English Transliteration */}
-                        {(nameDetails.nickname || nameDetails.englishName) && (
-                          <div className="flex items-center justify-center gap-1.5 mb-2 flex-wrap">
-                            {nameDetails.nickname && (
-                              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
-                                {b('ডাকনাম:', 'Nickname:')} “{nameDetails.nickname}”
-                              </span>
-                            )}
-                            {nameDetails.englishName && (
-                              <span className="text-[11px] font-mono text-stone-500 font-semibold uppercase tracking-wider">
-                                {nameDetails.englishName}
-                              </span>
-                            )}
-                          </div>
-                        )}
-
                         {/* Role & Wing Badges */}
-                        <div className="flex flex-col items-center gap-1.5 mt-1">
+                        <div className="flex flex-col items-center gap-1.5 mt-2">
                           <div className={`inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1 rounded-full font-bold text-xs uppercase tracking-wider shadow-sm ${
                             isClubMember 
                               ? 'bg-amber-50 border border-amber-200 text-amber-900' 
                               : 'bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon'
                           }`}>
-                            {isClubMember ? '🏆 ' : ''}{t(parsed.cleanRole)}
+                            {isClubMember && <ClubCrestIcon className="w-3.5 h-3.5 text-amber-700" />}
+                            <span>{t(parsed.cleanRole)}</span>
                           </div>
 
                           {/* Clickable Phone Number */}
@@ -283,15 +308,22 @@ export default function CommitteePage() {
                           )}
 
                           {parsed.wing === 'Samiti' && (
-                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                              🏛️ {b('উন্নয়ন সমিতি', 'Unnayan Samiti')}
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                              <SamitiEmblemIcon className="w-3 h-3 text-emerald-700" />
+                              <span>{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
                             </span>
                           )}
                           {parsed.wing === 'Puja' && (
-                            <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
-                              🌺 {b('শারদীয়া দুর্গোৎসব', 'Durga Puja')}
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                              <DurgaDeviEmblemIcon className="w-3 h-3 text-rose-700" />
+                              <span>{b('শারদীয়া দুর্গোৎসব', 'Durga Puja')}</span>
                             </span>
                           )}
+                        </div>
+
+                        {/* Deckle bottom edge */}
+                        <div className="-mx-5 sm:-mx-7 -mb-6 mt-3 opacity-80">
+                          <TornDeckleEdge className="w-full text-stone-200/90 h-2 block" />
                         </div>
                       </div>
                     );
@@ -370,18 +402,21 @@ export default function CommitteePage() {
                             </a>
                           )}
                           {isClubMember && (
-                            <span className="text-[9px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200/70">
-                              🏆 {b('ক্লাব', 'Club')} • ২০২৬-২৮
+                            <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/70">
+                              <ClubCrestIcon className="w-2.5 h-2.5 text-amber-700" />
+                              <span>{b('ক্লাব', 'Club')} • ২০২৬-২৮</span>
                             </span>
                           )}
                           {parsed.wing === 'Samiti' && (
-                            <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200/70">
-                              🏛️ {b('সমিতি', 'Samiti')}
+                            <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/70">
+                              <SamitiEmblemIcon className="w-2.5 h-2.5 text-emerald-700" />
+                              <span>{b('সমিতি', 'Samiti')}</span>
                             </span>
                           )}
                           {parsed.wing === 'Puja' && (
-                            <span className="text-[9px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.2 rounded border border-rose-200/70">
-                              🌺 {b('পূজা', 'Puja')}
+                            <span className="inline-flex items-center gap-1 text-[9px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200/70">
+                              <DurgaDeviEmblemIcon className="w-2.5 h-2.5 text-rose-700" />
+                              <span>{b('পূজা', 'Puja')}</span>
                             </span>
                           )}
                         </div>

@@ -5,6 +5,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Home, Calendar, Users, Image as ImageIcon, IndianRupee, ChevronRight, Trophy, Building, Megaphone, Bell, Shield } from 'lucide-react';
 import NotificationDrawer from '@/components/NotificationDrawer';
+import { ClubCrestIcon, SamitiEmblemIcon } from '@/components/HeritageIcons';
 
 const PUJA_LINKS = [
   { href: '/',             labelBn: 'হোম ও শারদীয়া উৎসব',      labelEn: 'Home & Durga Puja',   icon: Home },
@@ -104,7 +105,7 @@ export default function Navbar() {
               /* Club Dedicated Brand Badge */
               <Link href="/club" className="flex items-center gap-2 sm:gap-2.5 group min-w-0">
                 <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-amber-300 text-amber-600">
-                  <Trophy className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-amber-600" />
+                  <ClubCrestIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-amber-600" />
                 </div>
                 <div className="flex flex-col min-w-0 leading-tight">
                   <span className={`font-black uppercase tracking-tight sm:tracking-normal text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm transition-colors truncate ${
@@ -123,7 +124,7 @@ export default function Navbar() {
               /* Samiti Dedicated Brand Badge */
               <Link href="/samiti" className="flex items-center gap-2 sm:gap-2.5 group min-w-0">
                 <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-emerald-300 text-emerald-600">
-                  <Building className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-emerald-600" />
+                  <SamitiEmblemIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-emerald-600" />
                 </div>
                 <div className="flex flex-col min-w-0 leading-tight">
                   <span className={`font-black uppercase tracking-tight sm:tracking-normal text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm transition-colors truncate ${
@@ -175,14 +176,14 @@ export default function Navbar() {
                   ? b(`${toDigits(unreadNotifs)}টি নতুন বিজ্ঞপ্তি`, `${unreadNotifs} new notifications`)
                   : b('বিজ্ঞপ্তি ও নোটিফিকেশন', 'Notifications')
               }
-              className={`group relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-transform active:scale-95 hover:scale-105 cursor-pointer group-hover-bell ${
+              className={`group relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-transform active:scale-90 hover:scale-105 cursor-pointer group-hover-bell ${
                 hasDarkHero
-                  ? 'text-amber-300 hover:text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)]'
-                  : 'text-stone-700 hover:text-amber-600'
+                  ? 'bg-black/45 hover:bg-black/60 backdrop-blur-md border border-amber-400/40 text-amber-300 hover:text-amber-200 shadow-[0_2px_10px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.18)]'
+                  : 'bg-white/95 hover:bg-stone-50 backdrop-blur-md border border-stone-200 text-stone-700 hover:text-amber-600 shadow-[0_2px_8px_rgba(28,13,19,0.06),inset_0_1px_0_rgba(255,255,255,0.9)]'
               }`}
               aria-label="Notifications"
             >
-              <Bell className={`w-4.5 h-4.5 sm:w-5 sm:h-5 fill-amber-400/25 transition-transform ${
+              <Bell className={`w-4 h-4 sm:w-4.5 sm:h-4.5 fill-amber-400/25 transition-transform ${
                 unreadNotifs > 0 ? 'animate-bell-periodic text-amber-300' : ''
               }`} />
               {unreadNotifs > 0 && (
@@ -195,14 +196,14 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* Language Switcher Pill */}
-            <div className="flex items-center p-0.5 rounded-full backdrop-blur-md shadow-xs text-[10px] sm:text-[11px] font-bold transition-all bg-white/95 border border-stone-200/90 text-stone-700">
+            {/* Language Switcher Pill (Tactile 3D container with bevel) */}
+            <div className="flex items-center p-0.5 rounded-full backdrop-blur-md text-[10px] sm:text-[11px] font-bold transition-all bg-white/95 border border-stone-200/90 shadow-[0_2px_8px_rgba(28,13,19,0.06),inset_0_1px_1px_rgba(255,255,255,0.85)] text-stone-700">
               <button
                 onClick={() => changeLanguage('bn')}
                 className={`px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full transition-all cursor-pointer ${
                   lang === 'bn'
-                    ? 'bg-brand-maroon text-white shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-gradient-to-b from-[#BE123C] to-[#881337] text-white shadow-[0_2px_6px_rgba(190,18,60,0.35),inset_0_1px_0_rgba(255,255,255,0.3)]'
+                    : 'text-stone-600 hover:text-stone-900 active:scale-95'
                 }`}
               >
                 বাংলা
@@ -211,8 +212,8 @@ export default function Navbar() {
                 onClick={() => changeLanguage('en')}
                 className={`px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full transition-all cursor-pointer ${
                   lang === 'en'
-                    ? 'bg-brand-maroon text-white shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-gradient-to-b from-[#BE123C] to-[#881337] text-white shadow-[0_2px_6px_rgba(190,18,60,0.35),inset_0_1px_0_rgba(255,255,255,0.3)]'
+                    : 'text-stone-600 hover:text-stone-900 active:scale-95'
                 }`}
               >
                 EN
@@ -223,7 +224,7 @@ export default function Navbar() {
             <button
               id="menu-btn"
               onClick={() => setMenuOpen(!menuOpen)}
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-xs transition-all active:scale-95 hover:scale-105 cursor-pointer bg-white/95 hover:bg-stone-50 backdrop-blur-md border border-stone-200/90 text-stone-800 hover:text-brand-maroon"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all active:scale-90 hover:scale-105 cursor-pointer bg-white/95 hover:bg-stone-50 backdrop-blur-md border border-stone-200/90 text-stone-800 hover:text-brand-maroon shadow-[0_2px_8px_rgba(28,13,19,0.06),inset_0_1px_0_rgba(255,255,255,0.9)]"
               aria-label="Open menu"
             >
               {menuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4 text-stone-800" />}

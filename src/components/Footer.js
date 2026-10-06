@@ -2,6 +2,7 @@
 import { MapPin, Phone, Mail, ShieldCheck, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
+import { DiyaIcon, ClubCrestIcon, SamitiEmblemIcon } from '@/components/HeritageIcons';
 
 export default function Footer() {
   const { lang, b, toDigits } = useLanguage();
@@ -34,14 +35,17 @@ export default function Footer() {
 
           {/* 3 Pillars Direct Links */}
           <div className="flex flex-wrap gap-2 mb-4">
-            <Link href="/" className="px-2.5 py-1 rounded-full bg-white/10 hover:bg-brand-maroon text-[11px] text-white transition-colors">
-              🌺 {b('শারদীয়া দুর্গোৎসব', 'Durga Puja')}
+            <Link href="/" className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-brand-maroon text-[11px] text-white transition-colors">
+              <DiyaIcon className="w-3.5 h-3.5 text-rose-300" />
+              <span>{b('শারদীয়া দুর্গোৎসব', 'Durga Puja')}</span>
             </Link>
-            <Link href="/club" className="px-2.5 py-1 rounded-full bg-white/10 hover:bg-amber-600 text-[11px] text-white transition-colors">
-              🏆 {b('সোনালী সঙ্ঘ', 'Club')}
+            <Link href="/club" className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-amber-600 text-[11px] text-white transition-colors">
+              <ClubCrestIcon className="w-3.5 h-3.5 text-amber-300" />
+              <span>{b('সোনালী সঙ্ঘ', 'Club')}</span>
             </Link>
-            <Link href="/samiti" className="px-2.5 py-1 rounded-full bg-white/10 hover:bg-emerald-700 text-[11px] text-white transition-colors">
-              🏛️ {b('উন্নয়ন সমিতি', 'Samiti')}
+            <Link href="/samiti" className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-emerald-700 text-[11px] text-white transition-colors">
+              <SamitiEmblemIcon className="w-3.5 h-3.5 text-emerald-300" />
+              <span>{b('উন্নয়ন সমিতি', 'Samiti')}</span>
             </Link>
           </div>
 
@@ -71,11 +75,15 @@ export default function Footer() {
             </li>
             <li className="flex items-center gap-3">
               <Phone className="text-amber-400 w-4 h-4 shrink-0" />
-              <span className="font-mono">+91 98300 XXXXX</span>
+              <Link href="/committee" className="text-stone-300 hover:text-amber-400 transition-colors">
+                {b('কমিটি কর্মকর্তাদের ফোন নম্বর দেখুন →', 'View Committee Contact Directory →')}
+              </Link>
             </li>
             <li className="flex items-center gap-3">
               <Mail className="text-amber-400 w-4 h-4 shrink-0" />
-              <span className="font-mono">contact@bansdronisonalipark.org</span>
+              <a href="mailto:bansdronisonalipark@gmail.com" className="text-stone-300 hover:text-amber-400 transition-colors">
+                bansdronisonalipark@gmail.com
+              </a>
             </li>
           </ul>
         </div>

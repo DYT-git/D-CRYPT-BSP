@@ -167,3 +167,120 @@ h1, h2, h3, h4, h5, h6 {
   transform-origin: top center;
 }
 
+/* ═══ TACTILE 3D BUTTONS & CARDS (Inspired by block.youtest.me, styled for Bengal Heritage) ═══ */
+
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-gentle-float {
+  animation: floatGentle 4s ease-in-out infinite;
+}
+
+@keyframes alponaPulse {
+  0%, 100% {
+    opacity: 0.32;
+    transform: scale(0.97) rotate(0deg);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.03) rotate(3deg);
+  }
+}
+
+.animate-alpona-halo {
+  animation: alponaPulse 14s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+@keyframes goldPlaqueShine {
+  0%, 100% {
+    border-color: rgba(245, 158, 11, 0.32);
+    box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.8), 0 0 16px -2px rgba(245, 158, 11, 0.15);
+  }
+  50% {
+    border-color: rgba(245, 158, 11, 0.58);
+    box-shadow: 0 16px 44px -4px rgba(0, 0, 0, 0.85), 0 0 28px 2px rgba(245, 158, 11, 0.32);
+  }
+}
+
+.panjika-plaque-glow {
+  animation: goldPlaqueShine 6s ease-in-out infinite;
+}
+
+/* 3D Tactile Primary Button (Royal Alta Crimson) */
+.btn-tactile-crimson {
+  background: linear-gradient(180deg, #D41947 0%, #A31135 60%, #881337 100%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 
+    0 6px 16px -2px rgba(163, 17, 53, 0.42),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.38),
+    inset 0 -2.5px 0 0 rgba(0, 0, 0, 0.28);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
+}
+
+.btn-tactile-crimson:hover {
+  background: linear-gradient(180deg, #E11D48 0%, #BE123C 60%, #9F1239 100%);
+  box-shadow: 
+    0 10px 22px -3px rgba(163, 17, 53, 0.5),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2.5px 0 0 rgba(0, 0, 0, 0.28);
+  transform: translateY(-2px);
+}
+
+.btn-tactile-crimson:active {
+  transform: translateY(1.5px) scale(0.985);
+  box-shadow: 
+    0 2px 6px rgba(163, 17, 53, 0.3),
+    inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* 3D Tactile Secondary / Parchment Button */
+.btn-tactile-parchment {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFFDF9 60%, #F5EFEB 100%);
+  border: 1px solid #E2D7C8;
+  box-shadow: 
+    0 4px 12px -2px rgba(28, 13, 19, 0.06),
+    inset 0 1.5px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
+}
+
+.btn-tactile-parchment:hover {
+  border-color: rgba(190, 18, 60, 0.4);
+  box-shadow: 
+    0 8px 18px -2px rgba(190, 18, 60, 0.12),
+    inset 0 1.5px 0 0 rgba(255, 255, 255, 1),
+    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+.btn-tactile-parchment:active {
+  transform: translateY(1.5px) scale(0.985);
+  box-shadow: 
+    0 2px 4px rgba(28, 13, 19, 0.05),
+    inset 0 2px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* Elevated Tactile Card */
+.card-tactile-parchment {
+  background: #FFFDF9;
+  border: 1px solid #E8DFD1;
+  box-shadow: 
+    0 6px 20px -3px rgba(28, 13, 19, 0.04),
+    0 2px 6px -1px rgba(28, 13, 19, 0.02);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-tactile-parchment:hover {
+  transform: translateY(-3.5px);
+  border-color: rgba(190, 18, 60, 0.4);
+  box-shadow: 
+    0 16px 36px -4px rgba(159, 18, 57, 0.11),
+    0 4px 12px -2px rgba(28, 13, 19, 0.04);
+}
+
+

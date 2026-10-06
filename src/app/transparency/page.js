@@ -6,6 +6,15 @@ import { FileText, ExternalLink, Download, TrendingUp, TrendingDown, Landmark, S
 import Link from 'next/link';
 import YearSelector from "@/components/YearSelector";
 import { triggerDownload } from "@/utils/download";
+import { 
+  DurgaDeviEmblemIcon, 
+  ClubCrestIcon, 
+  SamitiEmblemIcon, 
+  FestiveWaveAccent, 
+  WashiTapePin, 
+  BinderHoles, 
+  TornDeckleEdge 
+} from '@/components/HeritageIcons';
 
 function parseFinanceDoc(doc) {
   if (!doc?.title) return { wing: 'Puja', cleanTitle: doc?.title || '' };
@@ -151,38 +160,41 @@ export default function TransparencyPage() {
           </button>
           <button
             onClick={() => setActiveWing('Puja')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeWing === 'Puja'
                 ? 'bg-rose-700 text-white shadow-xs'
                 : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-rose-50 hover:text-rose-700'
             }`}
           >
-            🌺 {b('শারদীয়া দুর্গোৎসব', 'Durga Puja')}
+            <DurgaDeviEmblemIcon className={`w-3.5 h-3.5 ${activeWing === 'Puja' ? 'text-white' : 'text-rose-700'}`} />
+            <span>{b('শারদীয়া দুর্গোৎসব', 'Durga Puja')}</span>
           </button>
           <button
             onClick={() => setActiveWing('Club')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeWing === 'Club'
                 ? 'bg-amber-600 text-white shadow-xs'
                 : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-amber-50 hover:text-amber-700'
             }`}
           >
-            🏆 {b('সোনালী সঙ্ঘ ক্লাব', 'Sonali Club')}
+            <ClubCrestIcon className={`w-3.5 h-3.5 ${activeWing === 'Club' ? 'text-white' : 'text-amber-600'}`} />
+            <span>{b('সোনালী সঙ্ঘ ক্লাব', 'Sonali Club')}</span>
           </button>
           <button
             onClick={() => setActiveWing('Samiti')}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
               activeWing === 'Samiti'
                 ? 'bg-emerald-700 text-white shadow-xs'
                 : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-emerald-50 hover:text-emerald-700'
             }`}
           >
-            🏛️ {b('উন্নয়ন সমিতি', 'Unnayan Samiti')}
+            <SamitiEmblemIcon className={`w-3.5 h-3.5 ${activeWing === 'Samiti' ? 'text-white' : 'text-emerald-700'}`} />
+            <span>{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
           </button>
         </div>
 
         {filteredFinances.length > 0 ? (
-          <div className="space-y-3.5 sm:space-y-4">
+          <div className="space-y-4">
             {filteredFinances.map((doc, i) => {
               const parsed = parseFinanceDoc(doc);
               return (
@@ -190,44 +202,49 @@ export default function TransparencyPage() {
                   key={i} 
                   href={`?viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(parsed.cleanTitle)}`}
                   scroll={false}
-                  className="group relative flex items-center gap-3.5 sm:gap-5 bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-stone-200/80 hover:border-brand-maroon/30 overflow-hidden"
+                  className="group relative flex items-center gap-3.5 sm:gap-5 bg-[#FFFDF9] p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-[0_4px_16px_rgba(28,13,19,0.04)] hover:shadow-[0_12px_28px_rgba(159,18,57,0.1)] hover:-translate-y-1 transition-all duration-300 border border-[#E5DAC8] hover:border-brand-maroon/30 overflow-hidden"
                 >
                   {/* Subtle top highlight */}
                   <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                  <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-center text-rose-600 shrink-0 group-hover:scale-105 transition-transform">
+                  <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-brand-maroon/10 border border-brand-maroon/20 flex items-center justify-center text-brand-maroon shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
                     <FileText className="w-5 h-5 sm:w-7 sm:h-7" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm sm:text-base md:text-xl font-serif font-bold text-stone-900 group-hover:text-brand-maroon transition-colors truncate">
                       {t(parsed.cleanTitle)}
                     </h3>
-                    <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-stone-100 text-stone-500 border border-stone-200">
-                        {b('পিডিএফ নথি', 'PDF Document')}
+                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                      <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF7F2] text-stone-600 border border-[#E8DFD1]">
+                        {b('পিডিএফ অডিট নথি', 'PDF Audit Document')}
                       </span>
                       {parsed.wing === 'Club' && (
-                        <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                          🏆 {b('সোনালী সঙ্ঘ ক্লাব', 'Club Audit')}
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                          <ClubCrestIcon className="w-3 h-3 text-amber-700" />
+                          <span>{b('সোনালী সঙ্ঘ ক্লাব', 'Club Audit')}</span>
                         </span>
                       )}
                       {parsed.wing === 'Samiti' && (
-                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                          🏛️ {b('উন্নয়ন সমিতি', 'Samiti Audit')}
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          <SamitiEmblemIcon className="w-3 h-3 text-emerald-700" />
+                          <span>{b('উন্নয়ন সমিতি', 'Samiti Audit')}</span>
                         </span>
                       )}
                       {parsed.wing === 'Puja' && (
-                        <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
-                          🌺 {b('শারদীয়া দুর্গোৎসব', 'Puja Audit')}
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                          <DurgaDeviEmblemIcon className="w-3 h-3 text-rose-700" />
+                          <span>{b('শারদীয়া দুর্গোৎসব', 'Puja Audit')}</span>
                         </span>
                       )}
-                      <span className="text-xs text-stone-400">{b('সাল:', 'Year:')} {toDigits(doc.year, lang)}</span>
+                      <span className="text-xs text-stone-400 font-mono">{b('সাল:', 'Year:')} {toDigits(doc.year, lang)}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <div className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon font-bold text-xs group-hover:bg-brand-maroon group-hover:text-white transition-all shadow-sm">
+                    <div className="btn-tactile-parchment inline-flex items-center gap-2 pl-3.5 pr-2 py-1.5 rounded-full text-stone-800 group-hover:text-brand-maroon font-bold text-xs shadow-2xs">
                       <span>{b('দেখুন', 'View')}</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span className="w-5 h-5 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-[10px] font-bold transition-colors">
+                        →
+                      </span>
                     </div>
                     <button
                       type="button"
@@ -247,7 +264,7 @@ export default function TransparencyPage() {
             })}
           </div>
         ) : (
-          <div className="text-center py-20 bg-white/80 rounded-3xl border border-dashed border-stone-300 text-stone-500">
+          <div className="text-center py-20 bg-[#FFFDF9] rounded-3xl border border-dashed border-[#E5DAC8] text-stone-500">
             <h3 className="text-xl font-serif">{b('এই বিভাগের কোনো আর্থিক রিপোর্ট এখনও আপলোড করা হয়নি।', 'No financial reports uploaded for this category yet.')}</h3>
             <p className="text-stone-400 text-sm mt-1">{b('অডিট সম্পন্ন হওয়ার পর নথিপত্র প্রকাশ করা হবে।', 'Documents will be published after the audit is finalized.')}</p>
           </div>
