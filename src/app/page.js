@@ -49,9 +49,17 @@ export default function HomePage() {
   const [timeOfDay, setTimeOfDay] = useState('morning');
   const [isMounted, setIsMounted] = useState(false);
 
-  // Lightbox State
+  // Lightbox & Carousel State
   const [selectedImage, setSelectedImage] = useState(null);
   const galleryScrollRef = useRef(null);
+
+  // Calendar Carousel & Day Switcher State
+  const [activeCalendarIndex, setActiveCalendarIndex] = useState(0);
+  const calendarScrollRef = useRef(null);
+
+  // MLH-Style Gallery Showcase State
+  const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
+  const [galleryTouchStart, setGalleryTouchStart] = useState(null);
 
   const scrollGallery = (direction) => {
     if (galleryScrollRef.current) {
@@ -156,7 +164,137 @@ export default function HomePage() {
 
   const curr = themes[timeOfDay];
 
+  const festivalDays = [
+    {
+      id: 'shashti',
+      tithiBn: 'মহাষষ্ঠী',
+      tithiEn: 'Maha Shashti',
+      weekdayBn: 'শুক্রবার',
+      weekdayEn: 'Friday',
+      dateNumBn: '১৬',
+      dateNumEn: '16',
+      monthBn: 'অক্টোবর ২০২৬',
+      monthEn: 'Oct 2026',
+      ceremonyBn: 'কল্পারম্ভ, দেবীর বোধন ও অধিবাস',
+      ceremonyEn: 'Kalparambha, Bodhon & Adhibas',
+      rituals: [
+        { timeBn: 'সকাল ৮:০০', timeEn: '8:00 AM', labelBn: 'কল্পারম্ভ ও বিহিত পূজা', labelEn: 'Kalparambha & Puja' },
+        { timeBn: 'সন্ধ্যা ৬:৩০', timeEn: '6:30 PM', labelBn: 'দেবীর বোধন ও আমন্ত্রণ', labelEn: 'Bodhon & Adhibas' },
+      ],
+      headerGrad: 'from-[#9F1239] to-[#881337]',
+      dateColor: 'text-[#9F1239]',
+      Icon: ShashtiBilvaIcon,
+    },
+    {
+      id: 'saptami',
+      tithiBn: 'মহাসপ্তমী',
+      tithiEn: 'Maha Saptami',
+      weekdayBn: 'শনিবার',
+      weekdayEn: 'Saturday',
+      dateNumBn: '১৭',
+      dateNumEn: '17',
+      monthBn: 'অক্টোবর ২০২৬',
+      monthEn: 'Oct 2026',
+      ceremonyBn: 'নবপত্রিকা স্নান ও সপ্তমী বিহিত পূজা',
+      ceremonyEn: 'Nabapatrika Snan & Puja',
+      rituals: [
+        { timeBn: 'ভোর ৬:৩০', timeEn: '6:30 AM', labelBn: 'গঙ্গায় নবপত্রিকা স্নান', labelEn: 'Nabapatrika Holy Snan' },
+        { timeBn: 'সকাল ১০:০০', timeEn: '10:00 AM', labelBn: 'সার্বজনীন পুষ্পাঞ্জলি', labelEn: 'Community Pushpanjali' },
+      ],
+      headerGrad: 'from-emerald-700 to-emerald-900',
+      dateColor: 'text-emerald-800',
+      Icon: SaptamiNabapatrikaIcon,
+    },
+    {
+      id: 'ashtami',
+      tithiBn: 'মহাষ্টমী',
+      tithiEn: 'Maha Ashtami',
+      weekdayBn: 'রবিবার',
+      weekdayEn: 'Sunday',
+      dateNumBn: '১৮',
+      dateNumEn: '18',
+      monthBn: 'অক্টোবর ২০২৬',
+      monthEn: 'Oct 2026',
+      ceremonyBn: 'পুষ্পাঞ্জলি, কুমারী পূজা ও সন্ধিপূজা',
+      ceremonyEn: 'Pushpanjali, Kumari & Sandhi Puja',
+      rituals: [
+        { timeBn: 'সকাল ৯:৪৫', timeEn: '9:45 AM', labelBn: 'মহাষ্টমীর পুষ্পাঞ্জলি', labelEn: 'Maha Ashtami Anjali' },
+        { timeBn: 'সন্ধ্যা', timeEn: 'Evening', labelBn: 'সন্ধিপূজা ও ১০৮ প্রদীপ', labelEn: 'Sandhi Puja & 108 Lamps' },
+      ],
+      headerGrad: 'from-amber-700 to-amber-900',
+      dateColor: 'text-amber-800',
+      Icon: AshtamiDhunuchiIcon,
+    },
+    {
+      id: 'navami',
+      tithiBn: 'মহানবমী',
+      tithiEn: 'Maha Navami',
+      weekdayBn: 'সোমবার',
+      weekdayEn: 'Monday',
+      dateNumBn: '১৯',
+      dateNumEn: '19',
+      monthBn: 'অক্টোবর ২০২৬',
+      monthEn: 'Oct 2026',
+      ceremonyBn: 'মহাহোম, যজ্ঞ ও মহাভোগ বিতরণ',
+      ceremonyEn: 'Maha Homa & Bhog Distribution',
+      rituals: [
+        { timeBn: 'সকাল ১১:০০', timeEn: '11:00 AM', labelBn: 'মহাহোম ও নবমী যজ্ঞ', labelEn: 'Maha Homa & Yajna' },
+        { timeBn: 'দুপুর ১:০০', timeEn: '1:00 PM', labelBn: 'সার্বজনীন মহাভোগ বিতরণ', labelEn: 'Community Mahabhog' },
+      ],
+      headerGrad: 'from-orange-700 to-orange-900',
+      dateColor: 'text-orange-800',
+      Icon: NavamiHomaIcon,
+    },
+    {
+      id: 'dashami',
+      tithiBn: 'বিজয়া দশমী',
+      tithiEn: 'Bijoya Dashami',
+      weekdayBn: 'মঙ্গলবার',
+      weekdayEn: 'Tuesday',
+      dateNumBn: '২০',
+      dateNumEn: '20',
+      monthBn: 'অক্টোবর ২০২৬',
+      monthEn: 'Oct 2026',
+      ceremonyBn: 'দর্পণ বিসর্জন, সিঁদুর খেলা ও বরণ',
+      ceremonyEn: 'Darpan Bisarjan & Sindoor Khela',
+      rituals: [
+        { timeBn: 'সকাল ৯:৪৫', timeEn: '9:45 AM', labelBn: 'দর্পণ বিসর্জন ও সমাপন', labelEn: 'Darpan Bisarjan' },
+        { timeBn: 'সকাল ১০:৩০', timeEn: '10:30 AM', labelBn: 'সিঁদুর খেলা ও দেবী বরণ', labelEn: 'Sindoor Khela & Baran' },
+      ],
+      headerGrad: 'from-rose-900 to-[#500619]',
+      dateColor: 'text-rose-900',
+      Icon: DashamiTrishulIcon,
+    },
+  ];
 
+  const galleryList = (data.gallery.filter(g => g.year === selectedYear).length > 0
+    ? data.gallery.filter(g => g.year === selectedYear)
+    : data.gallery).slice(0, 10);
+
+  const nextGallery = () => {
+    if (galleryList.length === 0) return;
+    setActiveGalleryIndex((prev) => (prev + 1) % galleryList.length);
+  };
+
+  const prevGallery = () => {
+    if (galleryList.length === 0) return;
+    setActiveGalleryIndex((prev) => (prev - 1 + galleryList.length) % galleryList.length);
+  };
+
+  const handleGalleryTouchStart = (e) => {
+    setGalleryTouchStart(e.touches[0].clientX);
+  };
+
+  const handleGalleryTouchEnd = (e) => {
+    if (galleryTouchStart === null) return;
+    const diff = galleryTouchStart - e.changedTouches[0].clientX;
+    if (diff > 45) {
+      nextGallery();
+    } else if (diff < -45) {
+      prevGallery();
+    }
+    setGalleryTouchStart(null);
+  };
 
   const notices = data.notices.filter(n => n.year === selectedYear && !n.title?.startsWith('[Club]') && !n.title?.startsWith('[Samiti]'));
 
@@ -542,7 +680,7 @@ export default function HomePage() {
       )}
 
       {/* ═══ 1. THEME SHOWCASE (Compact Sandalwood Ivory Pavilion) ═══ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-5 sm:mt-7 mb-12 sm:mb-16 relative z-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-5 sm:mt-7 mb-10 sm:mb-16 relative z-10">
         <div className="rounded-3xl bg-[#FFFDF9] text-stone-900 shadow-[0_8px_28px_rgba(28,13,19,0.06)] hover:shadow-[0_14px_36px_rgba(159,18,57,0.08)] border border-[#E5DAC8] relative overflow-hidden group transition-all duration-300">
           {/* Top Fine Alta & Gold Ribbon Seam */}
           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-brand-maroon via-amber-400 to-brand-maroon" />
@@ -556,23 +694,23 @@ export default function HomePage() {
             </svg>
           </div>
 
-          <div className="relative z-10 p-5 sm:p-7 lg:p-8">
+          <div className="relative z-10 p-4 sm:p-7 lg:p-8">
             {/* Top Header Row with Badge & Sub-label */}
-            <div className="flex flex-wrap items-center justify-between gap-2.5 mb-3 sm:mb-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-800 text-[11px] font-bold tracking-wider uppercase shadow-2xs">
-                <DurgaDeviEmblemIcon className="w-3.5 h-3.5 text-rose-700" />
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5 sm:mb-4">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-800 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase shadow-2xs">
+                <DurgaDeviEmblemIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-rose-700" />
                 <span>{b('শারদ থিম পরিক্রমা ২০২৬ • ৭৪তম বর্ষ', 'Curated Theme 2026 • 74th Year')}</span>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-900 font-serif font-medium shadow-2xs">
-                <DiyaIcon className="w-3.5 h-3.5 text-amber-700" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] sm:text-[11px] text-amber-900 font-serif font-medium shadow-2xs">
+                <DiyaIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-700" />
                 <span>{b('বাঁশদ্রোণী সোনালী পার্ক প্যাভিলিয়ন', 'Bansdroni Sonali Park Pavilion')}</span>
               </span>
             </div>
 
             {/* Center Display: Theme Title & Concept */}
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5 mb-5 sm:mb-6">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-3.5 sm:gap-5 mb-4 sm:mb-6">
               <div className="max-w-2xl">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-black text-stone-900 leading-[1.2] tracking-tight">
+                <h2 className="text-xl sm:text-3xl lg:text-4xl font-serif font-black text-stone-900 leading-[1.2] tracking-tight">
                   <span className="text-brand-maroon">&ldquo;</span>
                   {settings.themeTitle ? (
                     <span className="text-stone-900">{settings.themeTitle.replace(/^["'“]/, '').replace(/["'”]$/, '')}</span>
@@ -581,8 +719,8 @@ export default function HomePage() {
                   )}
                   <span className="text-brand-maroon">&rdquo;</span>
                 </h2>
-                <div className="my-2">
-                  <FestiveWaveAccent className="w-16 h-1.5 text-amber-500" />
+                <div className="my-1.5 sm:my-2">
+                  <FestiveWaveAccent className="w-14 sm:w-16 h-1.5 text-amber-500" />
                 </div>
                 <p className="text-stone-600 text-xs sm:text-sm font-serif italic leading-relaxed">
                   {b(
@@ -592,58 +730,58 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="shrink-0">
+              <div className="shrink-0 w-full sm:w-auto">
                 <Link
                   href="/puja"
-                  className="btn-tactile-crimson text-white pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-2.5 group shadow-md"
+                  className="btn-tactile-crimson text-white px-4 sm:pl-6 sm:pr-2.5 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap flex sm:inline-flex items-center justify-between sm:justify-start gap-2.5 group shadow-md w-full sm:w-auto"
                 >
                   <span>{b('সম্পূর্ণ থিম পরিক্রমা ও দর্শন', 'Explore Full Theme & Pandal')}</span>
-                  <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white text-brand-maroon flex items-center justify-center text-xs sm:text-sm font-bold shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5">
+                  <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white text-brand-maroon flex items-center justify-center text-xs sm:text-sm font-bold shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5 shrink-0">
                     →
                   </span>
                 </Link>
               </div>
             </div>
 
-            {/* 3 Artisan Dossier Plaques (Sleek, Compact Museum Cameos) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 sm:pt-5 border-t border-stone-200/80">
-              <div className="group/art flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-[#FAF7F2] hover:bg-white border border-[#E8DFD1] hover:border-amber-400/70 shadow-2xs hover:shadow-xs transition-all duration-200">
-                <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200/90 flex items-center justify-center shrink-0 shadow-2xs group-hover/art:scale-105 group-hover/art:bg-amber-100 transition-all text-amber-700">
-                  <MandapIcon className="w-5 h-5 text-amber-700" />
+            {/* 3 Artisan Dossier Plaques (Sleek 3-Column Compact Mini-Grid on Mobile & Desktop) */}
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-3 pt-3 sm:pt-4 border-t border-stone-200/80">
+              <div className="group/art flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1 sm:gap-3 p-1.5 sm:p-3 rounded-xl bg-[#FAF7F2] hover:bg-white border border-[#E8DFD1] hover:border-amber-400/70 shadow-2xs hover:shadow-xs transition-all duration-200">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-amber-50 border border-amber-200/90 flex items-center justify-center shrink-0 shadow-2xs group-hover/art:scale-105 group-hover/art:bg-amber-100 transition-all text-amber-700">
+                  <MandapIcon className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-amber-700" />
                 </div>
-                <div className="min-w-0">
-                  <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-brand-maroon font-bold font-serif block">
+                <div className="min-w-0 w-full">
+                  <span className="text-[9px] sm:text-[11px] uppercase tracking-wider text-brand-maroon font-bold font-serif block truncate">
                     {b('মণ্ডপ শিল্পী', 'Pandal Architect')}
                   </span>
-                  <span className="text-xs sm:text-sm font-serif font-black text-stone-900 tracking-tight block truncate">
+                  <span className="text-[10px] sm:text-sm font-serif font-black text-stone-900 tracking-tight block truncate">
                     {settings.pandalArtist || b('শিল্প নিকেতন', 'Shilpa Niketan')}
                   </span>
                 </div>
               </div>
 
-              <div className="group/art flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-[#FAF7F2] hover:bg-white border border-[#E8DFD1] hover:border-amber-400/70 shadow-2xs hover:shadow-xs transition-all duration-200">
-                <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200/90 flex items-center justify-center shrink-0 shadow-2xs group-hover/art:scale-105 group-hover/art:bg-amber-100 transition-all text-amber-700">
-                  <SculptorIcon className="w-5 h-5 text-amber-700" />
+              <div className="group/art flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1 sm:gap-3 p-1.5 sm:p-3 rounded-xl bg-[#FAF7F2] hover:bg-white border border-[#E8DFD1] hover:border-amber-400/70 shadow-2xs hover:shadow-xs transition-all duration-200">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-amber-50 border border-amber-200/90 flex items-center justify-center shrink-0 shadow-2xs group-hover/art:scale-105 group-hover/art:bg-amber-100 transition-all text-amber-700">
+                  <SculptorIcon className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-amber-700" />
                 </div>
-                <div className="min-w-0">
-                  <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-brand-maroon font-bold font-serif block">
+                <div className="min-w-0 w-full">
+                  <span className="text-[9px] sm:text-[11px] uppercase tracking-wider text-brand-maroon font-bold font-serif block truncate">
                     {b('প্রতিমা শিল্পী', 'Divine Sculptor')}
                   </span>
-                  <span className="text-xs sm:text-sm font-serif font-black text-stone-900 tracking-tight block truncate">
+                  <span className="text-[10px] sm:text-sm font-serif font-black text-stone-900 tracking-tight block truncate">
                     {settings.idolArtist || b('সনাতন রুদ্র পাল', 'Sanatan Rudra Paul')}
                   </span>
                 </div>
               </div>
 
-              <div className="group/art flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-[#FAF7F2] hover:bg-white border border-[#E8DFD1] hover:border-amber-400/70 shadow-2xs hover:shadow-xs transition-all duration-200">
-                <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200/90 flex items-center justify-center shrink-0 shadow-2xs group-hover/art:scale-105 group-hover/art:bg-amber-100 transition-all text-amber-700">
-                  <IlluminationIcon className="w-5 h-5 text-amber-700" />
+              <div className="group/art flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-1 sm:gap-3 p-1.5 sm:p-3 rounded-xl bg-[#FAF7F2] hover:bg-white border border-[#E8DFD1] hover:border-amber-400/70 shadow-2xs hover:shadow-xs transition-all duration-200">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-amber-50 border border-amber-200/90 flex items-center justify-center shrink-0 shadow-2xs group-hover/art:scale-105 group-hover/art:bg-amber-100 transition-all text-amber-700">
+                  <IlluminationIcon className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-amber-700" />
                 </div>
-                <div className="min-w-0">
-                  <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-brand-maroon font-bold font-serif block">
+                <div className="min-w-0 w-full">
+                  <span className="text-[9px] sm:text-[11px] uppercase tracking-wider text-brand-maroon font-bold font-serif block truncate">
                     {b('আলোকসজ্জা', 'Illumination')}
                   </span>
-                  <span className="text-xs sm:text-sm font-serif font-black text-stone-900 tracking-tight block truncate">
+                  <span className="text-[10px] sm:text-sm font-serif font-black text-stone-900 tracking-tight block truncate">
                     {settings.lightingArtist || b('দাস ইলেকট্রিক', 'Das Electric')}
                   </span>
                 </div>
@@ -682,178 +820,148 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* 5 Authentic Panjika Calendar Leaves */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-          {[
-            {
-              tithiBn: 'মহাষষ্ঠী',
-              tithiEn: 'Maha Shashti',
-              weekdayBn: 'শুক্রবার',
-              weekdayEn: 'Friday',
-              dateNumBn: '১৬',
-              dateNumEn: '16',
-              monthBn: 'অক্টোবর ২০২৬',
-              monthEn: 'Oct 2026',
-              ceremonyBn: 'কল্পারম্ভ, দেবীর বোধন ও অধিবাস',
-              ceremonyEn: 'Kalparambha, Bodhon & Adhibas',
-              rituals: [
-                { timeBn: 'সকাল ৮:০০', timeEn: '8:00 AM', labelBn: 'কল্পারম্ভ ও বিহিত পূজা', labelEn: 'Kalparambha & Puja' },
-                { timeBn: 'সন্ধ্যা ৬:৩০', timeEn: '6:30 PM', labelBn: 'দেবীর বোধন ও আমন্ত্রণ', labelEn: 'Bodhon & Adhibas' },
-              ],
-              headerGrad: 'from-[#9F1239] to-[#881337]',
-              dateColor: 'text-[#9F1239]',
-              Icon: ShashtiBilvaIcon,
-            },
-            {
-              tithiBn: 'মহাসপ্তমী',
-              tithiEn: 'Maha Saptami',
-              weekdayBn: 'শনিবার',
-              weekdayEn: 'Saturday',
-              dateNumBn: '১৭',
-              dateNumEn: '17',
-              monthBn: 'অক্টোবর ২০২৬',
-              monthEn: 'Oct 2026',
-              ceremonyBn: 'নবপত্রিকা স্নান ও সপ্তমী বিহিত পূজা',
-              ceremonyEn: 'Nabapatrika Snan & Puja',
-              rituals: [
-                { timeBn: 'ভোর ৬:৩০', timeEn: '6:30 AM', labelBn: 'গঙ্গায় নবপত্রিকা স্নান', labelEn: 'Nabapatrika Holy Snan' },
-                { timeBn: 'সকাল ১০:০০', timeEn: '10:00 AM', labelBn: 'সার্বজনীন পুষ্পাঞ্জলি', labelEn: 'Community Pushpanjali' },
-              ],
-              headerGrad: 'from-emerald-700 to-emerald-900',
-              dateColor: 'text-emerald-800',
-              Icon: SaptamiNabapatrikaIcon,
-            },
-            {
-              tithiBn: 'মহাষ্টমী',
-              tithiEn: 'Maha Ashtami',
-              weekdayBn: 'রবিবার',
-              weekdayEn: 'Sunday',
-              dateNumBn: '১৮',
-              dateNumEn: '18',
-              monthBn: 'অক্টোবর ২০২৬',
-              monthEn: 'Oct 2026',
-              ceremonyBn: 'পুষ্পাঞ্জলি, কুমারী পূজা ও সন্ধিপূজা',
-              ceremonyEn: 'Pushpanjali, Kumari & Sandhi Puja',
-              rituals: [
-                { timeBn: 'সকাল ৯:৪৫', timeEn: '9:45 AM', labelBn: 'মহাষ্টমীর পুষ্পাঞ্জলি', labelEn: 'Maha Ashtami Anjali' },
-                { timeBn: 'সন্ধ্যা', timeEn: 'Evening', labelBn: 'সন্ধিপূজা ও ১০৮ প্রদীপ', labelEn: 'Sandhi Puja & 108 Lamps' },
-              ],
-              headerGrad: 'from-amber-700 to-amber-900',
-              dateColor: 'text-amber-800',
-              Icon: AshtamiDhunuchiIcon,
-            },
-            {
-              tithiBn: 'মহানবমী',
-              tithiEn: 'Maha Navami',
-              weekdayBn: 'সোমবার',
-              weekdayEn: 'Monday',
-              dateNumBn: '১৯',
-              dateNumEn: '19',
-              monthBn: 'অক্টোবর ২০২৬',
-              monthEn: 'Oct 2026',
-              ceremonyBn: 'মহাহোম, যজ্ঞ ও মহাভোগ বিতরণ',
-              ceremonyEn: 'Maha Homa & Bhog Distribution',
-              rituals: [
-                { timeBn: 'সকাল ১১:০০', timeEn: '11:00 AM', labelBn: 'মহাহোম ও নবমী যজ্ঞ', labelEn: 'Maha Homa & Yajna' },
-                { timeBn: 'দুপুর ১:০০', timeEn: '1:00 PM', labelBn: 'সার্বজনীন মহাভোগ বিতরণ', labelEn: 'Community Mahabhog' },
-              ],
-              headerGrad: 'from-orange-700 to-orange-900',
-              dateColor: 'text-orange-800',
-              Icon: NavamiHomaIcon,
-            },
-            {
-              tithiBn: 'বিজয়া দশমী',
-              tithiEn: 'Bijoya Dashami',
-              weekdayBn: 'মঙ্গলবার',
-              weekdayEn: 'Tuesday',
-              dateNumBn: '২০',
-              dateNumEn: '20',
-              monthBn: 'অক্টোবর ২০২৬',
-              monthEn: 'Oct 2026',
-              ceremonyBn: 'দর্পণ বিসর্জন, সিঁদুর খেলা ও বরণ',
-              ceremonyEn: 'Darpan Bisarjan & Sindoor Khela',
-              rituals: [
-                { timeBn: 'সকাল ৯:৪৫', timeEn: '9:45 AM', labelBn: 'দর্পণ বিসর্জন ও সমাপন', labelEn: 'Darpan Bisarjan' },
-                { timeBn: 'সকাল ১০:৩০', timeEn: '10:30 AM', labelBn: 'সিঁদুর খেলা ও দেবী বরণ', labelEn: 'Sindoor Khela & Baran' },
-              ],
-              headerGrad: 'from-rose-900 to-[#500619]',
-              dateColor: 'text-rose-900',
-              Icon: DashamiTrishulIcon,
-            },
-          ].map((c, i) => (
-            <Link
-              key={i}
-              href="/puja"
-              className="group relative bg-[#FFFDF9] rounded-2xl border border-[#E5DAC8] shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+        {/* 5 Authentic Panjika Calendar Leaves (Mobile: Swipeable Snap Carousel • Desktop: Side-by-side Grid) */}
+        <div
+          ref={calendarScrollRef}
+          onScroll={(e) => {
+            const container = e.currentTarget;
+            const scrollLeft = container.scrollLeft;
+            const itemWidth = container.offsetWidth * 0.8;
+            if (itemWidth > 0) {
+              const newIdx = Math.round(scrollLeft / itemWidth);
+              if (newIdx >= 0 && newIdx < festivalDays.length && newIdx !== activeCalendarIndex) {
+                setActiveCalendarIndex(newIdx);
+              }
+            }
+          }}
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide no-scrollbar gap-3 sm:gap-4 lg:grid lg:grid-cols-5 lg:overflow-visible pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch'
+          }}
+        >
+          {festivalDays.map((c, i) => (
+            <div
+              key={c.id || i}
+              className="w-[84vw] max-w-[310px] shrink-0 snap-center lg:w-auto lg:shrink flex"
             >
-              {/* 1. TOP CALENDAR BINDING HEADER BAR */}
-              <div className={`px-3.5 py-2.5 bg-gradient-to-r ${c.headerGrad} text-white flex items-center justify-between shadow-xs`}>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-white/40 border border-white/60" />
-                  <span className="font-serif font-bold text-xs tracking-wide">
-                    {b(c.tithiBn, c.tithiEn)}
-                  </span>
-                </div>
-                <span className="text-[11px] font-sans font-medium text-amber-200">
-                  {b(c.weekdayBn, c.weekdayEn)}
-                </span>
-              </div>
-
-              {/* 2. CALENDAR DATE LEAF BODY */}
-              <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-                <div>
-                  {/* Date Display */}
-                  <div className="flex items-baseline justify-between gap-2 border-b border-stone-200/60 pb-3 mb-3">
+              <Link
+                href="/puja"
+                className="group relative w-full bg-[#FFFDF9] rounded-2xl border border-[#E5DAC8] shadow-2xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+              >
+                {/* 1. COMPACT INTEGRATED CALENDAR HEADER (Tithi, Weekday, Date & Auspicious Icon INSIDE the Card) */}
+                <div className={`px-3.5 py-2.5 bg-gradient-to-r ${c.headerGrad} text-white flex items-center justify-between shadow-xs`}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-white/15 flex items-center justify-center text-amber-200 shrink-0">
+                      <c.Icon className="w-3.5 h-3.5" />
+                    </div>
                     <div>
-                      <span className={`text-3xl sm:text-4xl font-serif font-black ${c.dateColor} leading-none block tabular-nums`}>
-                        {b(c.dateNumBn, c.dateNumEn)}
+                      <span className="font-serif font-black text-sm tracking-wide text-white block leading-tight drop-shadow-xs">
+                        {b(c.tithiBn, c.tithiEn)}
                       </span>
-                      <span className="text-[11px] font-serif font-semibold text-stone-500 uppercase tracking-wider block mt-1">
-                        {b(c.monthBn, c.monthEn)}
+                      <span className="text-[10px] font-serif font-medium text-amber-200 block leading-none mt-0.5">
+                        {b(c.weekdayBn, c.weekdayEn)}
                       </span>
                     </div>
-                    <div className="w-9 h-9 rounded-xl bg-stone-100/90 border border-stone-200/80 flex items-center justify-center text-stone-700 group-hover:scale-105 transition-transform shrink-0">
-                      <c.Icon className="w-5 h-5" />
-                    </div>
                   </div>
-
-                  {/* Occasion / Ceremony Title (NON-REPETITIVE!) */}
-                  <h3 className="text-sm sm:text-base font-serif font-bold text-stone-900 group-hover:text-brand-maroon transition-colors leading-snug line-clamp-2">
-                    {b(c.ceremonyBn, c.ceremonyEn)}
-                  </h3>
-
-                  <div className="my-2">
-                    <FestiveWaveAccent className="w-12 h-1.5 text-amber-500/80" />
-                  </div>
-
-                  {/* 2 Clean Timing Highlights (100% visible, ZERO truncation!) */}
-                  <div className="space-y-1.5 my-3">
-                    {c.rituals.map((r, rIdx) => (
-                      <div key={rIdx} className="flex items-center gap-2 text-xs text-stone-700 bg-stone-50/90 px-2.5 py-1.5 rounded-lg border border-stone-200/60">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-                        <span className="font-bold text-stone-900 shrink-0 font-serif">{b(r.timeBn, r.timeEn)}</span>
-                        <span className="text-stone-400">·</span>
-                        <span className="truncate text-stone-600">{b(r.labelBn, r.labelEn)}</span>
-                      </div>
-                    ))}
+                  <div className="text-right">
+                    <span className="font-serif font-black text-lg sm:text-xl text-white tabular-nums block leading-tight drop-shadow-2xs">
+                      {b(c.dateNumBn, c.dateNumEn)}
+                    </span>
+                    <span className="text-[9px] font-serif font-semibold text-rose-100/90 uppercase tracking-wider block leading-none">
+                      {b(c.monthBn, c.monthEn).split(' ')[0]}
+                    </span>
                   </div>
                 </div>
 
-                {/* 3. CALENDAR FOOTER LINK */}
-                <div className="pt-3 border-t border-dashed border-stone-200 flex items-center justify-between text-xs font-bold text-brand-maroon group-hover:translate-x-0.5 transition-transform">
-                  <span>{b('পূজা নির্ঘণ্ট দেখুন', 'Full Rituals')}</span>
-                  <span className="w-5 h-5 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-xs transition-colors">
-                    →
-                  </span>
-                </div>
-              </div>
+                {/* 2. COMPACT CALENDAR LEAF BODY (High-Density, Zero Wasted Space, No Redundant Button) */}
+                <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between gap-2.5">
+                  <div>
+                    {/* Occasion / Ceremony Title */}
+                    <h3 className="text-xs sm:text-[13px] font-serif font-bold text-stone-900 group-hover:text-brand-maroon transition-colors leading-snug line-clamp-2">
+                      {b(c.ceremonyBn, c.ceremonyEn)}
+                    </h3>
 
-              {/* Perforated bottom tear-off deckle edge */}
-              <div className="w-full opacity-60">
-                <TornDeckleEdge className="w-full text-stone-200 h-1.5 block" />
-              </div>
-            </Link>
+                    {/* Compact Ritual Timings List */}
+                    <div className="space-y-1 mt-2">
+                      {c.rituals.map((r, rIdx) => (
+                        <div key={rIdx} className="flex items-center gap-1.5 text-[11px] text-stone-700 bg-[#FAF7F2] px-2 py-1 rounded-md border border-[#E8DFD1]/60">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                          <span className="font-bold text-stone-900 shrink-0 font-serif">{b(r.timeBn, r.timeEn)}</span>
+                          <span className="text-stone-400">·</span>
+                          <span className="truncate text-stone-600">{b(r.labelBn, r.labelEn)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Perforated bottom tear-off deckle edge */}
+                <div className="w-full opacity-50">
+                  <TornDeckleEdge className="w-full text-stone-200 h-1 block" />
+                </div>
+              </Link>
+            </div>
           ))}
+        </div>
+
+        {/* Mobile Pagination Control Strip (< lg) */}
+        <div className="flex lg:hidden items-center justify-between mt-3 px-1">
+          <button
+            type="button"
+            onClick={() => {
+              const newIdx = Math.max(0, activeCalendarIndex - 1);
+              setActiveCalendarIndex(newIdx);
+              if (calendarScrollRef.current) {
+                const target = calendarScrollRef.current.children[newIdx];
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+              }
+            }}
+            disabled={activeCalendarIndex === 0}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white border border-stone-200 text-xs font-serif font-bold text-stone-700 hover:text-brand-maroon disabled:opacity-35 disabled:cursor-not-allowed shadow-2xs"
+          >
+            ← {b('আগের দিন', 'Prev')}
+          </button>
+
+          {/* Dot indicators */}
+          <div className="flex items-center gap-1.5">
+            {festivalDays.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => {
+                  setActiveCalendarIndex(idx);
+                  if (calendarScrollRef.current) {
+                    const target = calendarScrollRef.current.children[idx];
+                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                  }
+                }}
+                className={`transition-all duration-300 rounded-full ${
+                  activeCalendarIndex === idx
+                    ? 'w-6 h-2 bg-brand-maroon'
+                    : 'w-2 h-2 bg-stone-300 hover:bg-stone-400'
+                }`}
+                aria-label={`Go to day ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              const newIdx = Math.min(festivalDays.length - 1, activeCalendarIndex + 1);
+              setActiveCalendarIndex(newIdx);
+              if (calendarScrollRef.current) {
+                const target = calendarScrollRef.current.children[newIdx];
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+              }
+            }}
+            disabled={activeCalendarIndex === festivalDays.length - 1}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white border border-stone-200 text-xs font-serif font-bold text-stone-700 hover:text-brand-maroon disabled:opacity-35 disabled:cursor-not-allowed shadow-2xs"
+          >
+            {b('পরের দিন', 'Next')} →
+          </button>
         </div>
       </section>
 
@@ -876,28 +984,12 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto shrink-0">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => scrollGallery('left')}
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border border-stone-200 bg-white hover:bg-brand-maroon text-stone-700 hover:text-white transition-all duration-200 shadow-sm hover:scale-105 cursor-pointer"
-                aria-label="Scroll left"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
-              </button>
-              <button
-                onClick={() => scrollGallery('right')}
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border border-stone-200 bg-white hover:bg-brand-maroon text-stone-700 hover:text-white transition-all duration-200 shadow-sm hover:scale-105 cursor-pointer"
-                aria-label="Scroll right"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
-              </button>
-            </div>
+          <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
             <Link
               href="/gallery"
               className="inline-flex items-center gap-2 pl-4 sm:pl-5 pr-2 py-1.5 rounded-full text-xs sm:text-sm font-bold btn-tactile-parchment text-stone-800 hover:text-brand-maroon whitespace-nowrap group shadow-xs"
             >
-              <span>{b('পুরো অ্যালবাম', 'View All Photos')}</span>
+              <span>{b('পুরো অ্যালবাম দেখুন', 'View Full Album')}</span>
               <span className="w-6 h-6 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-xs font-bold transition-colors">
                 →
               </span>
@@ -905,7 +997,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {data.gallery.length === 0 ? (
+        {galleryList.length === 0 ? (
           <div className={`text-center py-14 ${curr.cardBg} rounded-2xl border border-dashed border-stone-300 flex flex-col items-center justify-center gap-2.5`}>
             <DiyaIcon className="w-8 h-8 text-amber-500" />
             <p className={`font-serif text-sm sm:text-base ${curr.textSub}`}>
@@ -913,54 +1005,161 @@ export default function HomePage() {
             </p>
           </div>
         ) : (
-          <div
-            ref={galleryScrollRef}
-            className="relative w-full overflow-x-auto flex gap-4 sm:gap-6 py-3 snap-x snap-mandatory scroll-smooth scrollbar-hide no-scrollbar"
-            style={{
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-              WebkitOverflowScrolling: 'touch'
-            }}
-          >
-            {(data.gallery.filter(g => g.year === selectedYear).length > 0
-              ? data.gallery.filter(g => g.year === selectedYear)
-              : data.gallery).slice(0, 10).map((img, i) => (
-              <div
-                key={i}
-                className={`relative h-64 sm:h-76 md:h-84 w-[75vw] max-w-[280px] sm:w-88 md:w-96 shrink-0 rounded-3xl overflow-hidden shadow-md hover:shadow-xl border transition-all duration-300 snap-center group cursor-pointer ${
-                  curr.isDark ? 'border-white/10 hover:border-brand-maroon/50' : 'border-stone-200/80 hover:border-brand-maroon/40'
-                }`}
-                onClick={() => setSelectedImage(img)}
-              >
-                {/* Pinned Moment Badge */}
-                <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none">
-                  <WashiTapePin text={b(`স্মৃতি #${toDigits(i + 1)}`, `Moment #${i + 1}`)} variant="amber" className="text-[9px]" />
+          (() => {
+            const currentPhoto = galleryList[activeGalleryIndex % galleryList.length] || galleryList[0];
+            return (
+              <div className="w-full max-w-4xl mx-auto">
+                {/* 1. MLH-Style Floating Showcase Card */}
+                <div
+                  className="rounded-3xl bg-white border border-[#E5DAC8] shadow-[0_12px_40px_rgba(28,13,19,0.07)] p-2.5 sm:p-4.5 relative overflow-hidden group transition-all duration-300"
+                  onTouchStart={handleGalleryTouchStart}
+                  onTouchEnd={handleGalleryTouchEnd}
+                >
+                  {/* Photo Display Window */}
+                  <div
+                    className="relative w-full h-64 sm:h-80 md:h-[420px] rounded-2xl overflow-hidden bg-stone-900 cursor-pointer"
+                    onClick={() => setSelectedImage(currentPhoto)}
+                  >
+                    {/* Top Left Washi Moment Tape */}
+                    <div className="absolute top-3 left-3 z-20 pointer-events-none">
+                      <WashiTapePin
+                        text={b(`স্মৃতি #${toDigits((activeGalleryIndex % galleryList.length) + 1)}`, `Moment #${(activeGalleryIndex % galleryList.length) + 1}`)}
+                        variant="amber"
+                        className="text-[9px] sm:text-[10px]"
+                      />
+                    </div>
+
+                    {/* Top Right Year Chip */}
+                    <div className="absolute top-3 right-3 z-20 pointer-events-none">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white text-[10px] sm:text-xs font-serif font-bold shadow-xs">
+                        {toDigits(currentPhoto.year || selectedYear)}
+                      </span>
+                    </div>
+
+                    <img
+                      src={currentPhoto.src}
+                      alt={currentPhoto.title || 'Durga Puja Moment'}
+                      onError={(e) => { e.currentTarget.src = '/assets/durga-hero.png'; }}
+                      className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-700"
+                    />
+
+                    {/* Frosted Bottom Info Dock */}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-stone-950/95 via-stone-950/60 to-transparent p-3.5 sm:p-5 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                      <div className="min-w-0">
+                        <span className="text-[10px] sm:text-xs font-serif uppercase tracking-wider text-amber-300 font-bold block mb-0.5">
+                          {currentPhoto.category || b('উৎসব পরিক্রমা', 'Festival Glimpses')}
+                        </span>
+                        <h3 className="text-white font-serif font-bold text-sm sm:text-lg md:text-xl truncate drop-shadow-sm">
+                          {currentPhoto.title || b('বাঁশদ্রোণী সোনালী পার্ক', 'Bansdroni Sonali Park')}
+                        </h3>
+                      </div>
+
+                      {/* Action Pills */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 text-white backdrop-blur-md border border-white/30 px-3 py-1.5 rounded-full font-bold text-xs shadow-xs transition-colors cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedImage(currentPhoto);
+                          }}
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                          </svg>
+                          <span>{b('বড় করে দেখুন', 'Zoom')}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1.5 bg-brand-maroon hover:bg-[#881337] text-white px-3 py-1.5 rounded-full font-bold text-xs shadow-md transition-colors cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            triggerDownload(currentPhoto.src, `${currentPhoto.title || 'durga-puja-moment'}.jpg`);
+                          }}
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                          <span>{b('ডাউনলোড', 'Download')}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <img
-                  src={img.src}
-                  alt={img.title || 'Durga Puja Moment'}
-                  onError={(e) => { e.currentTarget.src = '/assets/durga-hero.png'; }}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                {/* Frosted Vignette & Action Pill */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1224]/95 via-[#0B1224]/30 to-transparent opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
-                  <p className="text-white font-bold text-sm truncate mb-3">{img.title || b('বাঁশদ্রোণী সোনালী পার্ক', 'Bansdroni Sonali Park')}</p>
+                {/* 2. Signature MLH Pagination Navigation Dock */}
+                <div className="flex items-center justify-center gap-3 sm:gap-4 mt-5 sm:mt-6">
+                  {/* Prev Button [ ← ] */}
                   <button
                     type="button"
-                    className="inline-flex items-center justify-center gap-2 bg-black/50 hover:bg-brand-maroon text-white backdrop-blur-md border border-white/20 px-4 py-2 rounded-full font-bold transition-all duration-200 w-max text-xs shadow-md cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      triggerDownload(img.src, `${img.title || 'durga-puja-moment'}.jpg`);
-                    }}
+                    onClick={prevGallery}
+                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white border border-stone-200 hover:border-brand-maroon/50 hover:bg-stone-50 text-stone-700 hover:text-brand-maroon flex items-center justify-center shadow-xs transition-all duration-200 cursor-pointer active:scale-95"
+                    aria-label="Previous photo"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                    {b('ডাউনলোড', 'Download')}
+                    <svg className="w-4 h-4 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  {/* Segmented MLH Indicator Dock with Elongated Active Pill */}
+                  <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-stone-100/90 border border-stone-200/80 shadow-inner">
+                    {galleryList.map((_, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setActiveGalleryIndex(idx)}
+                        className={`transition-all duration-300 rounded-full cursor-pointer ${
+                          (activeGalleryIndex % galleryList.length) === idx
+                            ? 'w-7 sm:w-9 h-2 bg-stone-900'
+                            : 'w-2 h-2 bg-stone-300 hover:bg-stone-400'
+                        }`}
+                        aria-label={`Go to photo ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Next Button [ → ] */}
+                  <button
+                    type="button"
+                    onClick={nextGallery}
+                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white border border-stone-200 hover:border-brand-maroon/50 hover:bg-stone-50 text-stone-700 hover:text-brand-maroon flex items-center justify-center shadow-xs transition-all duration-200 cursor-pointer active:scale-95"
+                    aria-label="Next photo"
+                  >
+                    <svg className="w-4 h-4 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                    </svg>
                   </button>
                 </div>
+
+                {/* 3. Interactive Thumbnail Discovery Strip */}
+                <div className="flex items-center justify-center gap-2 sm:gap-2.5 mt-4 sm:mt-5 overflow-x-auto py-1 px-2 scrollbar-hide max-w-full">
+                  {galleryList.map((img, i) => {
+                    const isSelected = (activeGalleryIndex % galleryList.length) === i;
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setActiveGalleryIndex(i)}
+                        className={`relative w-12 h-12 sm:w-15 sm:h-15 rounded-xl overflow-hidden shrink-0 transition-all duration-200 cursor-pointer ${
+                          isSelected
+                            ? 'ring-2 ring-brand-maroon ring-offset-2 scale-105 shadow-sm opacity-100'
+                            : 'opacity-55 hover:opacity-100 border border-stone-200 hover:border-stone-400'
+                        }`}
+                      >
+                        <img
+                          src={img.src}
+                          alt={img.title || ''}
+                          onError={(e) => { e.currentTarget.src = '/assets/durga-hero.png'; }}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            ))}
-          </div>
+            );
+          })()
         )}
       </section>
 

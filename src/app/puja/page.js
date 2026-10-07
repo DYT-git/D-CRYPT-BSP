@@ -138,63 +138,83 @@ export default function PujaSchedule() {
         </div>
 
         {events.length > 0 ? (
-          <div className="space-y-6 sm:space-y-8 pt-4">
+          <div className="space-y-4 sm:space-y-6 pt-2">
             {events.map((event, i) => {
               const eventDate = new Date(event.date + (event.date.includes('T') ? '' : 'T00:00:00'));
-              const ritualThemes = ['rose', 'amber', 'emerald', 'blue'];
-              const tapeVariant = ritualThemes[i % ritualThemes.length];
+              // Clean ceremony title: strip redundant day prefix like "মহাষষ্ঠী —"
+              const cleanTitle = (event.title || '').replace(/^[^—–-]+[—–-]\s*/, '').trim() || event.title;
+
               return (
                 <div
                   key={i}
-                  className="group relative bg-[#FFFDF9] rounded-3xl pt-8 pb-5 pl-8 sm:pl-12 pr-5 sm:pr-8 shadow-[0_6px_20px_rgba(28,13,19,0.04)] hover:shadow-[0_16px_32px_rgba(159,18,57,0.1)] hover:-translate-y-1 transition-all duration-300 border border-[#E5DAC8]"
+                  className="group relative bg-[#FFFDF9] rounded-2xl p-4 sm:p-6 shadow-xs hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 border border-[#E5DAC8] overflow-hidden"
                 >
-                  {/* Top Pinned Washi Tape Header */}
-                  <div className="absolute -top-3.5 left-7 sm:left-10 z-20">
-                    <WashiTapePin text={b(`পূজা নির্ঘণ্ট • দিন ০${i + 1}`, `Ritual Schedule • Day ${i + 1}`)} variant={tapeVariant} />
-                  </div>
+                  {/* Top Fine Gold Highlight Line */}
+                  <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                  {/* Left Perforated Spiral Binder Holes */}
-                  <div className="absolute left-2.5 sm:left-3 top-8 bottom-8 flex flex-col justify-around pointer-events-none">
-                    <BinderHoles count={4} />
-                  </div>
-
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand-maroon/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-3 border-b border-[#E8DFD1]/80">
-                    <div className="flex items-center gap-3.5 sm:gap-4">
-                      {/* Floating Date Squircle */}
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#FAF7F2] border border-[#E5DAC8] flex flex-col items-center justify-center text-stone-900 group-hover:border-brand-maroon group-hover:bg-brand-maroon group-hover:text-white transition-all shrink-0 shadow-2xs">
-                        <span className="text-xl sm:text-2xl font-black leading-none">{toDigits(eventDate.getDate())}</span>
-                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mt-0.5 opacity-80">
+                  {/* Header: Date + Festival Day Counter + Clean Ceremony Title */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-2.5 border-b border-[#E8DFD1]/80">
+                    <div className="flex items-center gap-3">
+                      {/* Compact Date Badge */}
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#FAF7F2] to-amber-50/60 border border-[#E5DAC8] flex flex-col items-center justify-center text-stone-900 group-hover:border-brand-maroon group-hover:bg-brand-maroon group-hover:text-white transition-all shrink-0 shadow-2xs">
+                        <span className="text-lg sm:text-xl font-serif font-black leading-none tabular-nums">{toDigits(eventDate.getDate())}</span>
+                        <span className="text-[9px] font-serif font-bold uppercase tracking-wider mt-0.5 opacity-80">
                           {eventDate.toLocaleString(lang === 'bn' ? 'bn-IN' : 'en-US', { month: 'short' })}
                         </span>
                       </div>
+
                       <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#FAF7F2] text-stone-700 border border-[#E8DFD1]">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-[10px] font-serif font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-500/10 text-brand-maroon border border-rose-500/20">
                             {b('দিন', 'Day')} {toDigits(i + 1)}
                           </span>
-                          <span className="text-xs text-stone-500 font-medium">
+                          <span className="text-xs text-stone-500 font-serif font-medium">
                             {eventDate.toLocaleDateString(lang === 'bn' ? 'bn-IN' : 'en-US', { weekday: 'long' })}
                           </span>
                         </div>
-                        <h3 className="text-lg sm:text-xl md:text-2xl font-serif font-bold text-stone-900 group-hover:text-brand-maroon transition-colors leading-tight">
-                          {t(event.title)}
+                        <h3 className="text-base sm:text-lg md:text-xl font-serif font-bold text-stone-900 group-hover:text-brand-maroon transition-colors leading-tight">
+                          {cleanTitle}
                         </h3>
-                        <div className="mt-1.5">
-                          <FestiveWaveAccent className="w-12 h-1.5 text-amber-500/80" />
-                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <p className="text-stone-700 text-xs sm:text-sm leading-relaxed mb-3">
-                    {event.text}
-                  </p>
+                  {/* Structured Chronological Timeline Nodes (Zero Wasted Space) */}
+                  {event.text && (
+                    <div className="relative pl-4 sm:pl-5 border-l-2 border-amber-400/40 space-y-2 ml-1.5 sm:ml-2 my-2">
+                      {event.text
+                        .split(/[।.]/)
+                        .map((s) => s.trim())
+                        .filter(Boolean)
+                        .map((step, sIdx) => {
+                          const timeMatch = step.match(/^([^\s]+(?:\s+[^\s]+)?\s*টায়|[^\s]+(?:\s+[^\s]+)?\s*থেকে)/);
+                          const timeBadge = timeMatch ? timeMatch[0] : null;
+                          const ritualText = timeMatch ? step.slice(timeMatch[0].length).trim() : step;
 
-                  {/* Torn Deckle Bottom Edge */}
-                  <div className="pt-2 -mx-5 sm:-mx-8 -mb-5 opacity-80">
-                    <TornDeckleEdge className="w-full text-stone-200/90 h-2 block" />
+                          return (
+                            <div key={sIdx} className="relative group/step">
+                              {/* Glowing Timeline Node Dot */}
+                              <div className="absolute -left-[21px] sm:-left-[25px] top-2 w-2 h-2 rounded-full bg-brand-maroon ring-4 ring-[#FFFDF9]" />
+
+                              <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2.5 bg-[#FAF7F2] p-2 sm:p-2.5 rounded-xl border border-[#E8DFD1]/60 hover:border-amber-400/50 transition-colors">
+                                {timeBadge && (
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-serif font-bold text-brand-maroon bg-white px-2 py-0.5 rounded-md border border-[#E8DFD1]/70 shrink-0 w-max shadow-2xs">
+                                    🕒 {timeBadge}
+                                  </span>
+                                )}
+                                <span className="text-xs sm:text-[13px] text-stone-800 font-serif leading-relaxed">
+                                  {ritualText}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  )}
+
+                  {/* Subtle Perforated Bottom Deckle Edge */}
+                  <div className="pt-2 -mx-4 sm:-mx-6 -mb-4 opacity-50">
+                    <TornDeckleEdge className="w-full text-stone-200 h-1 block" />
                   </div>
                 </div>
               );
