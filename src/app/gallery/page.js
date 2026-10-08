@@ -149,7 +149,7 @@ export default function GalleryPage() {
                     <span className="text-white/90 text-[10px] uppercase tracking-widest font-bold px-2.5 py-0.5 rounded-full bg-black/50 border border-white/15 mb-2 inline-block">
                       {t(item.category)}
                     </span>
-                    <h3 className="text-white font-serif font-bold text-lg leading-tight mt-1">{item.title}</h3>
+                    <h3 className="text-white font-serif font-bold text-lg leading-tight mt-1">{t(item.title)}</h3>
                   </div>
                 </div>
 
@@ -195,7 +195,7 @@ export default function GalleryPage() {
                 <span className="text-rose-200 text-[10px] uppercase tracking-widest font-bold block">
                   {t(selectedImage.category)}
                 </span>
-                <h3 className="text-white font-bold text-lg truncate mt-0.5">{selectedImage.title}</h3>
+                <h3 className="text-white font-bold text-lg truncate mt-0.5">{t(selectedImage.title)}</h3>
               </div>
               <button
                 type="button"

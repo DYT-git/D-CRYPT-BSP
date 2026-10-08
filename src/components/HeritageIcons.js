@@ -400,15 +400,21 @@ export function WashiTapePin({ text = "শারদীয়া বুলেট�
   );
 }
 
-// 3. Perforated Spiral Notebook Binder Holes (Inspired by Reference 3)
+// 3. Perforated Spiral Notebook Binder Holes (Tactile 3D Punched Paper Holes)
 export function BinderHoles({ count = 5, className = "" }) {
   return (
-    <div className={`flex flex-col justify-around py-2 px-1 select-none pointer-events-none ${className}`}>
+    <div className={`flex flex-col justify-around items-center select-none pointer-events-none ${className}`}>
       {[...Array(count)].map((_, i) => (
         <div
           key={i}
-          className="w-2.5 h-2.5 rounded-full bg-stone-300/80 border border-stone-400/50 shadow-[inset_0_1px_2px_rgba(0,0,0,0.35)] my-1"
-        />
+          className="relative flex items-center justify-center my-1"
+        >
+          {/* Realistic punched paper hole with physical depth and light rim */}
+          <div className="w-3 sm:w-3.5 h-3 sm:h-3.5 rounded-full bg-[#E5DEC9] border border-[#BDB094] shadow-[inset_0_1.5px_3px_rgba(0,0,0,0.4),0_1px_0_rgba(255,255,255,0.85)] flex items-center justify-center">
+            {/* Dark inner cavity showing through the hole */}
+            <div className="w-1.5 h-1.5 rounded-full bg-[#3D3325]/35 shadow-[inset_0_1px_1px_rgba(0,0,0,0.5)]" />
+          </div>
+        </div>
       ))}
     </div>
   );

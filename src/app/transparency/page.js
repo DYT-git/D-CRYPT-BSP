@@ -123,7 +123,7 @@ export default function TransparencyPage() {
               {b('প্রধান ব্যয়ের খাত', 'Major Expense Area')}
             </span>
             <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-stone-900 leading-tight mb-1">
-              {t(settings.majorExpenseTitle || 'মণ্ডপ নির্মাণ ও সজ্জা')}
+              {lang === 'en' ? (t(settings.majorExpenseTitle) || 'Pandal Construction & Decor') : (settings.majorExpenseTitle || 'মণ্ডপ নির্মাণ ও সজ্জা')}
             </h3>
             <p className="text-xs sm:text-sm font-semibold text-brand-maroon">
               {toDigits(settings.majorExpenseAmount || (lang === 'bn' ? '₹ ৬,০০,০০০' : '₹ 6,00,000'), lang)}

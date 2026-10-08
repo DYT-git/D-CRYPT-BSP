@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChange }) {
-  const { lang, b, toDigits } = useLanguage();
+  const { lang, b, t, toDigits } = useLanguage();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'urgent' | 'puja' | 'club' | 'samiti'
@@ -493,13 +493,13 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
                   <h3 className={`text-xs sm:text-[13px] mb-1 leading-snug tracking-tight ${
                     isRead ? 'font-bold text-stone-800' : 'font-black text-stone-950'
                   }`}>
-                    {notif.title}
+                    {t(notif.title)}
                   </h3>
 
                   {/* Message description */}
                   {notif.message && (
                     <p className="text-xs text-stone-600 leading-relaxed line-clamp-3 mb-1.5">
-                      {notif.message}
+                      {t(notif.message)}
                     </p>
                   )}
 

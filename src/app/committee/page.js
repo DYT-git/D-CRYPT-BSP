@@ -90,7 +90,7 @@ const FALLBACK_SAMITI_MEMBERS = [
 
 export default function CommitteePage() {
   const { data, selectedYear } = useData();
-  const { lang, b, t, toDigits } = useLanguage();
+  const { lang, b, t, tRole, tName, tNickname, toDigits } = useLanguage();
   const [activeWing, setActiveWing] = useState('Puja');
 
   const allYearMembers = useMemo(() => {
@@ -221,7 +221,7 @@ export default function CommitteePage() {
                         {/* Top Pinned Washi Tape with Officer Portfolio */}
                         <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20">
                           <WashiTapePin 
-                            text={t(parsed.cleanRole)} 
+                            text={tRole(parsed.cleanRole)} 
                             variant={isClubMember ? 'amber' : (parsed.wing === 'Samiti' ? 'emerald' : 'rose')} 
                           />
                         </div>
@@ -241,7 +241,7 @@ export default function CommitteePage() {
                             {member.image ? (
                               <img
                                 src={member.image}
-                                alt={nameDetails.mainName}
+                                alt={lang === 'en' ? tName(member.name) : nameDetails.mainName}
                                 className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                                 loading="lazy"
                               />
@@ -252,7 +252,7 @@ export default function CommitteePage() {
 
                           {/* Name */}
                           <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 mb-1 group-hover:text-brand-maroon transition-colors leading-snug">
-                            {nameDetails.mainName}
+                            {lang === 'en' ? tName(member.name) : nameDetails.mainName}
                           </h3>
 
                           {/* Decorative Wave Accent */}
@@ -260,21 +260,24 @@ export default function CommitteePage() {
                             <FestiveWaveAccent className="w-12 h-1.5 text-amber-500/70" />
                           </div>
 
-                          {/* Nickname & English Transliteration */}
-                          {(nameDetails.nickname || nameDetails.englishName) && (
-                            <div className="flex items-center justify-center gap-1.5 mb-2 flex-wrap">
-                              {nameDetails.nickname && (
-                                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
-                                  {b('ডাকনাম:', 'Nickname:')} “{nameDetails.nickname}”
-                                </span>
-                              )}
-                              {nameDetails.englishName && (
-                                <span className="text-[11px] font-mono text-stone-500 font-semibold uppercase tracking-wider">
-                                  {nameDetails.englishName}
-                                </span>
-                              )}
-                            </div>
-                          )}
+                          {/* Nickname & Sub-language Transliteration */}
+                          <div className="flex items-center justify-center gap-1.5 mb-2 flex-wrap">
+                            {nameDetails.nickname && (
+                              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
+                                {b('ডাকনাম:', 'Nickname:')} “{lang === 'en' ? tNickname(nameDetails.nickname) : nameDetails.nickname}”
+                              </span>
+                            )}
+                            {lang === 'bn' && nameDetails.englishName && (
+                              <span className="text-[11px] font-mono text-stone-500 font-semibold uppercase tracking-wider">
+                                {nameDetails.englishName}
+                              </span>
+                            )}
+                            {lang === 'en' && (
+                              <span className="text-[11px] font-serif text-stone-500 font-semibold tracking-wide">
+                                {nameDetails.mainName}
+                              </span>
+                            )}
+                          </div>
                         </div>
 
                         {/* Role & Wing Badges */}
@@ -285,7 +288,7 @@ export default function CommitteePage() {
                               : 'bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon'
                           }`}>
                             {isClubMember && <ClubCrestIcon className="w-3.5 h-3.5 text-amber-700" />}
-                            <span>{t(parsed.cleanRole)}</span>
+                            <span>{tRole(parsed.cleanRole)}</span>
                           </div>
 
                           {/* Clickable Phone Number */}
@@ -364,7 +367,7 @@ export default function CommitteePage() {
                             {member.image ? (
                               <img
                                 src={member.image}
-                                alt={nameDetails.mainName}
+                                alt={lang === 'en' ? tName(member.name) : nameDetails.mainName}
                                 className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                                 loading="lazy"
                               />
@@ -372,24 +375,29 @@ export default function CommitteePage() {
                               <User className="w-10 h-10 text-stone-300" />
                             )}
                           </div>
-                          <h3 className="text-sm sm:text-base font-bold text-stone-900 leading-snug line-clamp-2 mb-0.5 group-hover:text-brand-maroon transition-colors" title={nameDetails.mainName}>
-                            {nameDetails.mainName}
+                          <h3 className="text-sm sm:text-base font-bold text-stone-900 leading-snug line-clamp-2 mb-0.5 group-hover:text-brand-maroon transition-colors" title={lang === 'en' ? tName(member.name) : nameDetails.mainName}>
+                            {lang === 'en' ? tName(member.name) : nameDetails.mainName}
                           </h3>
                           {nameDetails.nickname && (
                             <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 mb-1">
-                              “{nameDetails.nickname}”
+                              “{lang === 'en' ? tNickname(nameDetails.nickname) : nameDetails.nickname}”
                             </span>
                           )}
-                          {nameDetails.englishName && (
+                          {lang === 'bn' && nameDetails.englishName && (
                             <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block mb-1">
                               {nameDetails.englishName}
+                            </span>
+                          )}
+                          {lang === 'en' && (
+                            <span className="text-[10px] font-serif text-stone-400 tracking-wider block mb-1">
+                              {nameDetails.mainName}
                             </span>
                           )}
                         </div>
 
                         <div className="flex flex-col items-center gap-1 mt-2">
                           <span className="text-[11px] sm:text-xs text-stone-600 font-semibold px-2 sm:px-2.5 py-0.5 rounded-full bg-stone-100 border border-stone-200/60">
-                            {t(parsed.cleanRole)}
+                            {tRole(parsed.cleanRole)}
                           </span>
                           {parsed.phone && (
                             <a
@@ -404,7 +412,7 @@ export default function CommitteePage() {
                           {isClubMember && (
                             <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/70">
                               <ClubCrestIcon className="w-2.5 h-2.5 text-amber-700" />
-                              <span>{b('ক্লাব', 'Club')} • ২০২৬-২৮</span>
+                              <span>{b('ক্লাব', 'Club')} • {toDigits('২০২৬-২৮')}</span>
                             </span>
                           )}
                           {parsed.wing === 'Samiti' && (

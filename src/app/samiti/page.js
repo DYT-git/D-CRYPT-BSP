@@ -21,9 +21,25 @@ import {
   TornDeckleEdge 
 } from '@/components/HeritageIcons';
 
+function parseMemberNameDetails(rawName) {
+  if (!rawName) return { mainName: '', nickname: '', englishName: '' };
+  const parenMatches = [...rawName.matchAll(/\(([^)]+)\)/g)].map(m => m[1].trim());
+  let nickname = '';
+  let englishName = '';
+  parenMatches.forEach(item => {
+    if (/[a-zA-Z]/.test(item)) {
+      englishName = item;
+    } else {
+      nickname = item;
+    }
+  });
+  const mainName = rawName.replace(/\([^)]+\)/g, '').trim();
+  return { mainName, nickname, englishName };
+}
+
 export default function SamitiPage() {
   const { data, settings, selectedYear } = useData();
-  const { lang, b, t, toDigits } = useLanguage();
+  const { lang, b, t, tRole, tName, tNickname, toDigits } = useLanguage();
 
   // Gallery filter & lightbox
   const [activeCategory, setActiveCategory] = useState('All');
@@ -153,8 +169,12 @@ export default function SamitiPage() {
           role = parts[0].trim();
           phone = '+91 ' + parts[1].replace(/phone|tel|m\.|m:/gi, '').trim();
         }
+        const parsedName = parseMemberNameDetails(m.name);
         return {
-          name: m.name,
+          id: m.id,
+          name: parsedName.mainName,
+          englishName: parsedName.englishName,
+          rawName: m.name,
           role: role,
           image: m.image,
           phone: phone
@@ -162,21 +182,21 @@ export default function SamitiPage() {
       });
 
     const source = dynamicSamitiMembers.length > 0 ? dynamicSamitiMembers : [
-      { name: b('শ্রী পার্থসারথি সেনগুপ্ত', 'Partha Sarathi Sengupta'), role: b('সভাপতি', 'President'), phone: '+91 98300 XXXXX' },
-      { name: b('শ্রী অসীম চ্যাটার্জি', 'Ashim Chatterjee'), role: b('সহ-সভাপতি', 'Vice President'), phone: '+91 98301 XXXXX' },
-      { name: b('শ্রী সুশান্ত রায়', 'Sushanta Roy'), role: b('সাধারণ সম্পাদক', 'General Secretary'), phone: '+91 98302 XXXXX' },
-      { name: b('শ্রী ভাস্কর মজুমদার', 'Bhaskar Majumdar'), role: b('সহ-সম্পাদক', 'Assistant Secretary'), phone: '+91 98303 XXXXX' },
-      { name: b('শ্রী তপন ভট্টাচার্য', 'Tapan Bhattacharya'), role: b('পরিকাঠামো আহ্বায়ক', 'Civic Works Convenor'), phone: '+91 98304 XXXXX' },
-      { name: b('শ্রীমতী সোমা মুখার্জি', 'Soma Mukherjee'), role: b('পরিচ্ছন্নতা ও স্বাস্থ্য', 'Sanitation & Environment'), phone: '+91 98305 XXXXX' },
-      { name: b('শ্রী নারায়ণ ঘোষ', 'Narayan Ghosh'), role: b('কোষাধ্যক্ষ', 'Treasurer'), phone: '+91 98306 XXXXX' },
-      { name: b('শ্রী অলোক চক্রবর্তী', 'Aloke Chakraborty'), role: b('প্রবীণ নাগরিক সমন্বয়ক', 'Senior Citizen Support'), phone: '+91 98307 XXXXX' },
+      { name: 'শ্রী পার্থসারথি সেনগুপ্ত', englishName: 'Partha Sarathi Sengupta', rawName: 'শ্রী পার্থসারথি সেনগুপ্ত (PARTHA SARATHI SENGUPTA)', role: 'সভাপতি', phone: '+91 98300 XXXXX' },
+      { name: 'শ্রী অসীম চ্যাটার্জি', englishName: 'Ashim Chatterjee', rawName: 'শ্রী অসীম চ্যাটার্জি (ASHIM CHATTERJEE)', role: 'সহ-সভাপতি', phone: '+91 98301 XXXXX' },
+      { name: 'শ্রী সুশান্ত রায়', englishName: 'Sushanta Roy', rawName: 'শ্রী সুশান্ত রায় (SUSHANTA ROY)', role: 'সাধারণ সম্পাদক', phone: '+91 98302 XXXXX' },
+      { name: 'শ্রী ভাস্কর মজুমদার', englishName: 'Bhaskar Majumdar', rawName: 'শ্রী ভাস্কর মজুমদার (BHASKAR MAJUMDAR)', role: 'সহ-সম্পাদক', phone: '+91 98303 XXXXX' },
+      { name: 'শ্রী তপন ভট্টাচার্য', englishName: 'Tapan Bhattacharya', rawName: 'শ্রী তপন ভট্টাচার্য (TAPAN BHATTACHARYA)', role: 'পরিকাঠামো আহ্বায়ক', phone: '+91 98304 XXXXX' },
+      { name: 'শ্রীমতী সোমা মুখার্জি', englishName: 'Soma Mukherjee', rawName: 'শ্রীমতী সোমা মুখার্জি (SOMA MUKHERJEE)', role: 'পরিচ্ছন্নতা ও স্বাস্থ্য', phone: '+91 98305 XXXXX' },
+      { name: 'শ্রী নারায়ণ ঘোষ', englishName: 'Narayan Ghosh', rawName: 'শ্রী নারায়ণ ঘোষ (NARAYAN GHOSH)', role: 'কোষাধ্যক্ষ', phone: '+91 98306 XXXXX' },
+      { name: 'শ্রী অলোক চক্রবর্তী', englishName: 'Aloke Chakraborty', rawName: 'শ্রী অলোক চক্রবর্তী (ALOKE CHAKRABORTY)', role: 'প্রবীণ নাগরিক সমন্বয়ক', phone: '+91 98307 XXXXX' },
     ];
 
     return source.filter(m => 
-      m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (m.rawName || m.name).toLowerCase().includes(searchQuery.toLowerCase()) || 
       m.role.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [data.members, b, searchQuery]);
+  }, [data.members, searchQuery]);
 
   // Samiti Financial Documents
   const samitiFinances = useMemo(() => {
@@ -241,7 +261,7 @@ export default function SamitiPage() {
 
             {/* Samiti Main Title */}
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-tight text-white mb-2 leading-tight drop-shadow-md">
-              {settings.samitiHeroTitle || b('সোনালী পার্ক', 'Sonali Park')} <span className="text-emerald-400">{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
+              {lang === 'en' ? (t(settings.samitiHeroTitle) || 'Sonali Park') : (settings.samitiHeroTitle || 'সোনালী পার্ক')} <span className="text-emerald-400">{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
             </h1>
             <div className="flex justify-center mb-4">
               <FestiveWaveAccent className="w-16 h-2 text-emerald-400/90" />
@@ -249,10 +269,9 @@ export default function SamitiPage() {
 
             {/* Samiti Subtitle & Tagline */}
             <p className="text-base sm:text-lg md:text-xl text-stone-200 font-normal max-w-2xl leading-relaxed mb-4 drop-shadow-sm">
-              {settings.samitiHeroTagline || b(
-                'আমাদের পাড়ার নিরাপত্তা, পরিচ্ছন্নতা, রাস্তাঘাট ও নাগরিকদের দৈনন্দিন স্বাচ্ছন্দ্য রক্ষায় সার্বক্ষণিক নিয়োজিত রেজিস্টার্ড উন্নয়ন পরিষদ।',
-                'The registered Residents Welfare Association stewarding civic infrastructure, neighborhood security, green cleanliness, and resident welfare in Bansdroni Sonali Park.'
-              )}
+              {lang === 'en'
+                ? (t(settings.samitiHeroTagline) || 'The registered Residents Welfare Association stewarding civic infrastructure, neighborhood security, green cleanliness, and resident welfare in Bansdroni Sonali Park.')
+                : (settings.samitiHeroTagline || 'আমাদের পাড়ার নিরাপত্তা, পরিচ্ছন্নতা, রাস্তাঘাট ও নাগরিকদের দৈনন্দিন স্বাচ্ছন্দ্য রক্ষায় সার্বক্ষণিক নিয়োজিত রেজিস্টার্ড উন্নয়ন পরিষদ।')}
             </p>
           </div>
         </div>
@@ -498,13 +517,13 @@ export default function SamitiPage() {
                     )}
                   </div>
                   <h3 className="font-serif font-bold text-stone-900 text-base mb-1.5 group-hover:text-emerald-900 transition-colors leading-snug">
-                    {notice.title}
+                    {t(notice.title)}
                   </h3>
                   <div className="mb-2.5">
                     <FestiveWaveAccent className="w-12 h-1.5 text-emerald-600/80" />
                   </div>
                   <p className="text-xs sm:text-sm text-stone-600 leading-relaxed whitespace-pre-line mb-3">
-                    {notice.text}
+                    {t(notice.text)}
                   </p>
                 </div>
 
@@ -557,19 +576,31 @@ export default function SamitiPage() {
                 <div className="w-full flex flex-col items-center">
                   <div className="relative w-full max-w-[120px] aspect-[4/5] mx-auto rounded-xl overflow-hidden border border-emerald-200/80 bg-stone-100 shadow-2xs mb-2.5 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
                     {m.image ? (
-                      <img src={m.image} alt={m.name} className="w-full h-full object-cover object-top" loading="lazy" />
+                      <img src={m.image} alt={lang === 'en' ? tName(m.rawName || m.name) : m.name} className="w-full h-full object-cover object-top" loading="lazy" />
                     ) : (
                       <div className="w-full h-full bg-emerald-50 text-emerald-800 font-serif font-bold text-2xl flex items-center justify-center">
-                        {m.name.charAt(0)}
+                        {(lang === 'en' ? tName(m.rawName || m.name) : m.name).charAt(0)}
                       </div>
                     )}
                   </div>
-                  <h4 className="font-bold text-stone-900 text-xs sm:text-sm leading-snug line-clamp-2 group-hover:text-emerald-800 transition-colors">{m.name}</h4>
+                  <h4 className="font-bold text-stone-900 text-xs sm:text-sm leading-snug line-clamp-2 group-hover:text-emerald-800 transition-colors" title={lang === 'en' ? tName(m.rawName || m.name) : m.name}>
+                    {lang === 'en' ? tName(m.rawName || m.name) : m.name}
+                  </h4>
+                  {lang === 'bn' && m.englishName && (
+                    <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block mt-0.5">
+                      {m.englishName}
+                    </span>
+                  )}
+                  {lang === 'en' && (
+                    <span className="text-[10px] font-serif text-stone-400 tracking-wide block mt-0.5">
+                      {m.name}
+                    </span>
+                  )}
                 </div>
 
                 <div className="w-full flex flex-col items-center gap-1.5 mt-3 pt-2.5 border-t border-stone-200/60">
                   <span className="px-2.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-900 text-[11px] font-bold border border-emerald-200/80 leading-tight">
-                    {m.role}
+                    {tRole(m.role)}
                   </span>
                   {m.phone && (
                     <a
@@ -657,9 +688,9 @@ export default function SamitiPage() {
                   </div>
                   <div>
                     <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-emerald-600/80 text-white inline-block mb-1">
-                      {img.category || 'Samiti'}
+                      {t(img.category) || 'Samiti'}
                     </span>
-                    <h4 className="text-white text-sm font-bold truncate">{img.title}</h4>
+                    <h4 className="text-white text-sm font-bold truncate">{t(img.title)}</h4>
                   </div>
                 </div>
 
@@ -717,7 +748,7 @@ export default function SamitiPage() {
                 {b('প্রধান ব্যয়ের খাত', 'Major Development Head')}
               </span>
               <h3 className="text-lg sm:text-xl font-bold text-stone-900 leading-tight mb-1">
-                {b(settings.samitiMajorExpenseTitle || 'রাস্তা সংস্কার ও জলনিকাশি', 'Road Repairs & Drainage Dredging')}
+                {lang === 'en' ? (t(settings.samitiMajorExpenseTitle) || 'Road Repairs & Drainage Dredging') : (settings.samitiMajorExpenseTitle || 'রাস্তা সংস্কার ও জলনিকাশি')}
               </h3>
               <p className="text-xs font-bold text-teal-700 font-mono">
                 {toDigits(settings.samitiMajorExpenseAmount || '₹ ৫,১০,০০০', lang)}
@@ -730,7 +761,7 @@ export default function SamitiPage() {
             {samitiFinances.map((doc, idx) => (
               <Link
                 key={idx}
-                href={`?viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(doc.title)}`}
+                href={`?viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(t(doc.title))}`}
                 scroll={false}
                 className="group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-stone-50 border border-stone-200/80 hover:border-emerald-600/40 hover:bg-white transition-all shadow-xs hover:shadow-md cursor-pointer"
               >
@@ -740,7 +771,7 @@ export default function SamitiPage() {
                   </div>
                   <div className="min-w-0">
                     <h4 className="font-serif font-bold text-sm sm:text-base text-stone-900 group-hover:text-emerald-700 transition-colors truncate">
-                      {doc.title}
+                      {t(doc.title)}
                     </h4>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-stone-200/70 text-stone-600">
@@ -793,9 +824,9 @@ export default function SamitiPage() {
             <div className="flex items-center justify-between w-full bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-6 py-3.5 gap-4">
               <div className="min-w-0">
                 <span className="text-emerald-300 text-[10px] uppercase tracking-widest font-bold block">
-                  {selectedImage.category || 'Samiti'}
+                  {t(selectedImage.category) || 'Samiti'}
                 </span>
-                <h3 className="text-white font-bold text-lg truncate mt-0.5">{selectedImage.title}</h3>
+                <h3 className="text-white font-bold text-lg truncate mt-0.5">{t(selectedImage.title)}</h3>
               </div>
               <button
                 type="button"

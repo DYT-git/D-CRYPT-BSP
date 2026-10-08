@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 
 /**
  * DigitalDiya: Interactive Sacred Diya Lighting Experience.
@@ -9,6 +10,7 @@ import { useState, useEffect } from 'react';
  * - 100% responsive, hardware-accelerated, and lightweight.
  */
 export default function DigitalDiya() {
+  const { lang, b, toDigits } = useLanguage();
   const [isLit, setIsLit] = useState(false);
   const [count, setCount] = useState(1428);
   const [showSparks, setShowSparks] = useState(false);
@@ -90,7 +92,7 @@ export default function DigitalDiya() {
       <button
         type="button"
         onClick={handleLight}
-        aria-label={isLit ? 'প্রদীপ প্রজ্জ্বলিত' : 'শ্রদ্ধার্ঘ্য দিতে প্রদীপ জ্বালান'}
+        aria-label={isLit ? b('প্রদীপ প্রজ্জ্বলিত', 'Diya Lit') : b('শ্রদ্ধার্ঘ্য দিতে প্রদীপ জ্বালান', 'Light a Diya to offer homage')}
         className={`group relative inline-flex items-center gap-2.5 px-3.5 sm:px-4 py-1.5 rounded-full transition-all duration-300 shadow-[0_4px_16px_rgba(0,0,0,0.6)] cursor-pointer select-none ${
           isLit
             ? 'bg-gradient-to-r from-amber-950/80 via-stone-950/85 to-amber-950/80 border border-amber-400/50 hover:border-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.3)]'
@@ -164,17 +166,17 @@ export default function DigitalDiya() {
         <div className="flex items-center gap-1.5 text-left">
           {isLit ? (
             <span className="text-[11px] sm:text-xs font-serif font-semibold text-amber-200 tracking-wide drop-shadow-sm">
-              শ্রদ্ধার্ঘ্য নিবেদিত · <span className="font-bold text-amber-100">{toBn(count)}</span> জন ভক্ত
+              {b('শ্রদ্ধার্ঘ্য নিবেদিত', 'Offering Presented')} · <span className="font-bold text-amber-100">{toDigits(count, lang)}</span> {b('জন ভক্ত', 'devotees')}
             </span>
           ) : (
             <span className="text-[11px] sm:text-xs font-serif font-semibold text-amber-100/90 group-hover:text-amber-200 tracking-wide transition-colors">
-              প্রদীপ জ্বালান · <span className="text-amber-300/80 font-normal">{toBn(count)}</span> জন ভক্ত
+              {b('প্রদীপ জ্বালান', 'Light a Diya')} · <span className="text-amber-300/80 font-normal">{toDigits(count, lang)}</span> {b('জন ভক্ত', 'devotees')}
             </span>
           )}
         </div>
 
         {/* Mini bell sound icon hint */}
-        <span className="text-[10px] text-amber-300/60 group-hover:text-amber-200 transition-colors ml-0.5" title="শব্দ সহ">
+        <span className="text-[10px] text-amber-300/60 group-hover:text-amber-200 transition-colors ml-0.5" title={b('শব্দ সহ', 'With sound')}>
           🔔
         </span>
       </button>

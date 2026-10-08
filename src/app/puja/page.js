@@ -64,13 +64,13 @@ export default function PujaSchedule() {
               <span>{b('শারদ থিম', 'Theme of the Year')} {toDigits(selectedYear)}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-2 tracking-tight leading-tight">
-              &ldquo;{settings.themeTitle || b('অতীতের আয়নায় আগামী', 'Reflections of the Past, Visions of the Future')}&rdquo;
+              &ldquo;{lang === 'en' ? (t(settings.themeTitle) || 'Reflections of the Past, Visions of the Future') : (settings.themeTitle ? settings.themeTitle.replace(/^["'“]/, '').replace(/["'”]$/, '') : 'অতীতের আয়নায় আগামী')}&rdquo;
             </h2>
             <div className="flex justify-center my-2">
               <FestiveWaveAccent className="w-16 h-2 text-amber-300/80" />
             </div>
             <p className="text-rose-100/90 text-sm sm:text-base md:text-lg italic mb-6 sm:mb-8 font-light">
-              ({settings.themeSubtitle || b('অতীতের ঐতিহ্যে আগামী দিনের স্বপ্ন', 'Reflections of the Past, Visions of the Future')})
+              ({lang === 'en' ? (t(settings.themeSubtitle) || 'Reflections of the Past, Visions of the Future') : (settings.themeSubtitle || 'অতীতের ঐতিহ্যে আগামী দিনের স্বপ্ন')})
             </p>
 
             {/* Artist Squircles with Handcrafted Vector Motifs */}
@@ -81,7 +81,7 @@ export default function PujaSchedule() {
                 </div>
                 <div>
                   <span className="block text-[11px] uppercase tracking-wider text-rose-200 font-bold">{b('মণ্ডপ শিল্পী', 'Pandal Artist')}</span>
-                  <span className="font-semibold text-sm text-white/95">{settings.pandalArtist || b('শিল্প নিকেতন', 'Shilpa Niketan')}</span>
+                  <span className="font-semibold text-sm text-white/95">{lang === 'en' ? (t(settings.pandalArtist) || 'Shilpa Niketan') : (settings.pandalArtist || 'শিল্প নিকেতন')}</span>
                 </div>
               </div>
               <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-sm">
@@ -90,7 +90,7 @@ export default function PujaSchedule() {
                 </div>
                 <div>
                   <span className="block text-[11px] uppercase tracking-wider text-rose-200 font-bold">{b('প্রতিমা শিল্পী', 'Idol Sculptor')}</span>
-                  <span className="font-semibold text-sm text-white/95">{settings.idolArtist || b('সৌমেন পাল', 'Soumen Paul')}</span>
+                  <span className="font-semibold text-sm text-white/95">{lang === 'en' ? (t(settings.idolArtist) || 'Sanatan Rudra Paul') : (settings.idolArtist || 'সনাতন রুদ্র পাল')}</span>
                 </div>
               </div>
               <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-sm">
@@ -99,7 +99,7 @@ export default function PujaSchedule() {
                 </div>
                 <div>
                   <span className="block text-[11px] uppercase tracking-wider text-rose-200 font-bold">{b('আলোকসজ্জা', 'Illumination')}</span>
-                  <span className="font-semibold text-sm text-white/95">{settings.lightingArtist || b('রয়েল লাইটস', 'Royal Lights')}</span>
+                  <span className="font-semibold text-sm text-white/95">{lang === 'en' ? (t(settings.lightingArtist) || 'Das Electric') : (settings.lightingArtist || 'দাস ইলেকট্রিক')}</span>
                 </div>
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function PujaSchedule() {
                           </span>
                         </div>
                         <h3 className="text-base sm:text-lg md:text-xl font-serif font-bold text-stone-900 group-hover:text-brand-maroon transition-colors leading-tight">
-                          {cleanTitle}
+                          {t(cleanTitle)}
                         </h3>
                       </div>
                     </div>
@@ -190,6 +190,13 @@ export default function PujaSchedule() {
                           const timeMatch = step.match(/^([^\s]+(?:\s+[^\s]+)?\s*টায়|[^\s]+(?:\s+[^\s]+)?\s*থেকে)/);
                           const timeBadge = timeMatch ? timeMatch[0] : null;
                           const ritualText = timeMatch ? step.slice(timeMatch[0].length).trim() : step;
+                          
+                          // Convert Bengali time badge to English format (e.g. "সকাল ৮:০০ টায়" -> "8:00 AM")
+                          const formattedTime = timeBadge && lang === 'en'
+                            ? (timeBadge.includes('থেকে') 
+                                ? `${toDigits(timeBadge.replace(/[^০-৯0-9:]/g, ''), 'en')} onwards`
+                                : `${toDigits(timeBadge.replace(/[^০-৯0-9:]/g, ''), 'en')} ${timeBadge.includes('রাত') || timeBadge.includes('সন্ধ্যা') || timeBadge.includes('দুপুর') || timeBadge.includes('বিকেল') ? 'PM' : 'AM'}`)
+                            : timeBadge;
 
                           return (
                             <div key={sIdx} className="relative group/step">
@@ -197,13 +204,13 @@ export default function PujaSchedule() {
                               <div className="absolute -left-[21px] sm:-left-[25px] top-2 w-2 h-2 rounded-full bg-brand-maroon ring-4 ring-[#FFFDF9]" />
 
                               <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2.5 bg-[#FAF7F2] p-2 sm:p-2.5 rounded-xl border border-[#E8DFD1]/60 hover:border-amber-400/50 transition-colors">
-                                {timeBadge && (
+                                {formattedTime && (
                                   <span className="inline-flex items-center gap-1 text-[11px] font-serif font-bold text-brand-maroon bg-white px-2 py-0.5 rounded-md border border-[#E8DFD1]/70 shrink-0 w-max shadow-2xs">
-                                    🕒 {timeBadge}
+                                    🕒 {formattedTime}
                                   </span>
                                 )}
                                 <span className="text-xs sm:text-[13px] text-stone-800 font-serif leading-relaxed">
-                                  {ritualText}
+                                  {t(ritualText)}
                                 </span>
                               </div>
                             </div>

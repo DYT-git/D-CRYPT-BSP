@@ -57,7 +57,7 @@ function parseMemberNameDetails(rawName) {
 
 export default function ClubPage() {
   const { data, settings, selectedYear } = useData();
-  const { lang, b, t, toDigits } = useLanguage();
+  const { lang, b, t, tRole, tName, tNickname, toDigits } = useLanguage();
 
   // Gallery category filter
   const [activeCategory, setActiveCategory] = useState('All');
@@ -296,7 +296,7 @@ const FALLBACK_CLUB_MEMBERS = [
 
             {/* Club Main Title */}
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-black tracking-tight text-white mb-2 leading-tight drop-shadow-md">
-              {settings.clubHeroTitle || b('সোনালী সঙ্ঘ', 'Sonali Sangha')} <span className="text-amber-400">{b('ক্লাব', 'Club')}</span>
+              {lang === 'en' ? (t(settings.clubHeroTitle) || 'Sonali Sangha') : (settings.clubHeroTitle || 'সোনালী সঙ্ঘ')} <span className="text-amber-400">{b('ক্লাব', 'Club')}</span>
             </h1>
             <div className="flex justify-center mb-4">
               <FestiveWaveAccent className="w-16 h-2 text-amber-400/90" />
@@ -304,10 +304,9 @@ const FALLBACK_CLUB_MEMBERS = [
 
             {/* Club Subtitle & Tagline */}
             <p className="text-base sm:text-lg md:text-xl text-stone-200 font-normal max-w-2xl leading-relaxed drop-shadow-sm">
-              {settings.clubHeroTagline || b(
-                'বাঁশদ্রোণী সোনালী পার্কের সংস্কৃতি, ক্রীড়া ও যুবকল্যাণের প্রাণকেন্দ্র। খেলাধুলা, সাংস্কৃতিক অনুষ্ঠান এবং রক্তদান শিবিরের মাধ্যমে সমাজের সেবায় আমরা নিয়োজিত।',
-                'The athletic, cultural, and youth epicenter of Bansdroni Sonali Park. Fostering sporting excellence, cultural unity, and humanitarian welfare since 1952.'
-              )}
+              {lang === 'en'
+                ? (t(settings.clubHeroTagline) || 'The athletic, cultural, and youth epicenter of Bansdroni Sonali Park. Fostering sporting excellence, cultural unity, and humanitarian welfare since 1952.')
+                : (settings.clubHeroTagline || 'বাঁশদ্রোণী সোনালী পার্কের সংস্কৃতি, ক্রীড়া ও যুবকল্যাণের প্রাণকেন্দ্র। খেলাধুলা, সাংস্কৃতিক অনুষ্ঠান এবং রক্তদান শিবিরের মাধ্যমে সমাজের সেবায় আমরা নিয়োজিত।')}
             </p>
           </div>
         </div>
@@ -444,13 +443,13 @@ const FALLBACK_CLUB_MEMBERS = [
                     )}
                   </div>
                   <h3 className="font-serif font-bold text-stone-900 text-base mb-1.5 group-hover:text-amber-900 transition-colors leading-snug">
-                    {notice.title}
+                    {t(notice.title)}
                   </h3>
                   <div className="mb-2.5">
                     <FestiveWaveAccent className="w-12 h-1.5 text-amber-500/80" />
                   </div>
                   <p className="text-xs sm:text-sm text-stone-600 leading-relaxed whitespace-pre-line mb-3">
-                    {notice.text}
+                    {t(notice.text)}
                   </p>
                 </div>
 
@@ -518,27 +517,34 @@ const FALLBACK_CLUB_MEMBERS = [
                   </div>
 
                   {/* Name */}
-                  <h4 className="font-bold text-stone-900 text-xs sm:text-sm leading-snug line-clamp-1 group-hover:text-amber-800 transition-colors">
-                    {m.name}
+                  <h4 className="font-bold text-stone-900 text-xs sm:text-sm leading-snug line-clamp-1 group-hover:text-amber-800 transition-colors" title={lang === 'en' ? tName(m.rawName || m.name) : m.name}>
+                    {lang === 'en' ? tName(m.rawName || m.name) : m.name}
                   </h4>
 
-                  {/* Nickname & English */}
-                  {m.nickname && (
-                    <span className="mt-1 px-2 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
-                      “{m.nickname}”
-                    </span>
-                  )}
-                  {m.englishName && (
-                    <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block mt-0.5">
-                      {m.englishName}
-                    </span>
-                  )}
+                  {/* Nickname & Sub-language Transliteration */}
+                  <div className="flex items-center justify-center gap-1 mt-1 flex-wrap">
+                    {m.nickname && (
+                      <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
+                        “{lang === 'en' ? tNickname(m.nickname) : m.nickname}”
+                      </span>
+                    )}
+                    {lang === 'bn' && m.englishName && (
+                      <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block">
+                        {m.englishName}
+                      </span>
+                    )}
+                    {lang === 'en' && (
+                      <span className="text-[10px] font-serif text-stone-400 tracking-wide block">
+                        {m.name}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Role & Direct Phone Action */}
                 <div className="w-full flex flex-col items-center gap-1.5 mt-3 pt-2.5 border-t border-stone-200/60">
                   <span className="px-2.5 py-0.5 rounded-full bg-amber-100/80 text-amber-900 text-[11px] font-bold border border-amber-200/80 leading-tight">
-                    {t(m.role)}
+                    {tRole(m.role)}
                   </span>
                   {m.phone ? (
                     <a
@@ -550,7 +556,7 @@ const FALLBACK_CLUB_MEMBERS = [
                       <span>{m.phone}</span>
                     </a>
                   ) : (
-                    <span className="text-[10px] text-stone-400 font-mono">২০২৬–২০২৮</span>
+                    <span className="text-[10px] text-stone-400 font-mono">{toDigits('২০২৬–২০২৮')}</span>
                   )}
                 </div>
               </div>
@@ -627,9 +633,9 @@ const FALLBACK_CLUB_MEMBERS = [
                   </div>
                   <div>
                     <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-amber-500/80 text-white inline-block mb-1">
-                      {img.category || 'Club'}
+                      {t(img.category) || 'Club'}
                     </span>
-                    <h4 className="text-white text-sm font-bold truncate">{img.title}</h4>
+                    <h4 className="text-white text-sm font-bold truncate">{t(img.title)}</h4>
                   </div>
                 </div>
 
@@ -687,7 +693,7 @@ const FALLBACK_CLUB_MEMBERS = [
                 {b('প্রধান ব্যয়ের খাত', 'Major Expense Head')}
               </span>
               <h3 className="text-lg sm:text-xl font-bold text-stone-900 leading-tight mb-1">
-                {b(settings.clubMajorExpenseTitle || 'ক্রীড়া টুর্নামেন্ট ও উৎসব', 'Sports Tournaments & Celebrations')}
+                {lang === 'en' ? (t(settings.clubMajorExpenseTitle) || 'Sports Tournaments & Celebrations') : (settings.clubMajorExpenseTitle || 'ক্রীড়া টুর্নামেন্ট ও উৎসব')}
               </h3>
               <p className="text-xs font-bold text-amber-700 font-mono">
                 {toDigits(settings.clubMajorExpenseAmount || '₹ ৩,৫০,০০০', lang)}
@@ -700,7 +706,7 @@ const FALLBACK_CLUB_MEMBERS = [
             {clubFinances.map((doc, idx) => (
               <Link
                 key={idx}
-                href={`?viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(doc.title)}`}
+                href={`?viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(t(doc.title))}`}
                 scroll={false}
                 className="group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-stone-50 border border-stone-200/80 hover:border-brand-maroon/40 hover:bg-white transition-all shadow-xs hover:shadow-md cursor-pointer"
               >
@@ -710,7 +716,7 @@ const FALLBACK_CLUB_MEMBERS = [
                   </div>
                   <div className="min-w-0">
                     <h4 className="font-serif font-bold text-sm sm:text-base text-stone-900 group-hover:text-brand-maroon transition-colors truncate">
-                      {doc.title}
+                      {t(doc.title)}
                     </h4>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-stone-200/70 text-stone-600">
@@ -763,9 +769,9 @@ const FALLBACK_CLUB_MEMBERS = [
             <div className="flex items-center justify-between w-full bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-6 py-3.5 gap-4">
               <div className="min-w-0">
                 <span className="text-amber-300 text-[10px] uppercase tracking-widest font-bold block">
-                  {selectedImage.category || 'Club'}
+                  {t(selectedImage.category) || 'Club'}
                 </span>
-                <h3 className="text-white font-bold text-lg truncate mt-0.5">{selectedImage.title}</h3>
+                <h3 className="text-white font-bold text-lg truncate mt-0.5">{t(selectedImage.title)}</h3>
               </div>
               <button
                 type="button"
