@@ -695,18 +695,16 @@ export default function HomePage() {
       </section>
 
       {/* ═══ 2. FESTIVAL CALENDAR PREVIEW (Authentic Panjika Calendar Leaves) ═══ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-14 sm:my-20">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
-            <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-serif font-bold ${curr.textHead} tracking-tight leading-tight`}>
-              {b('শারদীয়া উৎসব নির্ঘণ্ট ও আচার', 'Sharadiya Festival Schedule & Rituals')}
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
+              <span>{b('পুজো ক্যালেন্ডার', 'Festival Calendar')}</span>
+            </div>
+            <h2 className={`text-xl sm:text-2xl lg:text-3xl font-serif font-black ${curr.textHead} tracking-tight leading-snug`}>
+              {b('শারদীয়া উৎসবের দিনপঞ্জি', 'The Sacred Days of Durga Puja')}
             </h2>
-            <p className={`text-sm sm:text-base ${curr.textSub} mt-2 leading-relaxed max-w-2xl`}>
-              {b(
-                'মহাষষ্ঠী থেকে বিজয়া দশমী — প্রতিটি পূজাদিনের বিশেষ আচার, শুভ সময় ও প্রধান উৎসব সূচি',
-                'From Maha Shashti to Bijoya Dashami — Daily auspicious ritual timings and festive schedule.'
-              )}
-            </p>
           </div>
           <Link
             href="/puja"
@@ -865,24 +863,22 @@ export default function HomePage() {
       </section>
 
       {/* ═══ 3. GLIMPSES GALLERY (Unified Editorial Controls & No Scrollbar) ═══ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-14 sm:my-20">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 sm:gap-5 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
-            <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-serif font-bold ${curr.textHead} tracking-tight leading-tight`}>
-              {b('স্মৃতির পাতা থেকে • উৎসবের অ্যালবাম', 'Moments & Memories • Festival Anthology')}
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
+              <span>{b('আলোকচিত্র সংগ্রহ', 'Photo Archive')}</span>
+            </div>
+            <h2 className={`text-xl sm:text-2xl lg:text-3xl font-serif font-black ${curr.textHead} tracking-tight leading-snug`}>
+              {b('উৎসবের মুহূর্ত ও সোনালী স্মৃতি', 'Cherished Moments & Golden Memories')}
             </h2>
-            <p className={`text-sm sm:text-base ${curr.textSub} mt-2 leading-relaxed max-w-2xl`}>
-              {b(
-                'বিগত বছরগুলোর উৎসব, সাংস্কৃতিক মুহূর্ত, মণ্ডপের আলো ও মায়ের অপরূপ রূপের অ্যালবাম',
-                'Cherished memories of our celebrations, cultural evenings, illuminations, and community moments.'
-              )}
-            </p>
           </div>
 
           <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
             <Link
               href="/gallery"
-              className="inline-flex items-center gap-2 pl-4 sm:pl-5 pr-2 py-1.5 rounded-full text-xs sm:text-sm font-bold btn-tactile-parchment text-stone-800 hover:text-brand-maroon whitespace-nowrap group shadow-xs"
+              className="w-full sm:w-auto justify-center inline-flex items-center gap-2 pl-4 sm:pl-5 pr-2 py-1.5 rounded-full text-xs sm:text-sm font-bold btn-tactile-parchment text-stone-800 hover:text-brand-maroon whitespace-nowrap group shadow-xs"
             >
               <span>{b('পুরো অ্যালবাম দেখুন', 'View Full Album')}</span>
               <span className="w-6 h-6 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-xs font-bold transition-colors">
@@ -1092,18 +1088,16 @@ export default function HomePage() {
       )}
 
       {/* ═══ 4. PUJA NOTICES (MLH-Style Interactive Bulletin Showcase) ═══ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-14 sm:my-20">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
-            <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-serif font-bold ${curr.textHead} tracking-tight leading-tight`}>
-              {b('শারদীয়া দুর্গোৎসব বুলেটিন', 'Sharadiya Festival Bulletins')}
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
+              <span>{b('পাড়ার বার্তা', 'Community Desk')}</span>
+            </div>
+            <h2 className={`text-xl sm:text-2xl lg:text-3xl font-serif font-black ${curr.textHead} tracking-tight leading-snug`}>
+              {b('শারদীয়া দুর্গোৎসবের আনুষ্ঠানিক বিজ্ঞপ্তি', 'Official Puja Notices & Announcements')}
             </h2>
-            <p className={`text-sm sm:text-base ${curr.textSub} mt-2 leading-relaxed max-w-2xl`}>
-              {b(
-                'শারদীয়া দুর্গোৎসবের আনুষ্ঠানিক বিজ্ঞপ্তি, অঞ্জলি ও আরতির সময় এবং প্রয়োজনীয় নির্দেশিকা',
-                'Official Durga Puja notices, ritual timings, guidelines, and community announcements.'
-              )}
-            </p>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
@@ -1326,18 +1320,16 @@ export default function HomePage() {
       </section>
 
       {/* ═══ 5. VISIT OUR OTHER PORTALS (Compact Redesigned Bento Cards) ═══ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-14 sm:my-20">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
-            <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-serif font-bold ${curr.textHead} tracking-tight leading-tight`}>
-              {b('সংগঠনের দুই স্তম্ভ • সোনালী সঙ্ঘ ও উন্নয়ন সমিতি', 'The Two Pillars • Sonali Sangha & Unnayan Samiti')}
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
+              <span>{b('পাড়ার চালিকাশক্তি', 'Community Wings')}</span>
+            </div>
+            <h2 className={`text-xl sm:text-2xl lg:text-3xl font-serif font-black ${curr.textHead} tracking-tight leading-snug`}>
+              {b('পাড়ার ঐতিহ্য ও সেবার দুই স্তম্ভ', 'The Two Pillars of Heritage & Service')}
             </h2>
-            <p className={`text-sm sm:text-base ${curr.textSub} mt-2 leading-relaxed max-w-2xl`}>
-              {b(
-                'বাঁশদ্রোণী সোনালী পার্কের ক্রীড়া ও সাংস্কৃতিক পরিষদ এবং নাগরিক উন্নয়ন সমিতির নিজস্ব পোর্টাল — কমিটি, হিসাব ও কার্যক্রম।',
-                'Explore the dedicated portals of our sports & cultural club and our registered civic residents welfare association.'
-              )}
-            </p>
           </div>
           <Link
             href="/committee"

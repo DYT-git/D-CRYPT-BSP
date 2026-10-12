@@ -160,7 +160,7 @@ function CommitteeContent() {
       {/* ═══ Clean Editorial Header ═══ */}
       <header className="max-w-3xl mx-auto text-center mt-10 sm:mt-12 mb-10 px-4">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-4 tracking-tight leading-tight">
-          {b('আমাদের পরিচালনা', 'Our Executive')} <span className="text-brand-maroon">{b('পরিষদ ও কমিটি', 'Council & Committee')}</span>
+          {b('পরিচালনা পরিষদ ও', 'Executive Council &')} <span className="text-brand-maroon">{b('কমিটি সদস্যবৃন্দ', 'Committee Members')}</span>
         </h1>
         <p className="text-sm sm:text-base md:text-lg text-stone-600 font-light leading-relaxed">
           {b(
@@ -213,9 +213,13 @@ function CommitteeContent() {
             {/* ═══ 1. EXECUTIVE LEADERSHIP (High-Impact Cards) ═══ */}
             {leaders.length > 0 && (
               <div className="mb-16 sm:mb-20">
-                <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
-                    {b('শীর্ষ কার্যনির্বাহী', 'Executive')} <span className="text-brand-maroon">{b('নেতৃত্ব', 'Leadership')}</span>
+                <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
+                    <span>{b('কর্মকর্তা পরিষদ', 'Core Board')}</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
+                    {b('মূল কার্যনির্বাহী', 'Core Executive')} <span className="text-brand-maroon">{b('নেতৃত্ব', 'Leadership')}</span>
                   </h2>
                 </div>
 
@@ -349,13 +353,14 @@ function CommitteeContent() {
             {/* ═══ 2. GENERAL COMMITTEE (Responsive Member Grid) ═══ */}
             {generalMembers.length > 0 && (
               <div>
-                <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
+                <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
+                    <span>{b('পরিচালনা সদস্য', 'Council Members')}</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
                     {b('সম্মানীয় সদস্য ও', 'Distinguished Members &')} <span className="text-brand-maroon">{b('উপদেষ্টামণ্ডলী', 'Advisors')}</span>
                   </h2>
-                  <p className="text-stone-500 text-xs sm:text-sm mt-1">
-                    {b('বিভিন্ন উপ-কমিটি ও সেবামূলক কাজের দায়িত্বপ্রাপ্ত কর্মকর্তাবৃন্দ', 'Sub-committee coordinators and dedicated community welfare executives')}
-                  </p>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">

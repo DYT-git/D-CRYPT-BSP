@@ -190,8 +190,12 @@ function TransparencyContent() {
 
       {/* ═══ 1. FINANCIAL SUMMARY DASHBOARD (Dynamic Metric Cards as per Selection) ═══ */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
+        <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
+            <span>{b('বাজেট সারসংক্ষেপ', 'Budget Overview')}</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
             {toDigits(selectedYear, lang)} {metrics.headingTitle}
           </h2>
         </div>
@@ -249,13 +253,14 @@ function TransparencyContent() {
 
       {/* ═══ 2. DOWNLOAD PDF REPORTS (Audit Cards) ═══ */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
-            {b('অডিট ও আর্থিক রিপোর্ট', 'Audited Statements & Financial')} <span className="text-brand-maroon">{b('ডাউনলোড', 'Reports')}</span>
+        <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
+            <span>{b('আর্থিক প্রতিবেদন', 'Audited Accounts')}</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
+            {b('নিরীক্ষিত অডিট ও', 'Audited Statements &')} <span className="text-brand-maroon">{b('আর্থিক রিপোর্ট', 'Financial Reports')}</span>
           </h2>
-          <p className="text-stone-500 text-xs sm:text-sm mt-1">
-            {b('পূর্ণাঙ্গ হিসাব দেখতে নিচের যেকোনো ডকুমেন্টে ক্লিক করুন', 'Click on any document below to inspect audited accounts or download verified statements.')}
-          </p>
         </div>
 
         {filteredFinances.length > 0 ? (

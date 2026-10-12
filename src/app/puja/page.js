@@ -153,19 +153,16 @@ export default function PujaSchedule() {
       </section>
 
       {/* ═══ 2. RITUALS TIMELINE (Bento Timeline Cards) ═══ */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-24">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-4 border-b border-stone-200">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-14 sm:mb-18">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 border-b border-stone-200">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-rose-800 font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
-              <span className="w-4 h-0.5 bg-rose-700/70 rounded-full" />
-              <span>{b('পঞ্চমী থেকে বিজয়া দশমী', 'Mahapanchami to Bijoya Dashami')}</span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
+              <span>{b('পঞ্চমী থেকে দশমী', 'Panchami to Dashami')}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-stone-900 tracking-tight">
-              {b('পূজার নির্ঘণ্ট ও', 'Sacred Rituals &')} <span className="text-brand-maroon">{b('পবিত্র সূচি', 'Timetable')}</span>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
+              {b('পূজার নির্ঘণ্ট ও', 'Sacred Rituals &')} <span className="text-brand-maroon">{b('অঞ্জলির সময়সূচি', 'Anjali Timings')}</span>
             </h2>
-            <p className="text-stone-500 text-xs sm:text-sm mt-1">
-              {b('প্রতিদিনের পূজার নির্ঘণ্ট, অঞ্জলির সময় ও সান্ধ্য আরতির সময়সূচি', 'Daily rituals, puja timings, and pushpanjali schedule')}
-            </p>
           </div>
           <Link
             href="?viewPdf=/docs/sample-puja-programme-2026.pdf&pdfTitle=Puja%20Detailed%20Timetable"
@@ -280,17 +277,15 @@ export default function PujaSchedule() {
       </section>
 
       {/* ═══ 3. EVENING CULTURAL ROSTER (3-Column Tactile Cards) ═══ */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-stone-900 tracking-tight">
-            {b('সন্ধ্যার সাংস্কৃতিক', 'Sharadiya Cultural')} <span className="text-brand-maroon">{b('মহোৎসব', 'Extravaganza')}</span>
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
+            <span>{b('সান্ধ্য আসর', 'Evening Stage')}</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
+            {b('উৎসবের সান্ধ্য', 'Sharadiya Evening')} <span className="text-brand-maroon">{b('সাংস্কৃতিক আসর', 'Cultural Stage')}</span>
           </h2>
-          <p className="text-stone-500 text-xs sm:text-base mt-2">
-            {b(
-              'প্রতি সন্ধ্যায় বিশিষ্ট অতিথি শিল্পী ও পাড়ার সদস্যদের মনোজ্ঞ সাংস্কৃতিক নিবেদন',
-              'Special performances by distinguished guest artists and talented neighborhood members every evening.'
-            )}
-          </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 pt-4">
