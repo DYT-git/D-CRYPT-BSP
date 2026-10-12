@@ -2,14 +2,14 @@
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ShieldAlert } from 'lucide-react';
 
 function LoginForm() {
   const searchParams = useSearchParams();
   const urlError = searchParams.get('error');
 
   const getErrorMessage = () => {
-    if (urlError === 'unauthorized_email') return 'এই গুগল অ্যাকাউন্টটি অনুমোদিত অ্যাডমিন তালিকায় নেই। শুধুমাত্র অনুমোদিত অ্যাডমিন (pdyutiranjan@gmail.com) প্রবেশ করতে পারবেন।';
+    if (urlError === 'unauthorized_email') return 'এই গুগল অ্যাকাউন্টটি অনুমোদিত অ্যাডমিন তালিকায় নেই। অনুগ্রহ করে অনুমোদিত ইমেইল ব্যবহার করুন।';
     if (urlError === 'google_not_configured') return 'Google Login এখনো কনফিগার করা হয়নি।';
     if (urlError === 'google_failed') return 'গুগল সাইন-ইন প্রক্রিয়া বাতিল হয়েছে বা ব্যর্থ হয়েছে।';
     if (urlError === 'token_exchange_failed') return 'গুগল ভেরিফিকেশন ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।';
@@ -79,18 +79,6 @@ function LoginForm() {
           </svg>
           <span className="group-hover:text-stone-900">Sign in with Google</span>
         </a>
-
-        {/* Authorized Admin Notice */}
-        <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/70 flex items-start gap-2.5 text-left">
-          <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-          <div className="text-[11px] leading-relaxed text-stone-600">
-            <span className="font-bold text-stone-800 block">অনুমোদিত অ্যাডমিন অ্যাকাউন্ট:</span>
-            <code className="text-brand-maroon font-mono font-semibold">pdyutiranjan@gmail.com</code>
-            <p className="mt-1 text-stone-500">
-              নিরাপত্তার স্বার্থে পাসওয়ার্ড ভিত্তিক লগইন বন্ধ করা হয়েছে। শুধুমাত্র উল্লেখিত গুগল অ্যাকাউন্ট দিয়ে সাইন-ইন করে অ্যাডমিন পোর্টালে প্রবেশ করা যাবে।
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );

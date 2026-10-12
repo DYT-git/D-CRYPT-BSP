@@ -576,62 +576,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ═══ MINIMALIST HERITAGE MILESTONE STRIP (Unboxed Typography & Hairline Seams) ═══ */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 my-6 sm:my-10" aria-label="Heritage Milestones">
-        <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-stone-200/80 border-y border-stone-200/80 py-5 sm:py-7 bg-transparent">
-          {/* Milestone 1 */}
-          <div className="text-center px-4 py-3 sm:py-1">
-            <div className="text-3xl sm:text-4xl lg:text-5xl font-serif font-black tracking-tight text-brand-maroon">
-              {b('৭৫+', '75+')}
-            </div>
-            <div className="text-[12px] sm:text-xs uppercase tracking-wider text-stone-600 font-semibold mt-1">
-              {b('ঐতিহ্যের হীরক জয়ন্তী', 'Jubilee Heritage')}
-            </div>
-            <p className="text-[11px] text-stone-500 hidden sm:block mt-0.5">
-              {b('১৯৫১ সাল থেকে নিরবচ্ছিন্ন পথচলা', 'Unbroken community since 1951')}
-            </p>
-          </div>
 
-          {/* Milestone 2 */}
-          <div className="text-center px-4 py-3 sm:py-1">
-            <div className="text-3xl sm:text-4xl lg:text-5xl font-serif font-black tracking-tight text-stone-900">
-              {b('১০০%', '100%')}
-            </div>
-            <div className="text-[12px] sm:text-xs uppercase tracking-wider text-stone-600 font-semibold mt-1">
-              {b('প্রকাশ্য আর্থিক স্বচ্ছতা', 'Audited Transparency')}
-            </div>
-            <p className="text-[11px] text-stone-500 hidden sm:block mt-0.5">
-              {b('প্রতিটি আয়-ব্যয়ের উন্মুক্ত হিসাব', 'Open ledger accessible to all')}
-            </p>
-          </div>
-
-          {/* Milestone 3 */}
-          <div className="text-center px-4 py-3 sm:py-1">
-            <div className="text-3xl sm:text-4xl lg:text-5xl font-serif font-black tracking-tight text-amber-700">
-              {b('২,০০০+', '2,000+')}
-            </div>
-            <div className="text-[12px] sm:text-xs uppercase tracking-wider text-stone-600 font-semibold mt-1">
-              {b('আবাসিক পরিবার ও সদস্য', 'Resident Families')}
-            </div>
-            <p className="text-[11px] text-stone-500 hidden sm:block mt-0.5">
-              {b('একত্রিত এক যৌথ বাঁশদ্রোণী পরিবার', 'A close-knit unified neighborhood')}
-            </p>
-          </div>
-
-          {/* Milestone 4 */}
-          <div className="text-center px-4 py-3 sm:py-1">
-            <div className="text-3xl sm:text-4xl lg:text-5xl font-serif font-black tracking-tight text-stone-900">
-              {b('২৪×৭', '24×7')}
-            </div>
-            <div className="text-[12px] sm:text-xs uppercase tracking-wider text-stone-600 font-semibold mt-1">
-              {b('নাগরিক সেবা ও হেল্পলাইন', 'Civic Care & Help')}
-            </div>
-            <p className="text-[11px] text-stone-500 hidden sm:block mt-0.5">
-              {b('জরুরি ও সামাজিক প্রয়োজনে সর্বদা পাশে', 'Always available for emergency aid')}
-            </p>
-          </div>
-        </div>
-      </section>
 
       {/* ═══ 1. THEME SHOWCASE (Heritage Notepad Pavilion) ═══ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-5 sm:mt-7 mb-10 sm:mb-16 relative z-10">
