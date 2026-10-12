@@ -78,7 +78,7 @@ export default function MediaManagerPage() {
       defaultPath: '/assets/club-hero-banner.jpg',
       nameBn: 'সোনালী সঙ্ঘ ক্লাব ব্যানার',
       nameEn: 'Club Hero Banner',
-      hours: 'ক্লাব পেজ (/club) প্রধান হিরো ব্যানার',
+      hours: 'ক্লাব পেজের প্রধান হিরো ব্যানার',
       icon: Trophy,
       iconColor: 'text-amber-500',
     },
@@ -89,7 +89,7 @@ export default function MediaManagerPage() {
       defaultPath: '/assets/samiti-hero-banner.jpg',
       nameBn: 'সোনালী পার্ক উন্নয়ন সমিতি ব্যানার',
       nameEn: 'Samiti Hero Banner',
-      hours: 'উন্নয়ন সমিতি পেজ (/samiti) প্রধান হিরো ব্যানার',
+      hours: 'উন্নয়ন সমিতি পেজের প্রধান হিরো ব্যানার',
       icon: Building,
       iconColor: 'text-emerald-500',
     },
@@ -152,7 +152,7 @@ export default function MediaManagerPage() {
       return;
     }
     if (file.size > 8 * 1024 * 1024) {
-      showToast('error', b('ছবির সাইজ ৮ মেগাবাইট (8MB)-এর কম হতে হবে।', 'File size must be under 8MB.'));
+      showToast('error', b('ছবির সাইজ ৮ মেগাবাইটের কম হতে হবে।', 'File size must be under 8MB.'));
       return;
     }
 
@@ -212,10 +212,10 @@ export default function MediaManagerPage() {
       return;
     }
     if (file.size > 15 * 1024 * 1024) {
-      showToast('error', b('অডিও সাইজ ১৫ মেগাবাইট (15MB)-এর কম হতে হবে।', 'Audio size must be under 15MB.'));
+      showToast('error', b('অডিও সাইজ ১৫ মেগাবাইটের কম হতে হবে।', 'Audio size must be under 15MB.'));
       return;
     }
-
+ 
     setUploadingAudio(true);
     const formData = new FormData();
     formData.append('file', file);
@@ -297,10 +297,10 @@ export default function MediaManagerPage() {
               {!isMounted
                 ? '...'
                 : currentHour >= 5 && currentHour < 12
-                ? b('সকাল (Morning)', 'Morning')
+                ? b('সকাল', 'Morning')
                 : currentHour >= 12 && currentHour < 17
-                ? b('দুপুর (Afternoon)', 'Afternoon')
-                : b('সন্ধ্যা (Evening)', 'Evening')}
+                ? b('দুপুর', 'Afternoon')
+                : b('সন্ধ্যা', 'Evening')}
             </strong>
           </span>
         </div>
@@ -545,7 +545,7 @@ export default function MediaManagerPage() {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-stone-900">
-                  {b('শারদীয়া ঢাকের বাদ্যি (Festival Dhak Audio)', 'Sharadiya Dhak Audio')}
+                  {b('শারদীয়া ঢাকের বাদ্যি', 'Sharadiya Dhak Audio')}
                 </h3>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-bold">
                   MP3

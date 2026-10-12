@@ -265,7 +265,7 @@ export default function AdminLayout({ children }) {
       </header>
 
       {/* ═══ Page Content Viewport (Unobstructed Full Width) ═══ */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto flex flex-col justify-between">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto flex flex-col justify-between pb-24 md:pb-8">
         <div className="space-y-6">
           {children}
         </div>
@@ -286,6 +286,77 @@ export default function AdminLayout({ children }) {
           </div>
         </footer>
       </main>
+
+      {/* ═══ App-Style Mobile Bottom Navigation Bar (Thumb-Friendly) ═══ */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] md:hidden">
+        <div className="grid grid-cols-5 items-center h-16 max-w-md mx-auto px-2">
+          {/* Tab 1: Dashboard */}
+          <Link
+            href="/admin"
+            className={`flex flex-col items-center justify-center py-1 transition-all ${
+              pathname === '/admin' ? 'text-brand-maroon font-bold' : 'text-stone-500 hover:text-stone-800'
+            }`}
+          >
+            <div className={`p-1 rounded-xl transition-all ${pathname === '/admin' ? 'bg-brand-maroon/10' : ''}`}>
+              <LayoutDashboard className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] mt-0.5 leading-tight">{lang === 'bn' ? 'হোম' : 'Home'}</span>
+          </Link>
+
+          {/* Tab 2: Notices */}
+          <Link
+            href="/admin/notices"
+            className={`flex flex-col items-center justify-center py-1 transition-all ${
+              pathname === '/admin/notices' ? 'text-brand-maroon font-bold' : 'text-stone-500 hover:text-stone-800'
+            }`}
+          >
+            <div className={`p-1 rounded-xl transition-all ${pathname === '/admin/notices' ? 'bg-brand-maroon/10' : ''}`}>
+              <Megaphone className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] mt-0.5 leading-tight">{lang === 'bn' ? 'নোটিশ' : 'Notices'}</span>
+          </Link>
+
+          {/* Tab 3: Gallery */}
+          <Link
+            href="/admin/gallery"
+            className={`flex flex-col items-center justify-center py-1 transition-all ${
+              pathname === '/admin/gallery' ? 'text-brand-maroon font-bold' : 'text-stone-500 hover:text-stone-800'
+            }`}
+          >
+            <div className={`p-1 rounded-xl transition-all ${pathname === '/admin/gallery' ? 'bg-brand-maroon/10' : ''}`}>
+              <Camera className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] mt-0.5 leading-tight">{lang === 'bn' ? 'ছবি' : 'Gallery'}</span>
+          </Link>
+
+          {/* Tab 4: Audit / Finance */}
+          <Link
+            href="/admin/finance"
+            className={`flex flex-col items-center justify-center py-1 transition-all ${
+              pathname === '/admin/finance' ? 'text-brand-maroon font-bold' : 'text-stone-500 hover:text-stone-800'
+            }`}
+          >
+            <div className={`p-1 rounded-xl transition-all ${pathname === '/admin/finance' ? 'bg-brand-maroon/10' : ''}`}>
+              <Wallet className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] mt-0.5 leading-tight">{lang === 'bn' ? 'অডিট' : 'Audit'}</span>
+          </Link>
+
+          {/* Tab 5: Menu / More */}
+          <button
+            type="button"
+            onClick={() => setMenuOpen(!menuOpen)}
+            className={`flex flex-col items-center justify-center py-1 transition-all cursor-pointer ${
+              menuOpen ? 'text-brand-maroon font-bold' : 'text-stone-500 hover:text-stone-800'
+            }`}
+          >
+            <div className={`p-1 rounded-xl transition-all ${menuOpen ? 'bg-brand-maroon/10' : ''}`}>
+              <Menu className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] mt-0.5 leading-tight">{lang === 'bn' ? 'মেনু' : 'Menu'}</span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }

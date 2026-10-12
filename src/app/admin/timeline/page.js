@@ -322,7 +322,7 @@ export default function TimelineManagerPage() {
           {/* Quick Presets Strip */}
           <div>
             <span className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1.5">
-              {b('দ্রুত প্রিসেট (Quick Presets)', 'Quick Presets')}
+              {b('দ্রুত প্রিসেট', 'Quick Presets')}
             </span>
             <div className="flex flex-wrap gap-1.5">
               {PUJA_PRESETS.map((preset) => (
@@ -357,7 +357,7 @@ export default function TimelineManagerPage() {
             {/* Date */}
             <div>
               <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                {b('তারিখ (Date)', 'Date')} <span className="text-rose-500">*</span>
+                {b('তারিখ', 'Date')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="date"

@@ -1,10 +1,9 @@
 'use client';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
-  X, Bell, CheckCheck, Megaphone, Image as ImageIcon,
-  Calendar, AlertTriangle, ChevronRight, RefreshCw,
-  Sparkles, Check, ArrowRight, ShieldCheck, FileText,
-  Flame, Clock
+  X, Bell, Megaphone, Image as ImageIcon,
+  AlertTriangle, ChevronRight, RefreshCw,
+  FileText, Clock, Trash2, RotateCcw
 } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
@@ -16,13 +15,19 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'urgent' | 'puja' | 'club' | 'samiti'
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [readIds, setReadIds] = useState([]);
+  const [dismissedIds, setDismissedIds] = useState([]);
+  const [showDismissed, setShowDismissed] = useState(false);
 
-  // Load read notifications from localStorage
+  // Load read & dismissed notifications from localStorage
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('bspc_read_notifs');
-      if (stored) {
-        setReadIds(JSON.parse(stored));
+      const storedRead = localStorage.getItem('bspc_read_notifs');
+      if (storedRead) {
+        setReadIds(JSON.parse(storedRead));
+      }
+      const storedDismissed = localStorage.getItem('bspc_dismissed_notifs');
+      if (storedDismissed) {
+        setDismissedIds(JSON.parse(storedDismissed));
       }
     } catch (e) {
       console.warn('LocalStorage read error:', e);
@@ -51,10 +56,10 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
     fetchNotifications();
   }, [fetchNotifications]);
 
-  // Compute unread count
+  // Compute unread count (excluding dismissed)
   const unreadCount = useMemo(() => {
-    return notifications.filter(n => !readIds.includes(n.id)).length;
-  }, [notifications, readIds]);
+    return notifications.filter(n => !dismissedIds.includes(n.id) && !readIds.includes(n.id)).length;
+  }, [notifications, readIds, dismissedIds]);
 
   // Notify parent component of unread count change
   useEffect(() => {
@@ -83,21 +88,52 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
     }
   };
 
-  // Calculate tab counts
+  // Clear single notification (dismiss)
+  const dismissSingle = (id) => {
+    if (!dismissedIds.includes(id)) {
+      const updated = [...dismissedIds, id];
+      setDismissedIds(updated);
+      try {
+        localStorage.setItem('bspc_dismissed_notifs', JSON.stringify(updated));
+      } catch (e) {}
+    }
+  };
+
+  // Clear all notifications
+  const clearAllNotifications = () => {
+    const allIds = notifications.map(n => n.id);
+    setDismissedIds(allIds);
+    setReadIds(allIds);
+    try {
+      localStorage.setItem('bspc_dismissed_notifs', JSON.stringify(allIds));
+      localStorage.setItem('bspc_read_notifs', JSON.stringify(allIds));
+    } catch (e) {}
+  };
+
+  // Restore cleared notifications
+  const restoreClearedNotifications = () => {
+    setDismissedIds([]);
+    try {
+      localStorage.removeItem('bspc_dismissed_notifs');
+    } catch (e) {}
+  };
+
+  // Calculate tab counts (excluding dismissed unless showDismissed is true)
   const tabCounts = useMemo(() => {
-    const counts = { all: notifications.length, urgent: 0, puja: 0, club: 0, samiti: 0 };
-    notifications.forEach(n => {
+    const activeList = showDismissed ? notifications : notifications.filter(n => !dismissedIds.includes(n.id));
+    const counts = { all: activeList.length, urgent: 0, puja: 0, club: 0, samiti: 0 };
+    activeList.forEach(n => {
       if (n.isUrgent) counts.urgent++;
       if (n.wing === 'puja') counts.puja++;
       else if (n.wing === 'club') counts.club++;
       else if (n.wing === 'samiti') counts.samiti++;
     });
     return counts;
-  }, [notifications]);
+  }, [notifications, dismissedIds, showDismissed]);
 
-  // Filtered notifications based on tab and unreadOnly toggle
+  // Filtered notifications based on tab, unreadOnly, and dismissal
   const filteredNotifications = useMemo(() => {
-    let list = notifications;
+    let list = showDismissed ? notifications : notifications.filter(n => !dismissedIds.includes(n.id));
 
     if (activeTab === 'urgent') {
       list = list.filter(n => n.isUrgent);
@@ -114,7 +150,7 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
     }
 
     return list;
-  }, [notifications, activeTab, unreadOnly, readIds]);
+  }, [notifications, activeTab, unreadOnly, readIds, dismissedIds, showDismissed]);
 
   // Relative timestamp formatting
   const formatTimeAgo = (isoDate) => {
@@ -146,23 +182,23 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
     switch (wing) {
       case 'club':
         return {
-          labelBn: 'সোনালী সঙ্ঘ ক্লাব',
-          labelEn: 'Sonali Sangha Club',
+          labelBn: 'সোনালী সঙ্ঘ',
+          labelEn: 'Sonali Club',
           badgeBg: 'bg-amber-50 text-amber-900 border-amber-200/80',
           accentBorder: 'border-l-amber-500',
           iconEmoji: '🏆'
         };
       case 'samiti':
         return {
-          labelBn: 'উন্নয়ন সমিতি (RWA)',
-          labelEn: 'Unnayan Samiti (RWA)',
+          labelBn: 'উন্নয়ন সমিতি',
+          labelEn: 'Samiti (RWA)',
           badgeBg: 'bg-emerald-50 text-emerald-900 border-emerald-200/80',
           accentBorder: 'border-l-emerald-500',
           iconEmoji: '🏛️'
         };
       case 'puja':
         return {
-          labelBn: 'শারদীয়া দুর্গাপূজা',
+          labelBn: 'শারদীয়া পূজা',
           labelEn: 'Durga Puja',
           badgeBg: 'bg-rose-50 text-rose-900 border-rose-200/80',
           accentBorder: 'border-l-brand-maroon',
@@ -197,6 +233,14 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
         className: 'bg-amber-500 text-white'
       };
     }
+    if (type === 'audit') {
+      return {
+        labelBn: 'অডিট PDF',
+        labelEn: 'Audit PDF',
+        icon: FileText,
+        className: 'bg-emerald-700 text-white'
+      };
+    }
     if (type === 'photo') {
       return {
         labelBn: 'নতুন ছবি',
@@ -220,6 +264,9 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
       className: 'bg-stone-700 text-white'
     };
   };
+
+  const activeVisibleCount = notifications.filter(n => !dismissedIds.includes(n.id)).length;
+  const dismissedCount = notifications.filter(n => dismissedIds.includes(n.id)).length;
 
   return (
     <div
@@ -249,11 +296,11 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
         {/* Mobile Drag Indicator Bar */}
         <div className="w-12 h-1 bg-stone-200 rounded-full mx-auto mt-2.5 sm:hidden shrink-0" />
 
-        {/* ═══ 1. HEADER WITH SUMMARY & ACTIONS ═══ */}
+        {/* ═══ 1. HEADER WITH SUMMARY & OFFICIAL APP ACTIONS ═══ */}
         <div className="px-4 sm:px-5 pt-3 sm:pt-4 pb-3 border-b border-stone-200/80 bg-stone-50/70 flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-amber-500/20 via-rose-500/15 to-brand-maroon/20 text-brand-maroon flex items-center justify-center border border-brand-maroon/25 shrink-0 shadow-xs">
-              <Bell className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-brand-maroon fill-brand-maroon/20" />
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-stone-100 text-stone-800 flex items-center justify-center border border-stone-200 shrink-0">
+              <Bell className="w-4 h-4 text-stone-700" strokeWidth={2} />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
@@ -275,22 +322,22 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
           </div>
 
           {/* Header Action Controls */}
-          <div className="flex items-center gap-1 shrink-0">
-            {unreadCount > 0 && (
+          <div className="flex items-center gap-1.5 shrink-0">
+            {activeVisibleCount > 0 && !showDismissed && (
               <button
-                onClick={markAllAsRead}
-                title={b('সমস্ত বিজ্ঞপ্তি পঠিত চিহ্নিত করুন', 'Mark all as read')}
-                className="px-2.5 py-1.5 rounded-xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-700 hover:text-brand-maroon text-[11px] font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer"
+                onClick={clearAllNotifications}
+                title={b('সমস্ত নোটিফিকেশন ক্লিয়ার করুন', 'Clear all notifications')}
+                className="min-h-[36px] px-2.5 py-1.5 rounded-xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-600 hover:text-rose-600 text-[11px] font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer"
               >
-                <CheckCheck className="w-3.5 h-3.5 text-brand-maroon" />
-                <span className="hidden xs:inline">{b('সব পঠিত', 'Mark Read')}</span>
+                <Trash2 className="w-3.5 h-3.5 text-stone-400 group-hover:text-rose-600" />
+                <span className="hidden xs:inline">{b('সব ক্লিয়ার', 'Clear All')}</span>
               </button>
             )}
 
             <button
               onClick={fetchNotifications}
               title={b('রিফ্রেশ করুন', 'Refresh')}
-              className="p-1.5 rounded-xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-500 hover:text-stone-800 transition-colors cursor-pointer shadow-xs"
+              className="min-w-[36px] min-h-[36px] flex items-center justify-center p-1.5 rounded-xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-500 hover:text-stone-800 transition-colors cursor-pointer shadow-xs"
               aria-label="Refresh"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-brand-maroon' : ''}`} />
@@ -299,7 +346,7 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
             <button
               onClick={onClose}
               title={b('বন্ধ করুন', 'Close')}
-              className="p-1.5 rounded-xl bg-white hover:bg-rose-50 border border-stone-200 text-stone-500 hover:text-rose-600 transition-colors cursor-pointer shadow-xs"
+              className="min-w-[36px] min-h-[36px] flex items-center justify-center p-1.5 rounded-xl bg-white hover:bg-rose-50 border border-stone-200 text-stone-500 hover:text-rose-600 transition-colors cursor-pointer shadow-xs"
               aria-label="Close"
             >
               <X className="w-4.5 h-4.5" />
@@ -369,30 +416,44 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
           </button>
         </div>
 
-        {/* ═══ 3. NOTIFICATION LIST (SCROLLABLE) ═══ */}
-        <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-2.5 bg-[#FAF8F5]/70">
+        {/* ═══ 3. NOTIFICATION LIST (APP-STYLE CARDS) ═══ */}
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2 bg-[#FAF8F5]/70">
           {loading && notifications.length === 0 ? (
             <div className="py-20 text-center text-stone-400 flex flex-col items-center justify-center">
               <RefreshCw className="w-8 h-8 animate-spin text-brand-maroon mb-2.5" />
               <p className="text-xs font-semibold">{b('বিজ্ঞপ্তি লোড হচ্ছে...', 'Loading updates...')}</p>
             </div>
           ) : filteredNotifications.length === 0 ? (
-            /* Delightful All Caught Up / Zero State */
+            /* Delightful All Caught Up / Cleared Zero State */
             <div className="py-14 text-center text-stone-500 flex flex-col items-center px-4">
               <div className="w-14 h-14 rounded-3xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-2xl mb-3 shadow-xs">
                 ✨
               </div>
               <p className="text-sm font-black text-stone-800 mb-1">
-                {unreadOnly
+                {showDismissed
+                  ? b('কোনো বিজ্ঞপ্তি নেই', 'No notifications found')
+                  : dismissedCount > 0
+                  ? b('সমস্ত বিজ্ঞপ্তি ক্লিয়ার করা হয়েছে!', 'All notifications cleared!')
+                  : unreadOnly
                   ? b('কোনো অপঠিত বিজ্ঞপ্তি নেই!', 'No unread notifications!')
                   : b('এই বিভাগে কোনো বিজ্ঞপ্তি নেই', 'No notifications in this tab')}
               </p>
               <p className="text-xs text-stone-400 max-w-xs leading-relaxed mb-4">
                 {b(
-                  'আপনি বাঁশদ্রোণী সোনালী পার্ক পূজা, ক্লাব ও সমিতির সমস্ত সাম্প্রতিক খবরের সাথে আপ-টু-ডেট আছেন।',
-                  'You are fully caught up with the latest announcements from Durga Puja, Sonali Sangha Club, and Unnayan Samiti.'
+                  'বাঁশদ্রোণী সোনালী পার্ক পূজা, ক্লাব ও সমিতির সমস্ত সাম্প্রতিক আপডেট আপনার কাছে প্রস্তুত।',
+                  'You are fully caught up with the latest updates from Durga Puja, Sonali Sangha Club, and Unnayan Samiti.'
                 )}
               </p>
+
+              {dismissedCount > 0 && !showDismissed && (
+                <button
+                  onClick={restoreClearedNotifications}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-stone-50 border border-stone-200 text-stone-700 text-xs font-bold shadow-2xs transition-colors cursor-pointer mb-3"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-stone-500" />
+                  <span>{b(`ক্লিয়ার করা ${toDigits(dismissedCount)}টি বিজ্ঞপ্তি ফেরত আনুন`, `Restore ${dismissedCount} cleared items`)}</span>
+                </button>
+              )}
 
               {/* Quick Navigation Shortcuts */}
               <div className="flex flex-wrap items-center justify-center gap-1.5">
@@ -401,7 +462,7 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
                   onClick={onClose}
                   className="px-2.5 py-1 rounded-full bg-white hover:bg-rose-50 border border-stone-200 text-rose-800 text-[11px] font-bold transition-all shadow-2xs"
                 >
-                  🌺 {b('পূজা সময়সূচি', 'Puja Schedule')}
+                  🌺 {b('পূজা নির্ঘণ্ট', 'Puja Schedule')}
                 </Link>
                 <Link
                   href="/club"
@@ -429,140 +490,141 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
               return (
                 <div
                   key={notif.id}
-                  className={`group relative p-3 sm:p-3.5 rounded-2xl border transition-all ${
+                  className={`group relative p-3 rounded-xl border transition-all ${
                     isRead
-                      ? 'bg-white/85 border-stone-200/80 opacity-85 hover:opacity-100 hover:bg-white hover:shadow-xs'
+                      ? 'bg-white/90 border-stone-200/70 hover:bg-white hover:shadow-xs'
                       : notif.isUrgent
-                      ? 'bg-rose-50/40 border-rose-300 ring-1 ring-rose-200 shadow-xs'
+                      ? 'bg-rose-50/50 border-rose-300 ring-1 ring-rose-200 shadow-xs'
                       : 'bg-white border-amber-300/60 ring-1 ring-amber-400/20 shadow-xs'
                   } ${wingInfo.accentBorder} border-l-4`}
                 >
-                  {/* Top Bar: Wing Pill + Category Badge + Relative Time + Mark Read Button */}
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                  {/* Top Bar: Wing + Type + Time + Dismiss (X) */}
+                  <div className="flex items-center justify-between gap-1.5 mb-1.5">
                     <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                       {/* Wing Badge */}
-                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border flex items-center gap-1 ${wingInfo.badgeBg}`}>
+                      <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold border flex items-center gap-1 ${wingInfo.badgeBg}`}>
                         <span>{wingInfo.iconEmoji}</span>
                         <span>{lang === 'bn' ? wingInfo.labelBn : wingInfo.labelEn}</span>
                       </span>
 
                       {/* Type Badge */}
-                      <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-black flex items-center gap-1 uppercase tracking-wider ${typeInfo.className}`}>
+                      <span className={`px-1.5 py-0.2 rounded text-[9px] font-black flex items-center gap-1 uppercase tracking-wider ${typeInfo.className}`}>
                         <TypeIcon className="w-2.5 h-2.5" />
                         <span>{lang === 'bn' ? typeInfo.labelBn : typeInfo.labelEn}</span>
                       </span>
                     </div>
 
-                    {/* Right side: Time Ago & Unread Dot / Checkmark Button */}
+                    {/* Right side: Time Ago & Dismiss button */}
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="text-[10px] text-stone-400 flex items-center gap-1 font-medium">
+                      <span className="text-[10px] text-stone-400 flex items-center gap-0.5 font-medium">
                         <Clock className="w-2.5 h-2.5 text-stone-300" />
                         {formatTimeAgo(notif.createdAt)}
                       </span>
 
-                      {/* Toggle Read Indicator Button */}
+                      {/* Individual Dismiss Button */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (isRead) {
-                            // Unmark
-                            const next = readIds.filter(id => id !== notif.id);
-                            setReadIds(next);
-                            localStorage.setItem('bspc_read_notifs', JSON.stringify(next));
-                          } else {
-                            markSingleAsRead(notif.id);
-                          }
+                          dismissSingle(notif.id);
                         }}
-                        title={isRead ? b('অপঠিত চিহ্নিত করুন', 'Mark as unread') : b('পঠিত চিহ্নিত করুন', 'Mark as read')}
-                        className="p-1 rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
-                        aria-label="Toggle read status"
+                        title={b('বিজ্ঞপ্তিটি সরান (Clear)', 'Clear notification')}
+                        className="p-1 rounded-full text-stone-400 hover:text-rose-600 hover:bg-stone-100 transition-colors cursor-pointer"
+                        aria-label="Dismiss notification"
                       >
-                        {isRead ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        ) : (
-                          <span className="relative flex h-2.5 w-2.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-600 ring-2 ring-white"></span>
-                          </span>
-                        )}
+                        <X className="w-3 h-3" />
                       </button>
                     </div>
                   </div>
 
-                  {/* Title */}
+                  {/* Title (Compact & bold) */}
                   <h3 className={`text-xs sm:text-[13px] mb-1 leading-snug tracking-tight ${
                     isRead ? 'font-bold text-stone-800' : 'font-black text-stone-950'
                   }`}>
                     {t(notif.title)}
                   </h3>
 
-                  {/* Message description */}
+                  {/* Teaser Message (Strictly clamped to 2 lines - App-Style) */}
                   {notif.message && (
-                    <p className="text-xs text-stone-600 leading-relaxed line-clamp-3 mb-1.5">
+                    <p className="text-[11px] text-stone-600 leading-relaxed line-clamp-2 mb-1.5">
                       {t(notif.message)}
                     </p>
                   )}
 
                   {/* Image Preview for Gallery Photos */}
                   {notif.image && (
-                    <div className="my-2 rounded-xl overflow-hidden border border-stone-200/90 relative aspect-[16/9] max-h-36 bg-stone-100 group/img shadow-2xs">
+                    <div className="my-1.5 rounded-lg overflow-hidden border border-stone-200 relative aspect-16/9 max-h-28 bg-stone-100 group/img shadow-2xs">
                       <img
                         src={notif.image}
                         alt={notif.title}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover/img:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-2 pointer-events-none">
-                        <span className="text-[10px] font-bold text-white flex items-center gap-1 drop-shadow-sm">
-                          <ImageIcon className="w-3 h-3 text-amber-300" />
-                          {b('ছবি গ্যালারিতে দেখুন', 'View in Gallery')}
-                        </span>
-                      </div>
                     </div>
                   )}
 
-                  {/* Footer Action Button */}
-                  {notif.link && (
-                    <div className="mt-2 pt-1.5 border-t border-stone-100 flex items-center justify-between">
-                      <span className="text-[10px] text-stone-400 italic">
-                        {isRead ? b('পঠিত হয়েছে', 'Read') : b('নতুন বিজ্ঞপ্তি', 'New')}
-                      </span>
+                  {/* Footer Action Bar */}
+                  <div className="mt-1.5 pt-1.5 border-t border-stone-100 flex items-center justify-between text-xs">
+                    <span className="text-[10px] text-stone-400 italic">
+                      {isRead ? b('পঠিত', 'Read') : b('নতুন', 'New')}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {notif.pdfUrl && (
+                        <Link
+                          href={`?viewPdf=${encodeURIComponent(notif.pdfUrl)}&pdfTitle=${encodeURIComponent(notif.title || '')}`}
+                          scroll={false}
+                          onClick={() => {
+                            markSingleAsRead(notif.id);
+                            onClose();
+                          }}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-800 text-[10px] font-bold transition-all border border-amber-200"
+                        >
+                          <FileText className="w-3 h-3 text-amber-700" />
+                          <span>PDF</span>
+                        </Link>
+                      )}
                       <Link
-                        href={notif.link}
+                        href={notif.link || '/notifications'}
                         onClick={() => {
                           markSingleAsRead(notif.id);
                           onClose();
                         }}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-brand-maroon text-stone-800 hover:text-white text-[11px] font-bold transition-all shadow-2xs"
+                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-stone-100 hover:bg-brand-maroon text-stone-800 hover:text-white text-[11px] font-bold transition-all shadow-2xs"
                       >
-                        <span>{b('বিস্তারিত দেখুন', 'View Details')}</span>
-                        <ChevronRight className="w-3.5 h-3.5" />
+                        <span>{b('দেখুন', 'View')}</span>
+                        <ChevronRight className="w-3 h-3" />
                       </Link>
                     </div>
-                  )}
+                  </div>
                 </div>
               );
             })
           )}
         </div>
 
-        {/* ═══ 4. FOOTER WITH QUICK BROADCAST SHORTCUT (FOR ADMINS/COMMITTEE) ═══ */}
-        <div className="p-3 border-t border-stone-200/80 bg-stone-50/90 flex items-center justify-between gap-2 shrink-0">
-          <div className="flex items-center gap-1.5 text-stone-500 text-[11px] min-w-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-            <span className="truncate">
-              {b('বাঁশদ্রোণী সোনালী পার্ক সার্বজনীন পোর্টাল', 'Bansdroni Sonali Park Universal')}
-            </span>
+        {/* ═══ 4. FOOTER: ARCHIVE LINK & RESTORE SHORTCUT ═══ */}
+        <div className="px-3.5 py-2.5 bg-amber-50/80 border-t border-amber-200/80 flex items-center justify-between gap-2 shrink-0">
+          <div className="text-[11px] font-medium text-amber-900 truncate flex items-center gap-2">
+            <span>{b('সকল নোটিশ ও সার্কুলার আর্কাইভ', 'Full Archive')}</span>
+            {dismissedCount > 0 && (
+              <button
+                onClick={() => setShowDismissed(!showDismissed)}
+                className="text-[10px] underline text-amber-800 hover:text-brand-maroon cursor-pointer font-bold"
+              >
+                {showDismissed
+                  ? b('ক্লিয়ার করা লুকান', 'Hide cleared')
+                  : b(`ক্লিয়ার করা দেখুন (${toDigits(dismissedCount)})`, `Cleared (${dismissedCount})`)}
+              </button>
+            )}
           </div>
-
           <Link
-            href="/admin/notifications"
+            href="/notifications"
             onClick={onClose}
-            className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-maroon hover:text-rose-700 bg-rose-50/80 hover:bg-rose-100/90 border border-brand-maroon/20 px-2.5 py-1 rounded-xl transition-all shadow-2xs shrink-0 cursor-pointer"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-maroon hover:bg-[#881337] text-white text-[11px] font-bold transition-all shadow-2xs shrink-0"
           >
-            <Megaphone className="w-3 h-3 text-brand-maroon" />
-            <span>{b('অ্যাডমিন ব্রডকাস্ট →', 'Admin Broadcast →')}</span>
+            <span>{b('সম্পূর্ণ তালিকা', 'Full List')}</span>
+            <ChevronRight className="w-3.5 h-3.5" />
           </Link>
         </div>
+
       </div>
     </div>
   );

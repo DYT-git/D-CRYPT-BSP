@@ -31,6 +31,7 @@ model Notice {
   text     String
   date     String
   isUrgent Boolean  @default(false) // Added for top ticker
+  pdfUrl   String?  // PDF circular attachment URL
 }
 
 model Gallery {

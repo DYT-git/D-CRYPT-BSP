@@ -81,23 +81,32 @@ export default function Countdown({ targetDate, variant = 'default' }) {
     );
   }
 
-  if (variant === 'festive-boxes') {
+  if (variant === 'festive-boxes' || variant === 'heirloom-panjika' || variant === 'artisan-dial') {
     return (
-      <div className="grid grid-cols-4 gap-2 sm:gap-3 w-full max-w-sm sm:max-w-md mx-auto my-1">
+      <div className="flex items-center justify-center gap-1 sm:gap-2.5 md:gap-4 w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto my-1.5 sm:my-2">
         {units.map(({ val, label }, i) => (
-          <div
-            key={i}
-            className="flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-xl bg-gradient-to-b from-[#2A101C] via-[#1C0913] to-[#12050B] border border-amber-400/35 shadow-[0_4px_14px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.18),inset_0_-2px_0_rgba(0,0,0,0.5)] relative overflow-hidden group/tile transition-transform hover:-translate-y-0.5"
-          >
-            {/* Glossy Top Sheen */}
-            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-300/80 to-transparent" />
-            <span className="text-xl sm:text-2xl font-black font-serif tabular-nums tracking-tight text-amber-200 drop-shadow-[0_2px_8px_rgba(251,191,36,0.45)] relative z-10">
-              {val}
-            </span>
-            <span className="text-[10px] sm:text-xs font-serif font-bold text-rose-200/90 tracking-wide mt-0.5 relative z-10">
-              {label}
-            </span>
+          <div key={i} className="flex items-center gap-1 sm:gap-2.5 md:gap-4">
+            <div className="flex flex-col items-center justify-center min-w-[60px] xs:min-w-[68px] sm:min-w-[84px] md:min-w-[96px] py-2 sm:py-3.5 px-1 sm:px-2 rounded-xl sm:rounded-2xl bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_4px_16px_rgba(28,13,19,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)] relative overflow-hidden group/dial transition-all duration-300 hover:border-brand-maroon/50 hover:shadow-md">
+              {/* Top Alta Crimson Accent Line */}
+              <div className="absolute top-0 inset-x-0 h-[2.5px] bg-gradient-to-r from-transparent via-[#BE123C] to-transparent opacity-80" />
+
+              {/* Letterpress Numerals */}
+              <span className="text-xl xs:text-2xl sm:text-3xl md:text-4xl font-serif font-black tabular-nums tracking-tight text-stone-900 group-hover/dial:text-brand-maroon transition-colors drop-shadow-2xs leading-none">
+                {val}
+              </span>
+
+              {/* Heritage Unit Label */}
+              <span className="text-[9px] xs:text-[10px] sm:text-xs font-serif font-bold text-amber-900/90 tracking-wider uppercase mt-1 sm:mt-1.5">
+                {label}
+              </span>
+            </div>
+
+            {/* Traditional Filigree Colon Separator */}
+            {i < units.length - 1 && (
+              <span className="text-brand-maroon/40 text-xs sm:text-lg font-serif font-bold select-none -mt-1 sm:-mt-2">
+                :
+              </span>
+            )}
           </div>
         ))}
       </div>

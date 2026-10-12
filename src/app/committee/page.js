@@ -1,5 +1,6 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { User, ShieldCheck, Phone } from 'lucide-react';
@@ -88,10 +89,27 @@ const FALLBACK_SAMITI_MEMBERS = [
   { id: 37, name: "শ্রী অলোক চক্রবর্তী (ALOKE CHAKRABORTY)", role: "[Samiti] প্রবীণ নাগরিক সমন্বয়ক | 9830712345", image: "/assets/avatars/club-member.svg", year: 2026 }
 ];
 
-export default function CommitteePage() {
+function CommitteeContent() {
   const { data, selectedYear } = useData();
   const { lang, b, t, tRole, tName, tNickname, toDigits } = useLanguage();
-  const [activeWing, setActiveWing] = useState('Puja');
+  const searchParams = useSearchParams();
+
+  const initialWing = useMemo(() => {
+    const w = searchParams?.get('wing');
+    if (!w) return 'Puja';
+    const lower = w.toLowerCase();
+    if (lower === 'club') return 'Club';
+    if (lower === 'samiti') return 'Samiti';
+    return 'Puja';
+  }, [searchParams]);
+
+  const [activeWing, setActiveWing] = useState(initialWing);
+
+  useEffect(() => {
+    if (initialWing) {
+      setActiveWing(initialWing);
+    }
+  }, [initialWing]);
 
   const allYearMembers = useMemo(() => {
     return (data.members || [])
@@ -139,14 +157,10 @@ export default function CommitteePage() {
         <YearSelector />
       </div>
 
-      {/* ═══ Symmetrical 3-Tier Header ═══ */}
+      {/* ═══ Clean Editorial Header ═══ */}
       <header className="max-w-3xl mx-auto text-center mt-10 sm:mt-12 mb-10 px-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon text-xs font-bold uppercase tracking-widest mb-3 shadow-sm">
-          <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon animate-pulse" />
-          {b('নেতৃত্ব ও পরিচালনা', 'Leadership & Governance')} • {toDigits(selectedYear)}
-        </div>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-4 tracking-tight leading-tight">
-          {b('আমাদের পরিচালনা', 'Executive')} <span className="text-brand-maroon">{b('কমিটি', 'Committee')}</span>
+          {b('আমাদের পরিচালনা', 'Our Executive')} <span className="text-brand-maroon">{b('পরিষদ ও কমিটি', 'Council & Committee')}</span>
         </h1>
         <p className="text-sm sm:text-base md:text-lg text-stone-600 font-light leading-relaxed">
           {b(
@@ -200,9 +214,6 @@ export default function CommitteePage() {
             {leaders.length > 0 && (
               <div className="mb-16 sm:mb-20">
                 <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 text-[11px] font-bold uppercase tracking-wider mb-2">
-                    <ShieldCheck className="w-3.5 h-3.5 text-brand-maroon" /> {b('মূল পদাধিকারী', 'Core Office Bearers')}
-                  </div>
                   <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
                     {b('শীর্ষ কার্যনির্বাহী', 'Executive')} <span className="text-brand-maroon">{b('নেতৃত্ব', 'Leadership')}</span>
                   </h2>
@@ -339,11 +350,8 @@ export default function CommitteePage() {
             {generalMembers.length > 0 && (
               <div>
                 <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-stone-100 border border-stone-200 text-stone-700 text-[11px] font-bold uppercase tracking-wider mb-2">
-                    ✦ {b('কমিটি সদস্যবৃন্দ', 'Committee Members')}
-                  </div>
                   <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
-                    {b('কমিটির অন্যান্য', 'Other Esteemed')} <span className="text-brand-maroon">{b('সদস্যবৃন্দ', 'Members')}</span>
+                    {b('সম্মানীয় সদস্য ও', 'Distinguished Members &')} <span className="text-brand-maroon">{b('উপদেষ্টামণ্ডলী', 'Advisors')}</span>
                   </h2>
                   <p className="text-stone-500 text-xs sm:text-sm mt-1">
                     {b('বিভিন্ন উপ-কমিটি ও সেবামূলক কাজের দায়িত্বপ্রাপ্ত কর্মকর্তাবৃন্দ', 'Sub-committee coordinators and dedicated community welfare executives')}
@@ -447,5 +455,13 @@ export default function CommitteePage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function CommitteePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center font-serif text-stone-600">লোড হচ্ছে...</div>}>
+      <CommitteeContent />
+    </Suspense>
   );
 }

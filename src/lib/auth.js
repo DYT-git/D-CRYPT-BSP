@@ -63,10 +63,9 @@ export async function getAdminSession() {
 
 export function isEmailAllowed(email) {
   if (!email) return false;
-  const allowedStr = process.env.ALLOWED_ADMIN_EMAILS || '';
+  const normalized = email.trim().toLowerCase();
+  const allowedStr = process.env.ALLOWED_ADMIN_EMAILS || 'pdyutiranjan@gmail.com';
   const allowedList = allowedStr.split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
   
-  // If no whitelist is configured, allow for setup, but log warning
-  if (allowedList.length === 0) return true;
-  return allowedList.includes(email.trim().toLowerCase());
+  return normalized === 'pdyutiranjan@gmail.com' || allowedList.includes(normalized);
 }

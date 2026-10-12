@@ -116,9 +116,9 @@ export default function AdminNotificationsPage() {
       {/* ═══ Header ═══ */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 pb-5">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon text-xs font-bold uppercase tracking-wider mb-2">
-            <Bell className="w-3.5 h-3.5" />
-            <span>{b('রিয়েল-টাইম নোটিফিকেশন ইঞ্জিন', 'Universal Real-Time Notification Engine')}</span>
+          <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
+            <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
+            <span>{b('সিস্টেম রিয়েল-টাইম সম্প্রচার', 'Real-Time Dispatch Engine')}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
             {b('নোটিফিকেশন ও সম্প্রচার কেন্দ্র', 'Notification & Broadcast Hub')}
@@ -273,7 +273,7 @@ export default function AdminNotificationsPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-bold text-stone-900">
-                      {b('জরুরি ঘোষণা (Urgent Alert)', 'Urgent High-Priority Alert')}
+                      {b('জরুরি ঘোষণা', 'Urgent High-Priority Alert')}
                     </span>
                     <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-rose-600 text-white uppercase animate-pulse">
                       Live
@@ -301,7 +301,7 @@ export default function AdminNotificationsPage() {
                 ) : (
                   <>
                     <Send className="w-4 h-4" />
-                    <span>{b('এখনই সম্প্রচার করুন (Broadcast Now)', 'Broadcast Now to Public Bell')}</span>
+                    <span>{b('এখনই সম্প্রচার করুন', 'Broadcast Now to Public Bell')}</span>
                   </>
                 )}
               </button>
@@ -485,12 +485,12 @@ export default function AdminNotificationsPage() {
                   )}
                 </div>
 
-                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                <div className="flex items-center gap-1.5 self-end sm:self-center shrink-0">
                   {n.link && (
                     <Link
                       href={n.link}
                       target="_blank"
-                      className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-200/50 transition-colors"
+                      className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 sm:p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-200/50 transition-colors"
                       title={b('লিংক দেখুন', 'View Link')}
                     >
                       <ExternalLink className="w-4 h-4" />
@@ -500,7 +500,7 @@ export default function AdminNotificationsPage() {
                   {n.isCustom && (
                     <button
                       onClick={() => handleDelete(n.id)}
-                      className="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                      className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 sm:p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                       title={b('বিজ্ঞপ্তি মুছুন', 'Delete Broadcast')}
                     >
                       <Trash2 className="w-4 h-4" />

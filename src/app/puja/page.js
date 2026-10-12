@@ -1,9 +1,11 @@
 'use client';
+import { useState } from 'react';
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { PartyPopper, Mic2, Drum, FileText, MapPin } from 'lucide-react';
+import { PartyPopper, Mic2, Drum, FileText, MapPin, Download, Share2, Check, Bell, AlertTriangle, ChevronRight, Megaphone, Link2 } from 'lucide-react';
 import Link from 'next/link';
 import YearSelector from "@/components/YearSelector";
+import { triggerDownload } from "@/utils/download";
 import { 
   MandapIcon, 
   SculptorIcon, 
@@ -13,13 +15,32 @@ import {
   BinderHoles, 
   TornDeckleEdge,
   DiyaIcon,
-  ShankhaIcon
+  ShankhaIcon,
+  DurgaDeviEmblemIcon
 } from '@/components/HeritageIcons';
 
 export default function PujaSchedule() {
   const { data, settings, selectedYear } = useData();
-  const { lang, b, t, toDigits } = useLanguage();
+  const { lang, b, t, toDigits, formatDate } = useLanguage();
+  const [activeNoticeTab, setActiveNoticeTab] = useState('current'); // 'current' | 'all'
+  const [copiedNoticeId, setCopiedNoticeId] = useState(null);
   const events = data.events.filter(e => e.year === selectedYear);
+
+  // Puja specific notices (Limited to top 5)
+  const allPujaNotices = (data.notices || []).filter(n => !n.title?.startsWith('[Club]') && !n.title?.startsWith('[Samiti]'));
+  const currentPujaNotices = allPujaNotices.filter(n => n.year === selectedYear);
+  const displayedPujaNotices = (activeNoticeTab === 'current' ? (currentPujaNotices.length > 0 ? currentPujaNotices : allPujaNotices) : allPujaNotices).slice(0, 5);
+
+  const copyNotice = (notice) => {
+    if (!notice) return;
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const shareUrl = `${origin}/notifications?wing=puja&id=${encodeURIComponent(notice.id || '')}`;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl);
+      setCopiedNoticeId(notice.id);
+      setTimeout(() => setCopiedNoticeId(null), 2500);
+    }
+  };
 
   return (
     <main className="bg-[#FAF7F2] min-h-screen pt-24 sm:pt-28 pb-24 selection:bg-brand-maroon selection:text-white font-sans">
@@ -27,14 +48,10 @@ export default function PujaSchedule() {
         <YearSelector />
       </div>
 
-      {/* ═══ Symmetrical 3-Tier Header ═══ */}
+      {/* ═══ Clean Editorial Header ═══ */}
       <header className="max-w-3xl mx-auto text-center mt-10 sm:mt-12 mb-12 sm:mb-16 px-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand-maroon/10 border border-brand-maroon/20 text-brand-maroon text-xs font-bold uppercase tracking-widest mb-3 shadow-sm">
-          <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon animate-pulse" />
-          {b('শারদীয়া দুর্গাপূজা নির্দেশিকা', 'Festival Guide')} • {toDigits(selectedYear)}
-        </div>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-4 tracking-tight leading-tight">
-          {b('শারদীয়া', 'Sharadiya')} <span className="text-brand-maroon">{b('দুর্গোৎসব', 'Durga Puja')}</span>
+          {b('শারদীয়া', 'Sharadiya')} <span className="text-brand-maroon">{b('দুর্গোৎসব', 'Durga Puja')}</span> {toDigits(selectedYear)}
         </h1>
         <p className="text-sm sm:text-base md:text-lg text-stone-600 font-light leading-relaxed">
           {b(
@@ -44,62 +61,90 @@ export default function PujaSchedule() {
         </p>
       </header>
 
-      {/* ═══ 1. THEME SHOWCASE (Bento Card with Authentic Ruby Depth) ═══ */}
+      {/* ═══ 1. THEME SHOWCASE (Heritage Notepad Pavilion) ═══ */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="group relative rounded-3xl overflow-hidden bg-gradient-to-br from-brand-maroon via-[#A01135] to-[#7D0925] text-white p-5 sm:p-8 md:p-12 shadow-2xl border border-white/15 transition-all duration-300">
-          {/* Ambient Background Geometry */}
-          <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
-            <svg viewBox="0 0 400 200" className="w-full h-full" fill="white">
-              {[...Array(8)].map((_, i) => (
-                <ellipse key={i} cx={i * 60 - 10} cy="100" rx="25" ry="80" opacity="0.5" transform={`rotate(${i * 22} ${i * 60 - 10} 100)`} />
-              ))}
-            </svg>
+        <div className="group relative bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_8px_24px_rgba(28,13,19,0.05)] hover:shadow-[0_16px_36px_rgba(159,18,57,0.1)] rounded-3xl pt-8 pb-5 pl-10 sm:pl-14 pr-5 sm:pr-8 transition-all duration-300">
+          {/* Top Pinned Textured Washi Tape */}
+          <div className="absolute -top-3.5 left-7 sm:left-10 z-30 pointer-events-none">
+            <WashiTapePin text={b(`শারদ থিম পরিক্রমা • ${toDigits(selectedYear)}`, `Theme of the Year • ${selectedYear}`)} variant="amber" />
           </div>
-          {/* Top Subtle Highlight */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-rose-400/40 to-transparent" />
 
-          <div className="relative z-10 text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-bold uppercase tracking-widest mb-4">
-              <DiyaIcon className="w-3.5 h-3.5 text-amber-300" />
-              <span>{b('শারদ থিম', 'Theme of the Year')} {toDigits(selectedYear)}</span>
+          {/* Left Perforated Spiral Binder Margin - Authentic 3D Punched Holes */}
+          <div className="absolute left-2.5 sm:left-3.5 top-8 bottom-8 flex flex-col justify-around pointer-events-none z-20">
+            <BinderHoles count={5} />
+          </div>
+
+          {/* Clipped Decorative Background Elements & Deckle Edge */}
+          <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+            {/* Ambient Background Watermark */}
+            <div className="absolute -right-8 -bottom-8 w-60 h-60 opacity-[0.03] text-stone-900">
+              <svg viewBox="0 0 200 200" className="w-full h-full" fill="currentColor">
+                {[...Array(6)].map((_, i) => (
+                  <ellipse key={i} cx="100" cy="100" rx="40" ry="90" transform={`rotate(${i * 30} 100 100)`} />
+                ))}
+              </svg>
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-2 tracking-tight leading-tight">
-              &ldquo;{lang === 'en' ? (t(settings.themeTitle) || 'Reflections of the Past, Visions of the Future') : (settings.themeTitle ? settings.themeTitle.replace(/^["'“]/, '').replace(/["'”]$/, '') : 'অতীতের আয়নায় আগামী')}&rdquo;
+
+            {/* Torn Paper Deckle Bottom Edge */}
+            <div className="absolute bottom-0 inset-x-0 opacity-70">
+              <TornDeckleEdge className="w-full text-stone-200 h-2 block" />
+            </div>
+          </div>
+
+          {/* Content Body */}
+          <div className="relative z-10 text-center max-w-3xl mx-auto">
+            {/* Top Header Row with Badges */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-3 sm:mb-4">
+              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#FAF7F2] text-stone-700 border border-[#E8DFD1] font-serif shadow-2xs">
+                <DurgaDeviEmblemIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-stone-600" />
+                <span>{b('শারদীয় বিশেষ ভাবনা', 'Curated Theme Concept')}</span>
+              </span>
+
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FAF7F2] border border-[#E8DFD1] text-[10px] sm:text-[11px] text-stone-600 font-serif font-medium shadow-2xs">
+                <DiyaIcon className="w-3 h-3 text-stone-500" />
+                <span>{b('বাঁশদ্রোণী সোনালী পার্ক প্যাভিলিয়ন', 'Bansdroni Sonali Park Pavilion')}</span>
+              </span>
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-black text-stone-900 mb-2 tracking-tight leading-tight">
+              <span className="text-stone-400">&ldquo;</span>
+              {lang === 'en' ? (t(settings.themeTitle) || 'Reflections of the Past, Visions of the Future') : (settings.themeTitle ? settings.themeTitle.replace(/^["'“]/, '').replace(/["'”]$/, '') : 'অতীতের আয়নায় আগামী')}
+              <span className="text-stone-400">&rdquo;</span>
             </h2>
             <div className="flex justify-center my-2">
-              <FestiveWaveAccent className="w-16 h-2 text-amber-300/80" />
+              <FestiveWaveAccent className="w-16 h-2 text-amber-500" />
             </div>
-            <p className="text-rose-100/90 text-sm sm:text-base md:text-lg italic mb-6 sm:mb-8 font-light">
+            <p className="text-stone-600 text-sm sm:text-base md:text-lg italic mb-6 sm:mb-8 font-serif leading-relaxed">
               ({lang === 'en' ? (t(settings.themeSubtitle) || 'Reflections of the Past, Visions of the Future') : (settings.themeSubtitle || 'অতীতের ঐতিহ্যে আগামী দিনের স্বপ্ন')})
             </p>
 
             {/* Artist Squircles with Handcrafted Vector Motifs */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 border-t border-white/15 pt-6 sm:pt-8 text-left">
-              <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-sm">
-                <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-                  <MandapIcon className="w-5 h-5 text-amber-200" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 border-t border-stone-200/80 pt-6 sm:pt-8 text-left">
+              <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-[#FAF7F2] hover:bg-white border border-[#E8DFD1] hover:border-amber-400/70 shadow-2xs transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/90 flex items-center justify-center shrink-0 shadow-2xs text-amber-700">
+                  <MandapIcon className="w-5 h-5 text-amber-700" />
                 </div>
                 <div>
-                  <span className="block text-[11px] uppercase tracking-wider text-rose-200 font-bold">{b('মণ্ডপ শিল্পী', 'Pandal Artist')}</span>
-                  <span className="font-semibold text-sm text-white/95">{lang === 'en' ? (t(settings.pandalArtist) || 'Shilpa Niketan') : (settings.pandalArtist || 'শিল্প নিকেতন')}</span>
+                  <span className="block text-[11px] uppercase tracking-wider text-stone-600 font-bold font-serif">{b('মণ্ডপ শিল্পী', 'Pandal Artist')}</span>
+                  <span className="font-serif font-black text-sm text-stone-900">{lang === 'en' ? (t(settings.pandalArtist) || 'Shilpa Niketan') : (settings.pandalArtist || 'শিল্প নিকেতন')}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-sm">
-                <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-                  <SculptorIcon className="w-5 h-5 text-rose-200" />
+              <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-[#FAF7F2] hover:bg-white border border-[#E8DFD1] hover:border-amber-400/70 shadow-2xs transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/90 flex items-center justify-center shrink-0 shadow-2xs text-amber-700">
+                  <SculptorIcon className="w-5 h-5 text-amber-700" />
                 </div>
                 <div>
-                  <span className="block text-[11px] uppercase tracking-wider text-rose-200 font-bold">{b('প্রতিমা শিল্পী', 'Idol Sculptor')}</span>
-                  <span className="font-semibold text-sm text-white/95">{lang === 'en' ? (t(settings.idolArtist) || 'Sanatan Rudra Paul') : (settings.idolArtist || 'সনাতন রুদ্র পাল')}</span>
+                  <span className="block text-[11px] uppercase tracking-wider text-stone-600 font-bold font-serif">{b('প্রতিমা শিল্পী', 'Idol Sculptor')}</span>
+                  <span className="font-serif font-black text-sm text-stone-900">{lang === 'en' ? (t(settings.idolArtist) || 'Sanatan Rudra Paul') : (settings.idolArtist || 'সনাতন রুদ্র পাল')}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-sm">
-                <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-                  <IlluminationIcon className="w-5 h-5 text-amber-200" />
+              <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-[#FAF7F2] hover:bg-white border border-[#E8DFD1] hover:border-amber-400/70 shadow-2xs transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/90 flex items-center justify-center shrink-0 shadow-2xs text-amber-700">
+                  <IlluminationIcon className="w-5 h-5 text-amber-700" />
                 </div>
                 <div>
-                  <span className="block text-[11px] uppercase tracking-wider text-rose-200 font-bold">{b('আলোকসজ্জা', 'Illumination')}</span>
-                  <span className="font-semibold text-sm text-white/95">{lang === 'en' ? (t(settings.lightingArtist) || 'Das Electric') : (settings.lightingArtist || 'দাস ইলেকট্রিক')}</span>
+                  <span className="block text-[11px] uppercase tracking-wider text-stone-600 font-bold font-serif">{b('আলোকসজ্জা', 'Illumination')}</span>
+                  <span className="font-serif font-black text-sm text-stone-900">{lang === 'en' ? (t(settings.lightingArtist) || 'Das Electric') : (settings.lightingArtist || 'দাস ইলেকট্রিক')}</span>
                 </div>
               </div>
             </div>
@@ -111,12 +156,12 @@ export default function PujaSchedule() {
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-24">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-4 border-b border-stone-200">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-800 text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
-              <ShankhaIcon className="w-3.5 h-3.5 text-rose-700" />
-              <span>{b('পবিত্র পূজা নির্ঘণ্ট', 'Sacred Rituals')}</span>
+            <div className="flex items-center gap-2 mb-2 text-rose-800 font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
+              <span className="w-4 h-0.5 bg-rose-700/70 rounded-full" />
+              <span>{b('পঞ্চমী থেকে বিজয়া দশমী', 'Mahapanchami to Bijoya Dashami')}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-stone-900 tracking-tight">
-              {b('পূজার নির্ঘণ্ট ও', 'Puja Timetable &')} <span className="text-brand-maroon">{b('পবিত্র সূচি', 'Sacred Rituals')}</span>
+              {b('পূজার নির্ঘণ্ট ও', 'Sacred Rituals &')} <span className="text-brand-maroon">{b('পবিত্র সূচি', 'Timetable')}</span>
             </h2>
             <p className="text-stone-500 text-xs sm:text-sm mt-1">
               {b('প্রতিদিনের পূজার নির্ঘণ্ট, অঞ্জলির সময় ও সান্ধ্য আরতির সময়সূচি', 'Daily rituals, puja timings, and pushpanjali schedule')}
@@ -237,12 +282,8 @@ export default function PujaSchedule() {
       {/* ═══ 3. EVENING CULTURAL ROSTER (3-Column Tactile Cards) ═══ */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-900 text-xs font-bold uppercase tracking-widest mb-3 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse" />
-            {b('সান্ধ্য সাংস্কৃতিক অনুষ্ঠান', 'Evening Cultural Programs')}
-          </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-stone-900 tracking-tight">
-            {b('সন্ধ্যার সাংস্কৃতিক', 'Evening Cultural')} <span className="text-brand-maroon">{b('মহোৎসব', 'Extravaganza')}</span>
+            {b('সন্ধ্যার সাংস্কৃতিক', 'Sharadiya Cultural')} <span className="text-brand-maroon">{b('মহোৎসব', 'Extravaganza')}</span>
           </h2>
           <p className="text-stone-500 text-xs sm:text-base mt-2">
             {b(
@@ -354,7 +395,192 @@ export default function PujaSchedule() {
         </div>
       </section>
 
-      {/* ═══ 4. HOW TO REACH (Transit Card) ═══ */}
+      {/* ═══ 4. PUJA BULLETINS & NOTICES (Dedicated Section) ═══ */}
+      <section id="puja-notices" className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-24 pt-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-4 border-b border-stone-200">
+          <div>
+            <div className="flex items-center gap-2 mb-2 text-rose-800 font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
+              <span className="w-4 h-0.5 bg-rose-700/70 rounded-full" />
+              <span>{b('মণ্ডপ ও ভক্ত নির্দেশিকা', 'Pavilion & Resident Advisory')}</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-stone-900 tracking-tight">
+              {b('পূজা বুলেটিন ও', 'Festival Circulars &')} <span className="text-brand-maroon">{b('বিজ্ঞপ্তি সার্কুলার', 'Bulletins')}</span>
+            </h2>
+            <p className="text-stone-500 text-xs sm:text-sm mt-1">
+              {b('মা দুর্গার আগমনী উৎসবের সমস্ত আনুষ্ঠানিক বিজ্ঞপ্তি, ভোগ কুপন, অঞ্জলি নির্ঘণ্ট ও নিয়মাবলী', 'Official circulars, bhog coupons, and guidelines approved by the Puja Committee')}
+            </p>
+          </div>
+
+          {/* Past / Current Archive Tabs & Full Directory Link */}
+          <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => setActiveNoticeTab('current')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                activeNoticeTab === 'current'
+                  ? 'bg-rose-700 text-white shadow-xs'
+                  : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-stone-50'
+              }`}
+            >
+              {b('বর্তমান বছর', 'Current Year')} ({toDigits(selectedYear, lang)})
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveNoticeTab('all')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                activeNoticeTab === 'all'
+                  ? 'bg-stone-900 text-white shadow-xs'
+                  : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-stone-50'
+              }`}
+            >
+              {b('সকল আর্কাইভ', 'All Archive')} ({toDigits(allPujaNotices.length, lang)})
+            </button>
+            <Link
+              href="/notifications?wing=puja"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold transition-all shadow-2xs"
+            >
+              <span>{b('সম্পূর্ণ তালিকা', 'Full List')}</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+
+        {displayedPujaNotices.length > 0 ? (
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 pt-2">
+            {displayedPujaNotices.map((notice, i) => {
+              const noticePdf = notice.pdfUrl || '/docs/sample-puja-notice-2026.pdf';
+              const cleanTitle = notice.title?.replace(/^\[Puja\]\s*/, '') || '';
+              const isCopied = copiedNoticeId === notice.id;
+
+              return (
+                <div
+                  key={notice.id || i}
+                  className="group relative bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_8px_24px_rgba(28,13,19,0.05)] hover:shadow-[0_16px_36px_rgba(159,18,57,0.1)] rounded-3xl pt-8 pb-5 pl-10 sm:pl-13 pr-6 sm:pr-8 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between"
+                >
+                  {/* Top Pinned Washi Tape */}
+                  <div className="absolute -top-3.5 left-8 sm:left-10 z-20 pointer-events-none">
+                    <WashiTapePin
+                      text={b(`শারদীয়া সার্কুলার • ${toDigits(notice.year, lang)}`, `Puja Circular • ${notice.year}`)}
+                      variant="rose"
+                    />
+                  </div>
+
+                  {/* Left 3D Punched Binder Margin */}
+                  <div className="absolute left-2.5 sm:left-3.5 top-8 bottom-8 flex flex-col justify-around pointer-events-none z-10">
+                    <BinderHoles count={5} />
+                  </div>
+
+                  <div>
+                    {/* Header Badges */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-800 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200">
+                          <DurgaDeviEmblemIcon className="w-3 h-3 text-rose-700" />
+                          <span>{b('শারদীয়া দুর্গোৎসব', 'Durga Puja')}</span>
+                        </span>
+                        {notice.isUrgent && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-100/80 px-2 py-0.5 rounded-full border border-rose-300">
+                            <AlertTriangle className="w-2.5 h-2.5 text-rose-700" />
+                            <span>{b('জরুরি', 'Urgent')}</span>
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] font-mono text-stone-500 bg-stone-100 px-2 py-0.5 rounded-full border border-stone-200/80">
+                          📅 {formatDate(notice.date, lang)}
+                        </span>
+                        <span className="text-[10px] font-mono font-bold text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded-full">
+                          {toDigits(notice.year, lang)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Notice Heading */}
+                    <h3 className="text-base sm:text-lg md:text-xl font-serif font-bold text-stone-900 leading-snug mb-2">
+                      {t(cleanTitle)}
+                    </h3>
+
+                    {/* Festive Wave */}
+                    <div className="mb-3">
+                      <FestiveWaveAccent className="w-12 h-1.5 text-rose-500" />
+                    </div>
+
+                    {/* Body Text */}
+                    <p className="text-xs sm:text-sm text-stone-700 leading-relaxed font-sans whitespace-pre-line mb-5">
+                      {t(notice.text)}
+                    </p>
+                  </div>
+
+                  {/* Actions Row */}
+                  <div>
+                    <div className="pt-3.5 border-t border-stone-200/80 flex flex-wrap items-center justify-between gap-2.5">
+                      {/* Direct PDF View Button (Only if notice.pdfUrl exists) */}
+                      {notice.pdfUrl ? (
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Link
+                            href={`?viewPdf=${encodeURIComponent(notice.pdfUrl)}&pdfTitle=${encodeURIComponent(cleanTitle)}`}
+                            scroll={false}
+                            className="btn-tactile-crimson inline-flex items-center gap-1.5 py-2 px-3.5 rounded-full text-white font-bold text-xs shadow-2xs hover:shadow-xs transition-all cursor-pointer group/btn"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-amber-200" />
+                            <span>{b('পিডিএফ দেখুন', 'View PDF')}</span>
+                            <span className="w-4 h-4 rounded-full bg-white/20 text-white flex items-center justify-center text-[10px] font-bold group-hover/btn:bg-white group-hover/btn:text-brand-maroon transition-colors">
+                              →
+                            </span>
+                          </Link>
+
+                          <button
+                            type="button"
+                            onClick={() => triggerDownload(notice.pdfUrl, `${cleanTitle || 'puja-notice'}.pdf`)}
+                            className="btn-tactile-parchment inline-flex items-center gap-1.5 py-2 px-3 rounded-full text-stone-700 hover:text-brand-maroon text-xs font-semibold border border-[#E5DAC8] shadow-2xs transition-all cursor-pointer"
+                            title={b('পিডিএফ ডাউনলোড করুন', 'Download PDF')}
+                          >
+                            <Download className="w-3.5 h-3.5 text-stone-600 group-hover:text-brand-maroon" />
+                            <span>{b('ডাউনলোড', 'Download')}</span>
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-stone-100 text-stone-500 text-xs font-medium border border-stone-200/80">
+                          <FileText className="w-3.5 h-3.5 text-stone-400" />
+                          <span>{b('অফিসিয়াল বার্তা', 'Official Notice')}</span>
+                        </div>
+                      )}
+
+                      {/* Link Copy Button */}
+                      <button
+                        type="button"
+                        onClick={() => copyNotice(notice)}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-2xs cursor-pointer ${
+                          isCopied
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200'
+                        }`}
+                        title={b('নোটিশের লিঙ্ক কপি করুন', 'Copy Notice Link')}
+                      >
+                        {isCopied ? <Check className="w-3.5 h-3.5" /> : <Link2 className="w-3.5 h-3.5" />}
+                        <span>{isCopied ? b('লিঙ্ক কপি!', 'Link Copied!') : b('লিঙ্ক কপি', 'Copy Link')}</span>
+                      </button>
+                    </div>
+
+                    {/* Torn Bottom Deckle Edge */}
+                    <div className="-mx-4 -mb-3 pt-3 opacity-80">
+                      <TornDeckleEdge className="w-full text-stone-200/90 h-2 block" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-[#FFFDF9] rounded-2xl border border-[#E5DAC8] p-6 max-w-md mx-auto">
+            <span className="text-3xl block mb-2">📜</span>
+            <p className="text-sm font-semibold text-stone-700">{b('এই বছরের জন্য কোনো নতুন বিজ্ঞপ্তি নেই।', 'No official circulars published for this year yet.')}</p>
+          </div>
+        )}
+      </section>
+
+      {/* ═══ 5. HOW TO REACH (Transit Card) ═══ */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 pt-4">
         <div className="group relative bg-[#FFFDF9] rounded-3xl p-6 sm:p-9 md:p-11 flex flex-col sm:flex-row gap-5 sm:gap-7 items-center shadow-[0_6px_20px_rgba(28,13,19,0.04)] hover:shadow-[0_16px_32px_rgba(159,18,57,0.08)] transition-all duration-300 border border-[#E5DAC8]">
           <div className="absolute -top-3.5 left-7 sm:left-10 z-20">

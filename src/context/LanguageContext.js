@@ -148,6 +148,9 @@ const dictBn = {
   "Sanitation": "পরিচ্ছন্নতা",
   "Meetings": "নাগরিক সভা",
   "General": "সাধারণ",
+  "Puja": "শারদীয়া পূজা",
+  "Club": "সোনালী সঙ্ঘ",
+  "Samiti": "উন্নয়ন সমিতি",
   "All Photos": "সব ছবি",
 
   // Emergency & Diya Widgets

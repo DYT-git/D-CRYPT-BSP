@@ -1,22 +1,16 @@
 'use client';
-import { useState, Suspense } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ShieldAlert, KeyRound } from 'lucide-react';
+import { ArrowLeft, ShieldAlert, ShieldCheck } from 'lucide-react';
 
 function LoginForm() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
-
   const urlError = searchParams.get('error');
 
   const getErrorMessage = () => {
-    if (error) return error;
-    if (urlError === 'unauthorized_email') return 'এই গুগল অ্যাকাউন্টটি অনুমোদিত অ্যাডমিন তালিকায় নেই। অনুগ্রহ করে অনুমোদিত ইমেইল ব্যবহার করুন।';
-    if (urlError === 'google_not_configured') return 'Google Login এখনো কনফিগার করা হয়নি। আপনার .env.local ফাইলে GOOGLE_CLIENT_ID ও SECRET যোগ করুন, অথবা নিচের পাসওয়ার্ড দিয়ে লগইন করুন।';
+    if (urlError === 'unauthorized_email') return 'এই গুগল অ্যাকাউন্টটি অনুমোদিত অ্যাডমিন তালিকায় নেই। শুধুমাত্র অনুমোদিত অ্যাডমিন (pdyutiranjan@gmail.com) প্রবেশ করতে পারবেন।';
+    if (urlError === 'google_not_configured') return 'Google Login এখনো কনফিগার করা হয়নি।';
     if (urlError === 'google_failed') return 'গুগল সাইন-ইন প্রক্রিয়া বাতিল হয়েছে বা ব্যর্থ হয়েছে।';
     if (urlError === 'token_exchange_failed') return 'গুগল ভেরিফিকেশন ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।';
     if (urlError) return 'অথেন্টিকেশন এরর হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।';
@@ -24,31 +18,6 @@ function LoginForm() {
   };
 
   const activeError = getErrorMessage();
-
-  const handlePasswordLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (res.ok) {
-        window.location.href = '/admin';
-      } else {
-        const data = await res.json();
-        setError(data.error || 'লগইন ব্যর্থ হয়েছে। ইউজারনেম ও পাসওয়ার্ড চেক করুন।');
-      }
-    } catch (err) {
-      setError('সার্ভারের সাথে সংযোগ বিচ্ছিন্ন। অনুগ্রহ করে আবার চেষ্টা করুন।');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="max-w-md w-full bg-white p-6 sm:p-10 rounded-2xl shadow-xl border border-stone-200/80 relative overflow-hidden">
@@ -84,11 +53,11 @@ function LoginForm() {
         </div>
       )}
 
-      {/* ═══ 1. Official Google Sign-In Button ═══ */}
-      <div className="space-y-4">
+      {/* ═══ Official Google Sign-In Only ═══ */}
+      <div className="space-y-5">
         <a
           href="/api/auth/google"
-          className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 shadow-sm hover:shadow text-sm font-bold text-stone-700 transition-all group"
+          className="w-full flex items-center justify-center gap-3 py-3.5 px-4 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 shadow-sm hover:shadow text-sm font-bold text-stone-700 transition-all group"
         >
           <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
             <path
@@ -111,54 +80,17 @@ function LoginForm() {
           <span className="group-hover:text-stone-900">Sign in with Google</span>
         </a>
 
-        {/* Divider */}
-        <div className="relative flex items-center justify-center my-6">
-          <div className="flex-grow border-t border-stone-200" />
-          <span className="flex-shrink mx-4 text-[11px] font-bold uppercase tracking-wider text-stone-400">
-            অথবা পাসওয়ার্ড দিয়ে
-          </span>
-          <div className="flex-grow border-t border-stone-200" />
+        {/* Authorized Admin Notice */}
+        <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/70 flex items-start gap-2.5 text-left">
+          <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+          <div className="text-[11px] leading-relaxed text-stone-600">
+            <span className="font-bold text-stone-800 block">অনুমোদিত অ্যাডমিন অ্যাকাউন্ট:</span>
+            <code className="text-brand-maroon font-mono font-semibold">pdyutiranjan@gmail.com</code>
+            <p className="mt-1 text-stone-500">
+              নিরাপত্তার স্বার্থে পাসওয়ার্ড ভিত্তিক লগইন বন্ধ করা হয়েছে। শুধুমাত্র উল্লেখিত গুগল অ্যাকাউন্ট দিয়ে সাইন-ইন করে অ্যাডমিন পোর্টালে প্রবেশ করা যাবে।
+            </p>
+          </div>
         </div>
-
-        {/* ═══ 2. Emergency Password Fallback Form ═══ */}
-        <form onSubmit={handlePasswordLogin} className="space-y-4">
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
-              Username
-            </label>
-            <input
-              type="text"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="admin"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon transition-all"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon transition-all"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 px-4 rounded-xl bg-brand-maroon hover:bg-brand-dark text-white font-bold text-sm shadow-md shadow-brand-maroon/20 hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            <KeyRound className="w-4 h-4" />
-            {loading ? 'যাচাই করা হচ্ছে...' : 'লগইন করুন'}
-          </button>
-        </form>
       </div>
     </div>
   );

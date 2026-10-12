@@ -10,6 +10,7 @@ import { ClubCrestIcon, SamitiEmblemIcon } from '@/components/HeritageIcons';
 const PUJA_LINKS = [
   { href: '/',             labelBn: 'হোম ও শারদীয়া উৎসব',      labelEn: 'Home & Durga Puja',   icon: Home },
   { href: '/puja',         labelBn: 'সময়সূচি ও নির্ঘণ্ট',        labelEn: 'Schedule & Calendar', icon: Calendar },
+  { href: '/notifications', labelBn: 'বিজ্ঞপ্তি ও বুলেটিন',       labelEn: 'Notices & Bulletins', icon: Megaphone },
   { href: '/committee',    labelBn: 'পুজো কমিটি সদস্যবৃন্দ',     labelEn: 'Committee Members',   icon: Users },
   { href: '/gallery',      labelBn: 'ছবি গ্যালারি',              labelEn: 'Photo Gallery',       icon: ImageIcon },
   { href: '/transparency', labelBn: 'হিসাব নিকাশ ও অডিট',      labelEn: 'Accounts & Audit',    icon: IndianRupee },
@@ -38,26 +39,6 @@ export default function Navbar() {
   const [notifDrawerOpen, setNotifDrawerOpen] = useState(false);
   const [unreadNotifs, setUnreadNotifs] = useState(0);
 
-  // Gentle audio chime feedback on bell interaction
-  const playChime = () => {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(587.33, now); // D5
-      osc.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
-      gain.gain.setValueAtTime(0.05, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.3);
-    } catch {}
-  };
 
   const isPuja = pathname === '/' || pathname === '/puja';
   const isClub = pathname.startsWith('/club');
@@ -163,35 +144,23 @@ export default function Navbar() {
 
           {/* ═══ RIGHT: Bell Icon + Lang Switcher + Menu Button (Shrink-0, Never Covered) ═══ */}
           <div className="pointer-events-auto shrink-0 flex items-center gap-1.5 sm:gap-2.5">
-            {/* Bell Notification Icon (Periodic Ring Animation, Radar Ping Halo & Chime on Click) */}
+            {/* Bell Notification Button */}
             <button
               id="notif-btn"
               type="button"
-              onClick={() => {
-                if (!notifDrawerOpen) playChime();
-                setNotifDrawerOpen(!notifDrawerOpen);
-              }}
+              onClick={() => setNotifDrawerOpen(!notifDrawerOpen)}
               title={
                 unreadNotifs > 0
                   ? b(`${toDigits(unreadNotifs)}টি নতুন বিজ্ঞপ্তি`, `${unreadNotifs} new notifications`)
                   : b('বিজ্ঞপ্তি ও নোটিফিকেশন', 'Notifications')
               }
-              className={`group relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-transform active:scale-90 hover:scale-105 cursor-pointer group-hover-bell ${
-                hasDarkHero
-                  ? 'bg-black/45 hover:bg-black/60 backdrop-blur-md border border-amber-400/40 text-amber-300 hover:text-amber-200 shadow-[0_2px_10px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.18)]'
-                  : 'bg-white/95 hover:bg-stone-50 backdrop-blur-md border border-stone-200 text-stone-700 hover:text-amber-600 shadow-[0_2px_8px_rgba(28,13,19,0.06),inset_0_1px_0_rgba(255,255,255,0.9)]'
-              }`}
+              className="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-all active:scale-95 hover:scale-105 cursor-pointer bg-white/95 hover:bg-stone-50 backdrop-blur-md border border-stone-200/90 text-stone-700 hover:text-stone-900 shadow-[0_2px_8px_rgba(28,13,19,0.06),inset_0_1px_0_rgba(255,255,255,0.9)]"
               aria-label="Notifications"
             >
-              <Bell className={`w-4 h-4 sm:w-4.5 sm:h-4.5 fill-amber-400/25 transition-transform ${
-                unreadNotifs > 0 ? 'animate-bell-periodic text-amber-300' : ''
-              }`} />
+              <Bell className="w-4 h-4 text-stone-700 hover:text-stone-900 transition-colors" strokeWidth={2} />
               {unreadNotifs > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 sm:top-0 sm:right-0 flex items-center justify-center">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                  <span className="relative min-w-[15px] h-[15px] sm:min-w-[17px] sm:h-[17px] px-0.5 bg-rose-600 text-white text-[8.5px] sm:text-[9.5px] font-black rounded-full flex items-center justify-center ring-2 ring-white shadow-xs">
-                    {unreadNotifs > 9 ? '9+' : (lang === 'bn' ? toDigits(unreadNotifs) : unreadNotifs)}
-                  </span>
+                <span className="absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 bg-rose-600 text-white text-[9.5px] font-bold rounded-full flex items-center justify-center border-2 border-white shadow-xs leading-none">
+                  {unreadNotifs > 9 ? '9+' : (lang === 'bn' ? toDigits(unreadNotifs) : unreadNotifs)}
                 </span>
               )}
             </button>

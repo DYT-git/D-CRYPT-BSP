@@ -72,10 +72,18 @@ export default function FinanceManagerPage() {
   const fetchFinances = async () => {
     setFetching(true);
     try {
-      const res = await fetch('/api/data');
-      const data = await res.json();
+      const res = await fetch('/api/admin/finance');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setFinances(data.sort((a, b) => (b.year - a.year) || ((b.id || 0) - (a.id || 0))));
+          return;
+        }
+      }
+      const dataRes = await fetch('/api/data');
+      const data = await dataRes.json();
       if (data.finances) {
-        setFinances(data.finances.sort((a, b) => b.year - a.year));
+        setFinances(data.finances.sort((a, b) => (b.year - a.year) || ((b.id || 0) - (a.id || 0))));
       }
     } catch (err) {
       console.error('Failed to fetch finance records:', err);
@@ -124,7 +132,7 @@ export default function FinanceManagerPage() {
     }
 
     if (selectedFile.size > 15 * 1024 * 1024) {
-      showToast('error', b('ফাইলের সাইজ ১৫ মেগাবাইট (15MB)-এর কম হতে হবে।', 'File size must be under 15MB.'));
+      showToast('error', b('ফাইলের সাইজ ১৫ মেগাবাইটের কম হতে হবে।', 'File size must be under 15MB.'));
       return;
     }
 
@@ -301,7 +309,7 @@ export default function FinanceManagerPage() {
             {/* 3-Pillar Wing Selector */}
             <div>
               <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
-                {b('অডিট রিপোর্টের শাখা (Wing / Pillar)', 'Audit Report Wing')} <span className="text-rose-500">*</span>
+                {b('অডিট রিপোর্টের শাখা', 'Audit Report Wing')} <span className="text-rose-500">*</span>
               </label>
               <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-100 rounded-xl">
                 <button
@@ -343,7 +351,7 @@ export default function FinanceManagerPage() {
             {/* Fiscal Year */}
             <div>
               <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                {b('আর্থিক বছর (Fiscal Year)', 'Fiscal Year')} <span className="text-rose-500">*</span>
+                {b('আর্থিক বছর', 'Fiscal Year')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="number"
@@ -373,7 +381,7 @@ export default function FinanceManagerPage() {
             {/* Title Presets */}
             <div>
               <span className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1.5">
-                {b('প্রস্তাবিত শিরোনাম (Quick Titles)', 'Quick Titles')}
+                {b('প্রস্তাবিত শিরোনাম', 'Quick Titles')}
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {(TITLE_PRESETS_BY_WING[formData.wing] || TITLE_PRESETS_BY_WING.Puja).map((preset) => (
@@ -426,7 +434,7 @@ export default function FinanceManagerPage() {
                     <span className="text-brand-maroon underline">{b('ব্রাউজ করুন', 'Browse')}</span>
                   </p>
                   <p className="text-[10px] text-stone-400 mt-0.5">
-                    PDF • {b('সর্বোচ্চ ১৫ মেগাবাইট (15MB)', 'Max 15MB')}
+                    PDF • {b('সর্বোচ্চ ১৫ মেগাবাইট', 'Max 15MB')}
                   </p>
                 </div>
               ) : (
@@ -621,40 +629,40 @@ export default function FinanceManagerPage() {
                   <div className="flex items-center gap-1 self-end sm:self-center shrink-0">
                     <button
                       onClick={() => setPreviewPdfUrl(doc.url)}
-                      className="p-1.5 rounded-lg text-stone-600 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
+                      className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 sm:p-1.5 rounded-lg text-stone-600 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
                       title={b('প্রিভিউ', 'Preview')}
                     >
-                      <Eye className="w-3.5 h-3.5" />
+                      <Eye className="w-4 h-4" />
                     </button>
 
                     <a
                       href={doc.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1.5 rounded-lg text-stone-600 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
+                      className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 sm:p-1.5 rounded-lg text-stone-600 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
                       title={b('নতুন ট্যাবে খুলুন', 'Open in new tab')}
                     >
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <ExternalLink className="w-4 h-4" />
                     </a>
 
                     <button
                       onClick={() => copyUrl(doc.url, doc.id)}
-                      className="p-1.5 rounded-lg text-stone-600 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
+                      className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 sm:p-1.5 rounded-lg text-stone-600 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
                       title={b('লিংক কপি', 'Copy URL')}
                     >
                       {copiedId === doc.id ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <Check className="w-4 h-4 text-emerald-600" />
                       ) : (
-                        <Copy className="w-3.5 h-3.5" />
+                        <Copy className="w-4 h-4" />
                       )}
                     </button>
 
                     <button
                       onClick={() => setDeleteConfirmId(doc.id)}
-                      className="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                      className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 sm:p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                       title={b('মুছুন', 'Delete')}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

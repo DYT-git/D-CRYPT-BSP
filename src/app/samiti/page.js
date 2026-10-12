@@ -3,10 +3,12 @@ import { useState, useMemo } from 'react';
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { 
-  Users, Image as ImageIcon, IndianRupee, ShieldCheck, Phone, ArrowRight, 
-  Building, CheckCircle2, Siren, Wrench, Lightbulb, Trash2, TreePine, 
-  Search, Download, ZoomIn, X, ExternalLink, FileText, HeartHandshake, Eye,
-  Megaphone
+  Users, Image as ImageIcon, ShieldCheck, 
+  ArrowRight, Download, FileText, 
+  Building, Wrench, Lightbulb, TreePine,
+  ZoomIn, X, Phone, Megaphone, Camera,
+  ChevronLeft, ChevronRight, Share2, Check, Bell,
+  Link2, Compass, Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import { triggerDownload } from '@/utils/download';
@@ -18,8 +20,27 @@ import {
   FestiveWaveAccent, 
   WashiTapePin, 
   BinderHoles, 
-  TornDeckleEdge 
+  TornDeckleEdge,
+  NoticeScrollIcon 
 } from '@/components/HeritageIcons';
+
+function parseMemberRole(role) {
+  if (!role) return { wing: 'Samiti', cleanRole: '', phone: '' };
+  let wing = 'Samiti';
+  let rest = role;
+  if (rest.startsWith('[Club]')) { wing = 'Club'; rest = rest.replace('[Club]', '').trim(); }
+  else if (rest.startsWith('[Samiti]')) { wing = 'Samiti'; rest = rest.replace('[Samiti]', '').trim(); }
+  else if (rest.startsWith('[Puja]')) { wing = 'Puja'; rest = rest.replace('[Puja]', '').trim(); }
+
+  let cleanRole = rest;
+  let phone = '';
+  if (rest.includes('|')) {
+    const parts = rest.split('|');
+    cleanRole = parts[0].trim();
+    phone = parts[1].replace(/phone|tel|m\.|m:/gi, '').trim();
+  }
+  return { wing, cleanRole, phone };
+}
 
 function parseMemberNameDetails(rawName) {
   if (!rawName) return { mainName: '', nickname: '', englishName: '' };
@@ -37,17 +58,37 @@ function parseMemberNameDetails(rawName) {
   return { mainName, nickname, englishName };
 }
 
+const FALLBACK_SAMITI_MEMBERS = [
+  { id: 30, name: "শ্রী পার্থসারথি সেনগুপ্ত (PARTHA SARATHI SENGUPTA)", role: "[Samiti] সভাপতি | 9830012345", image: "/assets/avatars/president.svg", year: 2026 },
+  { id: 31, name: "শ্রী অসীম চ্যাটার্জি (ASHIM CHATTERJEE)", role: "[Samiti] সহ-সভাপতি | 9830112345", image: "/assets/avatars/vice-president.svg", year: 2026 },
+  { id: 32, name: "শ্রী সুশান্ত রায় (SUSHANTA ROY)", role: "[Samiti] সাধারণ সম্পাদক | 9830212345", image: "/assets/avatars/secretary.svg", year: 2026 },
+  { id: 33, name: "শ্রী ভাস্কর মজুমদার (BHASKAR MAJUMDAR)", role: "[Samiti] সহ-সম্পাদক | 9830312345", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
+  { id: 34, name: "শ্রী নারায়ণ ঘোষ (NARAYAN GHOSH)", role: "[Samiti] কোষাধ্যক্ষ | 9830612345", image: "/assets/avatars/treasurer.svg", year: 2026 },
+  { id: 35, name: "শ্রী তপন ভট্টাচার্য (TAPAN BHATTACHARYA)", role: "[Samiti] পরিকাঠামো আহ্বায়ক | 9830412345", image: "/assets/avatars/samiti-member.svg", year: 2026 }
+];
+
 export default function SamitiPage() {
   const { data, settings, selectedYear } = useData();
-  const { lang, b, t, tRole, tName, tNickname, toDigits } = useLanguage();
+  const { lang, b, t, tRole, tName, tNickname, toDigits, formatDate } = useLanguage();
 
-  // Gallery filter & lightbox
-  const [activeCategory, setActiveCategory] = useState('All');
   const [selectedImage, setSelectedImage] = useState(null);
   const [lightboxIdx, setLightboxIdx] = useState(0);
 
-  // Committee search
-  const [searchQuery, setSearchQuery] = useState('');
+  // 1. Notice carousel state
+  const [activeNoticeIndex, setActiveNoticeIndex] = useState(0);
+  const [copiedNoticeId, setCopiedNoticeId] = useState(null);
+  const [touchStartNotice, setTouchStartNotice] = useState(null);
+
+  // 2. Member carousel state
+  const [activeMemberPage, setActiveMemberPage] = useState(0);
+  const [touchStartMember, setTouchStartMember] = useState(null);
+
+  // 3. Gallery carousel state
+  const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
+  const [touchStartGallery, setTouchStartGallery] = useState(null);
+
+  // 4. Audit PDF toggle state
+  const [showAllPdfs, setShowAllPdfs] = useState(false);
 
   // Samiti Dedicated Notices
   const samitiNotices = useMemo(() => {
@@ -56,48 +97,66 @@ export default function SamitiPage() {
           .filter(n => n.title && n.title.startsWith('[Samiti]'))
           .map(n => ({
             ...n,
-            title: n.title.replace(/^\[Samiti\]\s*/, '')
+            title: n.title.replace(/^\[Samiti\]\s*/, ''),
+            pdfUrl: n.pdfUrl || '/sample-notice.pdf'
           }))
       : [];
 
-    if (raw.length > 0) return raw;
+    if (raw.length > 0) return raw.slice(0, 5);
 
-    // Authentic fallback notices for samiti
     return [
       {
         id: 'samiti-notice-1',
         title: b('বর্ষাপূর্ব ড্রেন পরিষ্কার ও ডেঙ্গি প্রতিরোধ স্প্রে অভিযান', 'Pre-Monsoon Drainage Cleaning & Vector Spray Drive'),
         text: b(
-          'আসন্ন বর্ষা মৌসুমের পূর্বে সোনালী পার্কের প্রতিটি লেনের প্রধান ড্রেন পলি পরিষ্কার এবং মশা নিধনে ব্লিচিং ও লার্ভিসাইড স্প্রে করা হবে। বাসিন্দাদের নিকাশি নালায় কোনো ধরনের প্লাস্টিক বর্জ্য না ফেলার জন্য বিশেষ অনুরোধ জানানো হচ্ছে।',
-          'Intensive drain desilting and anti-larval chemical spraying will be conducted across all neighborhood lanes before monsoon. Residents are requested not to dispose of solid or plastic waste into drainage lines.'
+          'সকল লেন ও নিকাশি নালা • সকাল ৮:০০ টা হইতে অপরাহ্ন ১:০০ টা\n\nআসন্ন বর্ষা মৌসুমের পূর্বে সোনালী পার্কের প্রতিটি লেনের প্রধান ড্রেন পলি পরিষ্কার এবং মশা নিধনে ব্লিচিং ও লার্ভিসাইড স্প্রে করা হবে। বাসিন্দাদের নিকাশি নালায় কোনো ধরনের প্লাস্টিক বর্জ্য না ফেলার জন্য বিশেষ অনুরোধ জানানো হচ্ছে।',
+          'All Neighborhood Lanes • 8:00 AM to 1:00 PM\n\nIntensive drain desilting and anti-larval chemical spraying will be conducted across all neighborhood lanes before monsoon. Residents are requested not to dispose of solid or plastic waste into drainage lines.'
         ),
+        pdfUrl: '/sample-notice.pdf',
         isUrgent: true,
-        year: 2026
+        year: 2026,
+        date: '2026-09-15'
       },
       {
         id: 'samiti-notice-2',
         title: b('পাড়ার আবাসিকদের বার্ষিক সাধারণ সভা ও নাগরিক সনদ পর্যালোচনা', 'Annual General Meeting of Residents & Civic Charter Review'),
         text: b(
-          'উন্নয়ন সমিতির বাৎসরিক সাধারণ সভা (AGM) আগামী মাসে অনুষ্ঠিত হবে। বিগত বছরের অডিট রিপোর্ট পেশ, পাড়ার নতুন সিসিটিভি ক্যামেরা স্থাপন ও রাতের নিরাপত্তা ব্যবস্থা নিয়ে আলোচনা হবে। সকল আবাসিক পরিবারের উপস্থিতি কাম্য।',
-          'The Annual General Meeting (AGM) of Unnayan Samiti will take place next month. Discussion on annual audit presentation, new CCTV surveillance nodes, and neighborhood night guards.'
+          'কমিউনিটি হল ভবন • অপরাহ্ন ৬:০০ ঘটিকা\n\nউন্নয়ন সমিতির বাৎসরিক সাধারণ সভা (AGM) আগামী মাসে অনুষ্ঠিত হবে। বিগত বছরের অডিট রিপোর্ট পেশ, পাড়ার নতুন সিসিটিভি ক্যামেরা স্থাপন ও রাতের নিরাপত্তা ব্যবস্থা নিয়ে আলোচনা হবে। সকল আবাসিক পরিবারের উপস্থিতি কাম্য।',
+          'Community Hall • 6:00 PM Onwards\n\nThe Annual General Meeting (AGM) of Unnayan Samiti will take place next month. Discussion on annual audit presentation, new CCTV surveillance nodes, and neighborhood night guards.'
         ),
+        pdfUrl: '/sample-notice.pdf',
         isUrgent: false,
-        year: 2026
-      },
-      {
-        id: 'samiti-notice-3',
-        title: b('নতুন এলইডি পথবাতি রক্ষণাবেক্ষণ ও হেল্পলাইন বিজ্ঞপ্তি', 'LED Streetlight Infrastructure & Maintenance Helpline'),
-        text: b(
-          'পাড়ার কোনো লেনের পথবাতি অকেজো হলে বা আলো সংক্রান্ত কোনো সমস্যা দেখা দিলে অবিলম্বে সমিতির জরুরি হেল্পলাইনে অথবা বৈদ্যুতিক আহ্বায়কের সাথে যোগাযোগ করার অনুরোধ জানানো হচ্ছে।',
-          'If any streetlight in your lane is non-functional or flickering, please report immediately to the Samiti Civic Helpline or Electrical In-Charge for same-day repair.'
-        ),
-        isUrgent: false,
-        year: 2026
+        year: 2026,
+        date: '2026-09-10'
       }
     ];
   }, [data.notices, b]);
 
-  // Fallback civic gallery photos
+  // Notice Handlers
+  const prevNotice = () => setActiveNoticeIndex(prev => (prev - 1 + samitiNotices.length) % samitiNotices.length);
+  const nextNotice = () => setActiveNoticeIndex(prev => (prev + 1) % samitiNotices.length);
+
+  const handleNoticeTouchStart = (e) => setTouchStartNotice(e.touches[0].clientX);
+  const handleNoticeTouchEnd = (e) => {
+    if (!touchStartNotice) return;
+    const diff = touchStartNotice - e.changedTouches[0].clientX;
+    if (diff > 50) nextNotice();
+    if (diff < -50) prevNotice();
+    setTouchStartNotice(null);
+  };
+
+  const copyNotice = (notice) => {
+    if (!notice) return;
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const shareUrl = `${origin}/notifications?wing=Samiti&id=${encodeURIComponent(notice.id || '')}`;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl);
+      setCopiedNoticeId(notice.id || 'current');
+      setTimeout(() => setCopiedNoticeId(null), 2500);
+    }
+  };
+
+  // Civic gallery photos (All samiti photos)
   const samitiGalleryItems = useMemo(() => {
     const raw = (data.gallery && data.gallery.length > 0)
       ? data.gallery.filter(g => g.program === 'Unnayan Samiti' || g.category === 'Samiti' || g.category === 'Roads' || g.category === 'Greenery' || g.category === 'Sanitation' || g.category === 'Civic')
@@ -105,7 +164,6 @@ export default function SamitiPage() {
 
     if (raw.length > 0) return raw;
 
-    // Authentic civic fallbacks
     return [
       {
         src: '/assets/durga-hero.png',
@@ -126,77 +184,69 @@ export default function SamitiPage() {
         year: 2026
       },
       {
-        src: '/assets/durga-afternoon.png',
-        title: b('নতুন এলইডি পথবাতি স্থাপন অভিযান', 'LED Streetlight Infrastructure Project'),
-        category: 'Roads',
-        year: 2025
-      },
-      {
-        src: '/assets/durga-hero.jpg',
-        title: b('বর্ষাপূর্ব ড্রেন পরিষ্কার ও ডেঙ্গি প্রতিরোধ স্প্রে', 'Pre-Monsoon Drain Cleaning & Vector Spray'),
-        category: 'Sanitation',
-        year: 2025
+        src: '/assets/samiti-hero-banner.jpg',
+        title: b('সিসিটিভি নজরদারি ব্যবস্থা ও পথবাতি আধুনিকায়ন', 'CCTV Surveillance & LED Streetlights Upgrade'),
+        category: 'Security',
+        year: 2026
       }
     ];
   }, [data.gallery, b]);
 
-  const filteredGallery = useMemo(() => {
-    if (activeCategory === 'All') return samitiGalleryItems;
-    return samitiGalleryItems.filter(item => item.category === activeCategory);
-  }, [samitiGalleryItems, activeCategory]);
+  // Gallery Handlers
+  const prevGallery = () => setActiveGalleryIndex(prev => (prev - 1 + samitiGalleryItems.length) % samitiGalleryItems.length);
+  const nextGallery = () => setActiveGalleryIndex(prev => (prev + 1) % samitiGalleryItems.length);
 
-  const openLightbox = (item, idx) => {
-    setSelectedImage(item);
-    setLightboxIdx(idx);
+  const handleGalleryTouchStart = (e) => setTouchStartGallery(e.touches[0].clientX);
+  const handleGalleryTouchEnd = (e) => {
+    if (!touchStartGallery) return;
+    const diff = touchStartGallery - e.changedTouches[0].clientX;
+    if (diff > 50) nextGallery();
+    if (diff < -50) prevGallery();
+    setTouchStartGallery(null);
   };
 
-  const navigateLightbox = (dir) => {
-    const next = (lightboxIdx + dir + filteredGallery.length) % filteredGallery.length;
-    setSelectedImage(filteredGallery[next]);
-    setLightboxIdx(next);
+  // All Samiti Members
+  const allSamitiMembers = useMemo(() => {
+    let rawSamitiMembers = (data.members || []).filter(m => m.role && m.role.startsWith('[Samiti]'));
+    if (rawSamitiMembers.length === 0) {
+      rawSamitiMembers = FALLBACK_SAMITI_MEMBERS;
+    }
+    const sorted = [...rawSamitiMembers].sort((a, b) => (a.id || 0) - (b.id || 0));
+    return sorted.map(m => {
+      const parsedRole = parseMemberRole(m.role);
+      const parsedName = parseMemberNameDetails(m.name);
+      return {
+        id: m.id,
+        name: parsedName.mainName,
+        nickname: parsedName.nickname,
+        englishName: parsedName.englishName,
+        rawName: m.name,
+        role: parsedRole.cleanRole,
+        phone: parsedRole.phone,
+        image: m.image || '/assets/avatars/samiti-member.svg'
+      };
+    });
+  }, [data.members]);
+
+  // Member Pagination (4 cards per slide)
+  const MEMBERS_PER_PAGE = 4;
+  const totalMemberPages = Math.max(1, Math.ceil(allSamitiMembers.length / MEMBERS_PER_PAGE));
+  const currentMemberSlice = allSamitiMembers.slice(
+    (activeMemberPage % totalMemberPages) * MEMBERS_PER_PAGE,
+    ((activeMemberPage % totalMemberPages) + 1) * MEMBERS_PER_PAGE
+  );
+
+  const prevMemberPage = () => setActiveMemberPage(prev => (prev - 1 + totalMemberPages) % totalMemberPages);
+  const nextMemberPage = () => setActiveMemberPage(prev => (prev + 1) % totalMemberPages);
+
+  const handleMemberTouchStart = (e) => setTouchStartMember(e.touches[0].clientX);
+  const handleMemberTouchEnd = (e) => {
+    if (!touchStartMember) return;
+    const diff = touchStartMember - e.changedTouches[0].clientX;
+    if (diff > 50) nextMemberPage();
+    if (diff < -50) prevMemberPage();
+    setTouchStartMember(null);
   };
-
-  // Samiti Committee Roster
-  const samitiCommittee = useMemo(() => {
-    const dynamicSamitiMembers = (data.members || [])
-      .filter(m => m.role && m.role.startsWith('[Samiti]'))
-      .map(m => {
-        const withoutTag = m.role.replace('[Samiti]', '').trim();
-        let role = withoutTag;
-        let phone = '+91 98300 XXXXX';
-        if (withoutTag.includes('|')) {
-          const parts = withoutTag.split('|');
-          role = parts[0].trim();
-          phone = '+91 ' + parts[1].replace(/phone|tel|m\.|m:/gi, '').trim();
-        }
-        const parsedName = parseMemberNameDetails(m.name);
-        return {
-          id: m.id,
-          name: parsedName.mainName,
-          englishName: parsedName.englishName,
-          rawName: m.name,
-          role: role,
-          image: m.image,
-          phone: phone
-        };
-      });
-
-    const source = dynamicSamitiMembers.length > 0 ? dynamicSamitiMembers : [
-      { name: 'শ্রী পার্থসারথি সেনগুপ্ত', englishName: 'Partha Sarathi Sengupta', rawName: 'শ্রী পার্থসারথি সেনগুপ্ত (PARTHA SARATHI SENGUPTA)', role: 'সভাপতি', phone: '+91 98300 XXXXX' },
-      { name: 'শ্রী অসীম চ্যাটার্জি', englishName: 'Ashim Chatterjee', rawName: 'শ্রী অসীম চ্যাটার্জি (ASHIM CHATTERJEE)', role: 'সহ-সভাপতি', phone: '+91 98301 XXXXX' },
-      { name: 'শ্রী সুশান্ত রায়', englishName: 'Sushanta Roy', rawName: 'শ্রী সুশান্ত রায় (SUSHANTA ROY)', role: 'সাধারণ সম্পাদক', phone: '+91 98302 XXXXX' },
-      { name: 'শ্রী ভাস্কর মজুমদার', englishName: 'Bhaskar Majumdar', rawName: 'শ্রী ভাস্কর মজুমদার (BHASKAR MAJUMDAR)', role: 'সহ-সম্পাদক', phone: '+91 98303 XXXXX' },
-      { name: 'শ্রী তপন ভট্টাচার্য', englishName: 'Tapan Bhattacharya', rawName: 'শ্রী তপন ভট্টাচার্য (TAPAN BHATTACHARYA)', role: 'পরিকাঠামো আহ্বায়ক', phone: '+91 98304 XXXXX' },
-      { name: 'শ্রীমতী সোমা মুখার্জি', englishName: 'Soma Mukherjee', rawName: 'শ্রীমতী সোমা মুখার্জি (SOMA MUKHERJEE)', role: 'পরিচ্ছন্নতা ও স্বাস্থ্য', phone: '+91 98305 XXXXX' },
-      { name: 'শ্রী নারায়ণ ঘোষ', englishName: 'Narayan Ghosh', rawName: 'শ্রী নারায়ণ ঘোষ (NARAYAN GHOSH)', role: 'কোষাধ্যক্ষ', phone: '+91 98306 XXXXX' },
-      { name: 'শ্রী অলোক চক্রবর্তী', englishName: 'Aloke Chakraborty', rawName: 'শ্রী অলোক চক্রবর্তী (ALOKE CHAKRABORTY)', role: 'প্রবীণ নাগরিক সমন্বয়ক', phone: '+91 98307 XXXXX' },
-    ];
-
-    return source.filter(m => 
-      (m.rawName || m.name).toLowerCase().includes(searchQuery.toLowerCase()) || 
-      m.role.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [data.members, searchQuery]);
 
   // Samiti Financial Documents
   const samitiFinances = useMemo(() => {
@@ -214,18 +264,18 @@ export default function SamitiPage() {
 
     return [
       {
-        title: b('সোনালী পার্ক উন্নয়ন সমিতি বার্ষিক অডিট ও আর্থিক হিসাব ২০২৫-২৬', 'Sonali Park Unnayan Samiti Annual Audit Statement 2025-26'),
+        title: b('সোনালী পার্ক উন্নয়ন সমিতি বাৎসরিক অডিট রিপোর্ট ২০২৫-২৬', 'Sonali Park Unnayan Samiti Annual Audit Report 2025-26'),
         year: 2026,
         url: '/sample-audit.pdf'
       },
       {
-        title: b('পাড়ার রাস্তা, এলইডি আলো ও জলনিকাশি উন্নয়ন হিসাব বিবরণী', 'Roads, LED Lighting & Drainage Capital Accounts'),
+        title: b('পাড়ার ড্রেন ও রাস্তা সংস্কার কাজের ব্যয় বিবরণী', 'Drain & Lane Infrastructure Expenditure Statement'),
         year: 2026,
         url: '/sample-audit.pdf'
       },
       {
-        title: b('মাসিক নিরাপত্তা প্রহরী ও বর্জ্য নিষ্কাশন পরিচালনা হিসাব', 'Monthly Security Patrol & Sanitation Operations Audit'),
-        year: 2025,
+        title: b('নৈশ নিরাপত্তা ও সিসিটিভি ক্যামেরা তহবিল হিসাব', 'Night Security & CCTV Surveillance Fund Statement'),
+        year: 2026,
         url: '/sample-audit.pdf'
       }
     ];
@@ -233,30 +283,28 @@ export default function SamitiPage() {
 
   return (
     <main className="bg-[#FAF7F2] min-h-screen pt-20 sm:pt-24 pb-20 selection:bg-brand-maroon selection:text-white font-sans">
-      {/* ═══ INDEPENDENT SAMITI HERO BANNER (WITH HERO IMAGE & CONTROLS) ═══ */}
+      {/* ═══ INDEPENDENT SAMITI HERO BANNER (ATMOSPHERIC HERITAGE LOOK) ═══ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-16">
-        <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-stone-950 text-white border border-emerald-900/40 group">
+        <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-stone-950 text-white border border-stone-800/80 group">
           {/* Hero Banner Background Image */}
           <div className="absolute inset-0 z-0 overflow-hidden">
             <img
               src={settings?.samitiHeroImage || '/assets/samiti-hero-banner.jpg'}
-              alt="Bansdroni Sonali Park Unnayan Samiti Civic Banner"
+              alt="Bansdroni Sonali Park Unnayan Samiti Banner"
               className="w-full h-full object-cover object-center transform scale-100 group-hover:scale-105 transition-transform duration-1000 ease-out"
             />
-            {/* Cinematic Multi-Layer Gradient Overlays for maximum legibility */}
+            {/* Cinematic Multi-Layer Gradient Overlays */}
             <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/80 to-stone-950/55" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-stone-950/90" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-stone-950/90" />
             <div className="absolute inset-0 bg-[radial-gradient(#10B981_1px,transparent_1px)] [background-size:24px_24px] opacity-15 pointer-events-none" />
           </div>
 
-          {/* Top emerald decorative highlight */}
-          <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent z-10" />
-
           <div className="relative z-10 px-6 py-14 sm:py-20 md:py-24 lg:px-12 flex flex-col items-center text-center max-w-4xl mx-auto">
-            {/* Samiti RWA Registration Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-400/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-sm backdrop-blur-md">
-              <SamitiEmblemIcon className="w-4 h-4 text-emerald-400" />
-              <span>{b('সোনালী পার্ক উন্নয়ন সমিতি • নাগরিক ও আবাসিক পরিষদ (RWA)', 'Sonali Park Unnayan Samiti • Residents Welfare Association')}</span>
+            {/* Samiti Registration / Identity Kicker */}
+            <div className="inline-flex items-center justify-center gap-2.5 mb-3 text-emerald-300 font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em]">
+              <span className="w-5 h-0.5 bg-emerald-400/50 rounded-full" />
+              <span>{b('নাগরিক কল্যাণ ও আবাসিক আরডব্লিউএ শাখা • ১৯৭৮', 'Civic Development & Residents Welfare Association • Estd. 1978')}</span>
+              <span className="w-5 h-0.5 bg-emerald-400/50 rounded-full" />
             </div>
 
             {/* Samiti Main Title */}
@@ -268,347 +316,439 @@ export default function SamitiPage() {
             </div>
 
             {/* Samiti Subtitle & Tagline */}
-            <p className="text-base sm:text-lg md:text-xl text-stone-200 font-normal max-w-2xl leading-relaxed mb-4 drop-shadow-sm">
+            <p className="text-base sm:text-lg md:text-xl text-stone-200 font-normal max-w-2xl leading-relaxed drop-shadow-sm mb-2">
               {lang === 'en'
-                ? (t(settings.samitiHeroTagline) || 'The registered Residents Welfare Association stewarding civic infrastructure, neighborhood security, green cleanliness, and resident welfare in Bansdroni Sonali Park.')
-                : (settings.samitiHeroTagline || 'আমাদের পাড়ার নিরাপত্তা, পরিচ্ছন্নতা, রাস্তাঘাট ও নাগরিকদের দৈনন্দিন স্বাচ্ছন্দ্য রক্ষায় সার্বক্ষণিক নিয়োজিত রেজিস্টার্ড উন্নয়ন পরিষদ।')}
+                ? (t(settings.samitiHeroTagline) || 'The registered residents welfare association safeguarding neighborhood security, clean roads, civic drainage, and environmental welfare.')
+                : (settings.samitiHeroTagline || 'বাঁশদ্রোণী সোনালী পার্কের নাগরিক পরিষেবা, নিরাপত্তা ও সামগ্রিক উন্নয়নের অভিভাবক। রাস্তাঘাট, পরিচ্ছন্নতা এবং সবুজায়নের মাধ্যমে উন্নত জীবনযাত্রার প্রতিশ্রুতি।')}
             </p>
           </div>
         </div>
       </section>
 
-      {/* ═══ 1. SAMITI CIVIC CHARTER & SERVICES ═══ */}
-      <section id="samiti-charter" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-900 text-[11px] font-bold uppercase tracking-wider mb-2">
-            <Building className="w-3.5 h-3.5 text-emerald-700" />
-            <span>{b('নাগরিক অধিকার ও পরিষেবা', 'Civic Amenities & Care')}</span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">
-            {b('নিরাপত্তা, পরিকাঠামো ও', 'Security, Infrastructure &')} <span className="text-emerald-700">{b('পরিবেশ', 'Environment')}</span>
+      {/* ═══ 1. OUR ACTIVITIES & CIVIC INITIATIVES (WHAT WE DO / CHARTER) ═══ */}
+      <section id="samiti-charter" className="scroll-mt-24">
+      </section>
+      <section id="samiti-activities" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
+        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
+            {b('আবাসিক কল্যাণ ও', 'Residential Welfare &')} <span className="text-emerald-800">{b('নাগরিক সেবা উদ্যোগ', 'Civic Action')}</span>
           </h2>
-          <p className="text-stone-600 text-sm mt-2">
+          <p className="text-stone-600 text-xs sm:text-sm md:text-base mt-2 max-w-xl mx-auto leading-relaxed">
             {b(
-              'সোনালী পার্ক উন্নয়ন সমিতি পাড়ার প্রতিটি নাগরিকের নিরাপত্তা, আধুনিক পরিকাঠামো ও সুস্থ পরিবেশ নিশ্চিতে সার্বক্ষণিক প্রতিশ্রুতিবদ্ধ।',
-              'Committed to guarding the civic wellbeing, infrastructure longevity, and emergency resilience of every resident family.'
+              'বাঁশদ্রোণী সোনালী পার্কের নাগরিক পরিষেবা, পরিকাঠামো ও সামগ্রিক জীবনযাত্রার উন্নয়ন রূপরেখা।',
+              'Comprehensive civic services, infrastructure roadmap, and community development at Bansdroni Sonali Park.'
             )}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-4 sm:gap-6">
-          <div className="bg-white rounded-3xl p-6 border border-stone-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center mb-4">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-serif font-bold text-stone-900 mb-2">
-              {b('রাত্রিকালীন পাহারা ও গেট', 'Night Watch & Security Gates')}
-            </h3>
-            <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
-              {b(
-                'সিসিটিভি ক্যামেরা নজরদারি, অটোমেটেড গেট লকিং এবং সার্বক্ষণিক গার্ডের টহল।',
-                'Comprehensive entry-gate lock system, CCTV recording, and patrolling night guards.'
-              )}
-            </p>
+        {/* Minimal Animated Roadmap Showcase Card */}
+        <div className="relative max-w-4xl mx-auto bg-gradient-to-br from-[#FFFDF9] via-[#FAF7F2] to-emerald-50/30 rounded-3xl p-6 sm:p-10 border border-[#E5DAC8] shadow-[0_8px_30px_rgba(6,78,59,0.05)] overflow-hidden group">
+          {/* Top Decorative Washi Tape */}
+          <div className="absolute -top-3.5 left-7 sm:left-10 z-20 pointer-events-none">
+            <WashiTapePin text={b('কর্মকাণ্ড রূপরেখা • ২০২৬-২৭', 'Action Roadmap • 2026-27')} variant="emerald" />
           </div>
 
-          <div className="bg-white rounded-3xl p-6 border border-stone-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-700 flex items-center justify-center mb-4">
-              <Wrench className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-serif font-bold text-stone-900 mb-2">
-              {b('রাস্তা ও নিকাশি সংস্কার', 'Roads & Drainage Networks')}
-            </h3>
-            <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
-              {b(
-                'কংক্রিট লেন মেরামত, বর্ষার ড্রেন পরিষ্কার এবং পথবাতির তাত্ক্ষণিক রক্ষণাবেক্ষণ।',
-                'Pre-monsoon drainage silt clearing, lane paving, and prompt electrical maintenance.'
-              )}
-            </p>
-          </div>
+          {/* Ambient Background Aura */}
+          <div className="absolute -right-16 -top-16 w-56 h-56 bg-emerald-200/20 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-300/30 transition-all duration-700" />
+          <div className="absolute -left-16 -bottom-16 w-56 h-56 bg-amber-200/15 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="bg-white rounded-3xl p-6 border border-stone-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-slate-500/10 text-slate-700 flex items-center justify-center mb-4">
-              <Trash2 className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-serif font-bold text-stone-900 mb-2">
-              {b('পরিচ্ছন্নতা ও বর্জ্য অপসারণ', 'Doorstep Solid Waste')}
-            </h3>
-            <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
-              {b(
-                'দৈনিক দরজায় দরজায় ময়লা সংগ্রহ, ডেঙ্গু প্রতিরোধে নিয়মিত ব্লিচিং ও স্প্রে।',
-                'Daily morning garbage collection, vector spray for dengue control, and sanitation.'
-              )}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-3xl p-6 border border-stone-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center mb-4">
-              <TreePine className="w-6 h-6" />
-            </div>
-            <h3 className="text-lg font-serif font-bold text-stone-900 mb-2">
-              {b('বৃক্ষরোপণ ও সবুজায়ন', 'Greenery & Parks')}
-            </h3>
-            <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
-              {b(
-                'পাড়ার রাস্তার দুধারে ছায়াঘন বৃক্ষরোপণ এবং খোলা উদ্যানের নিয়মিত পরিচর্যা।',
-                'Seasonal tree sapling planting drives and neighborhood park green cover upkeep.'
-              )}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ 2. RESIDENT EMERGENCY DIRECTORY & HELPLINES ═══ */}
-      <section id="samiti-helplines" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20 pt-4">
-        <div className="group relative bg-gradient-to-r from-stone-900 via-stone-950 to-stone-900 rounded-3xl p-6 sm:p-10 text-white border border-stone-800 shadow-2xl">
-          {/* Top Pinned Washi Tape */}
-          <div className="absolute -top-3.5 left-7 sm:left-10 z-20">
-            <WashiTapePin text={b('জরুরি হেল্পলাইন • সার্বক্ষণিক সেবা', 'Emergency Helplines • 24x7 Direct')} variant="rose" />
-          </div>
-
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-stone-800 mb-6">
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
-                <Siren className="w-6 h-6 animate-pulse" />
+          <div className="relative z-10 flex flex-col items-center text-center">
+            {/* Animated Pulsing Icon Stage */}
+            <div className="relative mb-5">
+              <div className="absolute inset-0 rounded-full bg-emerald-400/25 blur-md animate-pulse" />
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border border-emerald-200/90 text-emerald-700 flex items-center justify-center shadow-md">
+                <Sparkles className="w-8 h-8 text-emerald-600 animate-bounce duration-1000" />
               </div>
-              <div>
-                <span className="text-xs font-bold text-rose-400 uppercase tracking-widest block">
-                  {b('জরুরি নাগরিক সেবা ডিরেক্টরি', 'Emergency Resident Helpline Directory')}
+            </div>
+
+            {/* Showcase Title & Subtitle */}
+            <h3 className="text-lg sm:text-2xl font-serif font-black text-stone-900 tracking-tight mb-2">
+              {b('উদ্যোগ ও কার্যক্রম রূপরেখা শীঘ্রই আপডেট করা হচ্ছে...', 'Civic Activities & Initiatives Roadmap Updating Soon...')}
+            </h3>
+            <p className="font-serif text-xs sm:text-sm text-stone-600 max-w-xl leading-relaxed mb-6 sm:mb-8">
+              {b(
+                'নাগরিক সেবা, নিকাশি ও রাস্তা সংস্কার, এলইডি পথবাতি আধুনিকায়ন ও পরিবেশবান্ধব সবুজায়ন প্রকল্পের পূর্ণাঙ্গ প্রতিবেদন অতি শীঘ্রই সবিস্তারে প্রকাশিত হবে।',
+                'Detailed reports and timelines for drainage maintenance, LED streetlighting, 24x7 security, and environmental drives will be published here shortly.'
+              )}
+            </p>
+
+            {/* Sleek Interactive Preview Pills */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 w-full max-w-2xl mb-7">
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-white/90 border border-emerald-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-xs transition-all flex flex-col items-center gap-1.5">
+                <Wrench className="w-4 h-4 text-emerald-700" />
+                <span className="font-serif font-bold text-xs text-stone-800 leading-snug">{b('নিকাশি সংস্কার', 'Drainage')}</span>
+                <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/70 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  {b('পরিকল্পনাধীন', 'Planning')}
                 </span>
-                <h3 className="text-xl sm:text-2xl font-serif font-bold text-white">
-                  {b('পাড়ার বাসিন্দাদের জন্য সার্বক্ষণিক জরুরি যোগাযোগ', 'Immediate Emergency Assistance Contacts')}
-                </h3>
+              </div>
+
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-white/90 border border-emerald-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-xs transition-all flex flex-col items-center gap-1.5">
+                <Lightbulb className="w-4 h-4 text-amber-700" />
+                <span className="font-serif font-bold text-xs text-stone-800 leading-snug">{b('পথবাতি সেবা', 'Lighting')}</span>
+                <span className="text-[10px] font-mono text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/70 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  {b('চলমান', 'Active')}
+                </span>
+              </div>
+
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-white/90 border border-emerald-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-xs transition-all flex flex-col items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-800" />
+                <span className="font-serif font-bold text-xs text-stone-800 leading-snug">{b('নিরাপত্তা ও গার্ড', 'Security')}</span>
+                <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/70 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  {b('নিয়মিত', 'Routine')}
+                </span>
+              </div>
+
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-white/90 border border-emerald-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-xs transition-all flex flex-col items-center gap-1.5">
+                <TreePine className="w-4 h-4 text-teal-700" />
+                <span className="font-serif font-bold text-xs text-stone-800 leading-snug">{b('সবুজায়ন প্রকল্প', 'Greenery')}</span>
+                <span className="text-[10px] font-mono text-teal-800 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200/70 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
+                  {b('আগামী প্রকল্প', 'Upcoming')}
+                </span>
               </div>
             </div>
-            <span className="text-xs text-stone-400">
-              {b('যেকোনো জরুরি প্রয়োজনে সরাসরি কল করুন', 'Direct 1-tap call for urgent assistance')}
-            </span>
-          </div>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-4">
-            <a href="tel:+919830000000" className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-400/40 transition-all flex items-center justify-between group">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-[11px] text-stone-400 block">{b('সমিতি নিরাপত্তা রুম', 'Samiti Security Desk')}</span>
-                  <span className="text-sm font-bold text-white font-mono group-hover:text-emerald-400 transition-colors">+91 98300 XXXXX</span>
-                </div>
-              </div>
-              <Phone className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-            </a>
-
-            <a href="tel:100" className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-rose-400/40 transition-all flex items-center justify-between group">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
-                  <Siren className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-[11px] text-stone-400 block">{b('বাঁশদ্রোণী থানা', 'Bansdroni Police Station')}</span>
-                  <span className="text-sm font-bold text-white font-mono group-hover:text-rose-400 transition-colors">100 / 033-2412-XXXX</span>
-                </div>
-              </div>
-              <Phone className="w-4 h-4 text-rose-400 group-hover:scale-110 transition-transform" />
-            </a>
-
-            <a href="tel:102" className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-400/40 transition-all flex items-center justify-between group">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center">
-                  <HeartHandshake className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-[11px] text-stone-400 block">{b('জরুরি অ্যাম্বুলেন্স', 'Emergency Ambulance')}</span>
-                  <span className="text-sm font-bold text-white font-mono group-hover:text-red-400 transition-colors">102 / +91 98311 XXXXX</span>
-                </div>
-              </div>
-              <Phone className="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform" />
-            </a>
-
-            <a href="tel:03324750000" className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-teal-400/40 transition-all flex items-center justify-between group">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center">
-                  <Building className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-[11px] text-stone-400 block">{b('কেএমসি ১১২ ওয়ার্ড অফিস', 'KMC Ward 112 Office')}</span>
-                  <span className="text-sm font-bold text-white font-mono group-hover:text-teal-400 transition-colors">033-2475-XXXX</span>
-                </div>
-              </div>
-              <Phone className="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform" />
-            </a>
-
-            <a href="tel:+919832200000" className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-400/40 transition-all flex items-center justify-between group">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
-                  <Lightbulb className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-[11px] text-stone-400 block">{b('পাড়ার ইলেকট্রিশিয়ান', 'Local Electrician')}</span>
-                  <span className="text-sm font-bold text-white font-mono group-hover:text-amber-400 transition-colors">+91 98322 XXXXX</span>
-                </div>
-              </div>
-              <Phone className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
-            </a>
-
-            <a href="tel:+919833300000" className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-400/40 transition-all flex items-center justify-between group">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
-                  <Wrench className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-[11px] text-stone-400 block">{b('প্লাম্বার ও জল সরবরাহ', 'Emergency Plumber')}</span>
-                  <span className="text-sm font-bold text-white font-mono group-hover:text-blue-400 transition-colors">+91 98333 XXXXX</span>
-                </div>
-              </div>
-              <Phone className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
-            </a>
+            {/* Live Status Indicator Bar */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#E5DAC8] text-stone-600 text-xs shadow-2xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              <span className="font-serif text-[11px] sm:text-xs text-stone-700">
+                {b('পরবর্তী সাধারণ সভায় অনুমোদনের পর বিস্তারিত রূপরেখা সংযোজন করা হবে', 'Full action schedule will be added following general body review')}
+              </span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ═══ 3. DEDICATED SAMITI NOTICE BOARD ═══ */}
+      {/* ═══ 2. SAMITI NOTICES (SIDE-WISE CONTROLLING CAROUSEL) ═══ */}
       <section id="samiti-notices" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-sm">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 pb-6 border-b border-stone-100 mb-6">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-900 text-[11px] font-bold uppercase tracking-wider mb-2">
-                <Megaphone className="w-3.5 h-3.5 text-emerald-700" />
-                <span>{b('নাগরিক বুলেটিন ও সার্কুলার', 'Civic Bulletin & Circulars')}</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                {b('উন্নয়ন সমিতির জরুরি', 'Unnayan Samiti Official')} <span className="text-emerald-800">{b('বিজ্ঞপ্তি ও নির্দেশিকা', 'Notices & Directives')}</span>
-              </h2>
-              <p className="text-stone-500 text-xs sm:text-sm mt-1">
-                {b('রাস্তাঘাট, নিকাশি নালা, বর্জ্য নিষ্কাশন ও পাড়ার নিরাপত্তা সংক্রান্ত সরকারি ও আবাসিক নোটিশ', 'Official announcements regarding drainage works, waste collection, security gates, and resident meetings.')}
-              </p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+          <div>
+            <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
+              <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
+              <span>{b('জরুরি প্রশাসনিক সার্কুলার', 'Administrative Circulars')}</span>
             </div>
-            <div className="shrink-0 text-xs font-bold px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200 shadow-2xs">
-              {b('সক্রিয় নোটিশ', 'Active Notices')}: {toDigits(samitiNotices.length, lang)} {b('টি', '')}
-            </div>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
+              {b('উন্নয়ন সমিতির সাধারণ', 'Unnayan Samiti Public')} <span className="text-brand-maroon">{b('বিজ্ঞপ্তি ও নির্দেশিকা', 'Notices & Guidelines')}</span>
+            </h2>
+            <p className="text-sm sm:text-base text-stone-600 mt-2 leading-relaxed max-w-2xl">
+              {b('ড্রেন পরিষ্কার, পথবাতি মেরামত, সাধারণ সভা ও আবাসিক নির্দেশিকা সংক্রান্ত আনুষ্ঠানিক বিজ্ঞপ্তি।', 'Official circulars regarding drain works, road repairs, resident meetings, and civic guidelines.')}
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 pt-5">
-            {samitiNotices.map((notice, idx) => (
-              <div
-                key={notice.id || idx}
-                className="group relative pt-8 pb-5 pl-8 sm:pl-10 pr-6 rounded-3xl bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_6px_20px_rgba(28,13,19,0.04)] hover:shadow-[0_16px_32px_rgba(5,150,105,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
-              >
-                {/* Top Pinned Washi Tape Header */}
-                <div className="absolute -top-3.5 left-6 sm:left-8 z-20">
-                  <WashiTapePin text={b(`নাগরিক সার্কুলার নং ০${idx + 1}`, `Civic Circular #${idx + 1}`)} variant="emerald" />
-                </div>
-
-                {/* Left Spiral Binder Holes */}
-                <div className="absolute left-2.5 top-8 bottom-8 flex flex-col justify-around pointer-events-none">
-                  <BinderHoles count={4} />
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-900 border border-emerald-500/20 font-serif shadow-2xs">
-                      <SamitiEmblemIcon className="w-3.5 h-3.5 text-emerald-700" />
-                      <span>{b('নাগরিক বিজ্ঞপ্তি', 'Civic Notice')}</span>
-                    </span>
-                    {notice.isUrgent && (
-                      <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold shadow-2xs">
-                        {b('জরুরি', 'Urgent')}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="font-serif font-bold text-stone-900 text-base mb-1.5 group-hover:text-emerald-900 transition-colors leading-snug">
-                    {t(notice.title)}
-                  </h3>
-                  <div className="mb-2.5">
-                    <FestiveWaveAccent className="w-12 h-1.5 text-emerald-600/80" />
-                  </div>
-                  <p className="text-xs sm:text-sm text-stone-600 leading-relaxed whitespace-pre-line mb-3">
-                    {t(notice.text)}
-                  </p>
-                </div>
-
-                <div>
-                  <div className="pt-3 border-t border-[#E8DFD1] flex items-center justify-between text-[11px] text-stone-400">
-                    <span>{b('সাল:', 'Year:')} {toDigits(notice.year, lang)}</span>
-                    <span className="text-emerald-800 font-bold font-serif">{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
-                  </div>
-                  {/* Deckle bottom edge */}
-                  <div className="-mx-6 -mb-5 mt-2 opacity-80">
-                    <TornDeckleEdge className="w-full text-stone-200/90 h-2 block" />
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
+            <Link
+              href="/notifications?wing=Samiti"
+              className="inline-flex items-center gap-2 pl-4 sm:pl-5 pr-2 py-1.5 rounded-full text-xs sm:text-sm font-bold btn-tactile-parchment text-stone-800 hover:text-brand-maroon whitespace-nowrap group shadow-xs"
+            >
+              <span>{b('সকল সমিতি নোটিশ দেখুন', 'View All Samiti Notices')}</span>
+              <span className="w-6 h-6 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-xs font-bold transition-colors">
+                →
+              </span>
+            </Link>
           </div>
         </div>
-      </section>
 
-      {/* ═══ 4. DEDICATED SAMITI COMMITTEE ROSTER ═══ */}
-      <section id="samiti-committee" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-sm">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-stone-100">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-900 text-[11px] font-bold uppercase tracking-wider mb-2">
-                <Users className="w-3.5 h-3.5 text-emerald-700" />
-                <span>{b('নাগরিক পরিষদ', 'Executive Roster')}</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                {b('উন্নয়ন সমিতির কর্মকর্তা ও লেন সমন্বয়কবৃন্দ', 'Unnayan Samiti Leadership & Ward Reps')}
-              </h2>
+        {samitiNotices.length === 0 ? (
+          <div className="relative text-center py-16 px-6 bg-[#FFFDF9] rounded-3xl border border-dashed border-[#E5DAC8] flex flex-col items-center justify-center gap-3 max-w-2xl mx-auto shadow-xs">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 shadow-2xs">
+              <NoticeScrollIcon className="w-7 h-7 text-brand-maroon" />
             </div>
-
-            {/* Search Input */}
-            <div className="relative w-full md:w-72">
-              <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={b('নাম বা পদবী খুঁজুন...', 'Search name or role...')}
-                className="w-full pl-9 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-full text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-              />
-            </div>
+            <h3 className="font-serif font-bold text-lg text-stone-800">
+              {b('কোনো নতুন নোটিশ নেই', 'No Active Notices')}
+            </h3>
+            <p className="font-serif text-xs sm:text-sm text-stone-600 max-w-md">
+              {b('সমিতির সমস্ত নিয়মিত আপডেট এখানে সময়মতো প্রকাশ করা হবে।', 'All regular civic updates and samiti circulars will be published here in timely order.')}
+            </p>
           </div>
+        ) : (
+          (() => {
+            const currentNotice = samitiNotices[activeNoticeIndex % samitiNotices.length] || samitiNotices[0];
+            const noticeIdx = (activeNoticeIndex % samitiNotices.length) + 1;
+            const isCopied = copiedNoticeId === (currentNotice.id || 'current');
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-6">
-            {samitiCommittee.map((m, idx) => (
-              <div key={idx} className="group relative p-4 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 hover:border-emerald-500/40 hover:bg-white hover:shadow-md transition-all flex flex-col items-center justify-between text-center">
-                <div className="w-full flex flex-col items-center">
-                  <div className="relative w-full max-w-[120px] aspect-[4/5] mx-auto rounded-xl overflow-hidden border border-emerald-200/80 bg-stone-100 shadow-2xs mb-2.5 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                    {m.image ? (
-                      <img src={m.image} alt={lang === 'en' ? tName(m.rawName || m.name) : m.name} className="w-full h-full object-cover object-top" loading="lazy" />
-                    ) : (
-                      <div className="w-full h-full bg-emerald-50 text-emerald-800 font-serif font-bold text-2xl flex items-center justify-center">
-                        {(lang === 'en' ? tName(m.rawName || m.name) : m.name).charAt(0)}
+            return (
+              <div className="w-full max-w-3xl lg:max-w-4xl mx-auto pt-2">
+                {/* 1. MLH-Style Floating Showcase Notice Card */}
+                <div
+                  className="group relative bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_10px_32px_rgba(28,13,19,0.06)] hover:shadow-[0_18px_48px_rgba(159,18,57,0.1)] rounded-3xl pt-8 pb-5 pl-10 sm:pl-14 pr-5 sm:pr-8 transition-all duration-300 flex flex-col justify-between"
+                  onTouchStart={handleNoticeTouchStart}
+                  onTouchEnd={handleNoticeTouchEnd}
+                >
+                  {/* Pinned Textured Washi Tape on Top Center */}
+                  <div className="absolute -top-3.5 left-7 sm:left-10 z-30 pointer-events-none">
+                    <WashiTapePin text={b(`সমিতি বিজ্ঞপ্তি নং ০${noticeIdx} • ২০২৬`, `Samiti Circular #${noticeIdx} • 2026`)} variant="emerald" />
+                  </div>
+
+                  {/* Left Perforated Spiral Binder Margin */}
+                  <div className="absolute left-2.5 sm:left-3.5 top-8 bottom-8 flex flex-col justify-around pointer-events-none z-20">
+                    <BinderHoles count={5} />
+                  </div>
+
+                  {/* Clipped Decorative Background Elements */}
+                  <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+                    <div className="absolute bottom-0 inset-x-0 opacity-70">
+                      <TornDeckleEdge className="w-full text-stone-200 h-2 block" />
+                    </div>
+                  </div>
+
+                  {/* Content Body */}
+                  <div className="relative z-10">
+                    {/* Top Header Row with Badges */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-serif shadow-2xs">
+                          <SamitiEmblemIcon className="w-3 h-3 text-emerald-700" />
+                          <span>{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
+                        </span>
+                        {currentNotice.isUrgent && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-100/80 px-2 py-0.5 rounded-full border border-rose-300">
+                            <span>{b('জরুরি', 'Urgent')}</span>
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] sm:text-xs font-serif font-medium text-stone-600 bg-stone-100/90 px-2.5 py-0.5 rounded-full border border-stone-200/80 shadow-2xs">
+                          📅 {formatDate(currentNotice.date, lang)}
+                        </span>
+                        {samitiNotices.length > 1 && (
+                          <span className="text-[10px] sm:text-xs font-mono font-bold text-amber-900 bg-amber-100/80 px-2 py-0.5 rounded-full border border-amber-300">
+                            {toDigits(noticeIdx)}/{toDigits(samitiNotices.length)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Notice Title */}
+                    <h3 className="text-base sm:text-xl md:text-2xl font-serif font-black text-stone-900 leading-[1.3] tracking-tight">
+                      {t(currentNotice.title?.replace(/^\[Samiti\]\s*/i, ''))}
+                    </h3>
+
+                    {/* Festive Wave Accent */}
+                    <div className="my-2 sm:my-2.5">
+                      <FestiveWaveAccent className="w-14 sm:w-16 h-1.5 text-emerald-600" />
+                    </div>
+
+                    {/* Notice Body */}
+                    <p className="text-stone-700 text-xs sm:text-sm md:text-base leading-relaxed sm:leading-loose font-sans whitespace-pre-line mb-4 sm:mb-5">
+                      {t(currentNotice.text)}
+                    </p>
+
+                    {/* PDF Circular Quick Action Bar */}
+                    {currentNotice.pdfUrl && (
+                      <div className="flex flex-wrap items-center gap-2.5 mb-5 sm:mb-6">
+                        <Link
+                          href={`/transparency?wing=Samiti&viewPdf=${encodeURIComponent(currentNotice.pdfUrl)}&pdfTitle=${encodeURIComponent(currentNotice.title?.replace(/^\[Samiti\]\s*/i, '') || 'Official Circular')}`}
+                          className="btn-tactile-crimson inline-flex items-center gap-2 py-2 sm:py-2.5 px-4 sm:px-5 rounded-full text-white font-bold text-xs sm:text-sm shadow-[0_4px_16px_rgba(190,18,60,0.28)] hover:shadow-[0_8px_24px_rgba(190,18,60,0.4)] transition-all cursor-pointer group/pdf"
+                        >
+                          <FileText className="w-4 h-4 text-amber-200 group-hover/pdf:scale-110 transition-transform" />
+                          <span>{b('অফিসিয়াল বিজ্ঞপ্তি PDF দেখুন', 'View Official PDF Circular')}</span>
+                          <span className="w-5 h-5 rounded-full bg-white/20 group-hover/pdf:bg-white text-white group-hover/pdf:text-brand-maroon flex items-center justify-center text-xs font-bold transition-colors ml-0.5">
+                            →
+                          </span>
+                        </Link>
+
+                        <button
+                          type="button"
+                          onClick={() => triggerDownload(currentNotice.pdfUrl, `${currentNotice.title?.replace(/^\[Samiti\]\s*/i, '') || 'Samiti-Notice'}.pdf`)}
+                          className="btn-tactile-parchment inline-flex items-center gap-1.5 py-2 sm:py-2.5 px-3.5 sm:px-4 rounded-full text-stone-700 hover:text-brand-maroon font-semibold text-xs sm:text-sm border border-[#E5DAC8] shadow-2xs transition-all cursor-pointer"
+                          title={b('পিডিএফ ডাউনলোড করুন', 'Download Circular PDF')}
+                        >
+                          <Download className="w-3.5 h-3.5 text-stone-600 group-hover:text-brand-maroon" />
+                          <span>{b('ডাউনলোড', 'Download')}</span>
+                        </button>
                       </div>
                     )}
                   </div>
-                  <h4 className="font-bold text-stone-900 text-xs sm:text-sm leading-snug line-clamp-2 group-hover:text-emerald-800 transition-colors" title={lang === 'en' ? tName(m.rawName || m.name) : m.name}>
+
+                  {/* Footer Meta Row & Action Controls */}
+                  <div className="pt-3.5 sm:pt-4 border-t border-stone-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs relative z-10">
+                    <span className="text-stone-500 font-serif italic text-[11px] sm:text-xs flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                      <span className="truncate">{b('বাঁশদ্রোণী সোনালী পার্ক উন্নয়ন সমিতি পরিচালনা পরিষদ কর্তৃক অনুমোদিত', 'Authorized by Bansdroni Sonali Park Unnayan Samiti Executive')}</span>
+                    </span>
+
+                    <div className="flex items-center gap-2 self-end sm:self-auto shrink-0 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => copyNotice(currentNotice)}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-2xs cursor-pointer ${
+                          isCopied
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200'
+                        }`}
+                        title={b('নোটিশের লিঙ্ক কপি করুন', 'Copy Notice Link')}
+                      >
+                        {isCopied ? <Check className="w-3.5 h-3.5" /> : <Link2 className="w-3.5 h-3.5" />}
+                        <span>{isCopied ? b('লিঙ্ক কপি!', 'Link Copied!') : b('লিঙ্ক কপি', 'Copy Link')}</span>
+                      </button>
+
+                      <Link
+                        href="/notifications?wing=Samiti"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-brand-maroon hover:bg-[#881337] text-white shadow-2xs transition-colors cursor-pointer"
+                        title={b('সকল সমিতি নোটিশ দেখুন', 'View Full List of Samiti Notices')}
+                      >
+                        <span>{b('সকল সমিতি নোটিশ', 'All Samiti Notices')}</span>
+                        <span className="text-xs">→</span>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Harmonized Heritage Pagination Navigation Dock */}
+                {samitiNotices.length > 1 && (
+                  <>
+                    <div className="flex items-center justify-center gap-3 sm:gap-4 mt-5 sm:mt-6">
+                      <button
+                        type="button"
+                        onClick={prevNotice}
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#FFFDF9] border border-[#E5DAC8] hover:border-brand-maroon/50 hover:bg-[#FAF7F2] text-stone-700 hover:text-brand-maroon flex items-center justify-center shadow-xs transition-all duration-200 cursor-pointer active:scale-95"
+                        aria-label="Previous notice"
+                      >
+                        <ChevronLeft className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                      </button>
+
+                      <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#FAF7F2] border border-[#E5DAC8] shadow-inner">
+                        {samitiNotices.map((_, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setActiveNoticeIndex(idx)}
+                            className={`transition-all duration-300 rounded-full cursor-pointer ${
+                              (activeNoticeIndex % samitiNotices.length) === idx
+                                ? 'w-7 sm:w-9 h-2 bg-brand-maroon'
+                                : 'w-2 h-2 bg-amber-900/25 hover:bg-amber-900/40'
+                            }`}
+                            aria-label={`Go to notice ${idx + 1}`}
+                          />
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={nextNotice}
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#FFFDF9] border border-[#E5DAC8] hover:border-brand-maroon/50 hover:bg-[#FAF7F2] text-stone-700 hover:text-brand-maroon flex items-center justify-center shadow-xs transition-all duration-200 cursor-pointer active:scale-95"
+                        aria-label="Next notice"
+                      >
+                        <ChevronRight className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                      </button>
+                    </div>
+
+                    {/* Quick Notice Discovery Strip */}
+                    <div className="flex items-center justify-center gap-2 mt-4 overflow-x-auto py-1 px-2 scrollbar-hide max-w-full">
+                      {samitiNotices.map((n, i) => {
+                        const isSelected = (activeNoticeIndex % samitiNotices.length) === i;
+                        return (
+                          <button
+                            key={n.id || i}
+                            onClick={() => setActiveNoticeIndex(i)}
+                            className={`px-3 py-1.5 rounded-full text-xs font-serif font-medium transition-all cursor-pointer whitespace-nowrap ${
+                              isSelected
+                                ? 'bg-brand-maroon text-white font-bold shadow-xs'
+                                : 'bg-white border border-[#E5DAC8] text-stone-700 hover:border-brand-maroon/50'
+                            }`}
+                          >
+                            {toDigits(i + 1)}. {t(n.title?.replace(/^\[Samiti\]\s*/i, '')).slice(0, 24)}...
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })()
+        )}
+      </section>
+
+      {/* ═══ 3. SAMITI COMMITTEE (SIDE-WISE CONTROLLING CAROUSEL) ═══ */}
+      <section id="samiti-committee" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+          <div>
+            <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
+              <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
+              <span>{b('নির্বাচিত দায়িত্বপ্রাপ্ত প্রতিনিধি • ২০২৬–২০২৮', 'Elected Representatives • 2026–2028')}</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
+              {b('উন্নয়ন সমিতির কর্মকর্তা ও', 'Unnayan Samiti Executive')} <span className="text-brand-maroon">{b('পরিচালনা পরিষদ', 'Board')}</span>
+            </h2>
+            <p className="text-sm sm:text-base text-stone-600 mt-2 leading-relaxed max-w-2xl">
+              {b('বাঁশদ্রোণী সোনালী পার্কের নাগরিক উন্নয়ন ও আবাসিক কল্যাণ পরিচালনার শীর্ষ কর্মকর্তা পরিষদ।', 'Leading office-bearers and civic conveners responsible for resident welfare, roads, and security.')}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
+            <Link
+              href="/committee?wing=Samiti"
+              className="inline-flex items-center gap-2 pl-4 sm:pl-5 pr-2 py-1.5 rounded-full text-xs sm:text-sm font-bold btn-tactile-parchment text-stone-800 hover:text-brand-maroon whitespace-nowrap group shadow-xs"
+            >
+              <span>{b('সম্পূর্ণ কমিটি ও সকল সদস্য দেখুন (২০+)', 'View Full Committee (20+ Members)')}</span>
+              <span className="w-6 h-6 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-xs font-bold transition-colors">
+                →
+              </span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Member Cards Slider Container */}
+        <div
+          className="relative max-w-5xl mx-auto"
+          onTouchStart={handleMemberTouchStart}
+          onTouchEnd={handleMemberTouchEnd}
+        >
+          {/* Active 4-Member Slice Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-5 transition-all duration-300">
+            {currentMemberSlice.map((m, idx) => (
+              <div
+                key={m.id || idx}
+                className="group relative p-3.5 sm:p-4 rounded-3xl bg-[#FFFDF9] border border-[#E5DAC8] hover:border-emerald-500/50 shadow-2xs hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 flex flex-col items-center justify-between text-center overflow-hidden"
+              >
+                {/* Top Subtle Emerald Glow on Hover */}
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-emerald-500/0 to-transparent group-hover:via-emerald-500 transition-all duration-500" />
+
+                <div className="w-full flex flex-col items-center">
+                  {/* Portrait Avatar Frame */}
+                  <div className="relative w-full max-w-[100px] sm:max-w-[120px] aspect-[4/5] mx-auto rounded-2xl overflow-hidden border border-emerald-200/80 group-hover:border-emerald-400 bg-stone-100 shadow-2xs mb-2.5 flex items-center justify-center group-hover:scale-105 group-hover:shadow-md transition-all duration-300">
+                    <img
+                      src={m.image}
+                      alt={m.name}
+                      onError={(e) => { e.currentTarget.src = '/assets/avatars/samiti-member.svg'; }}
+                      className="w-full h-full object-cover object-top"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  {/* Name */}
+                  <h4 className="font-serif font-bold text-stone-900 text-xs sm:text-sm leading-snug line-clamp-1 group-hover:text-emerald-900 transition-colors" title={lang === 'en' ? tName(m.rawName || m.name) : m.name}>
                     {lang === 'en' ? tName(m.rawName || m.name) : m.name}
                   </h4>
-                  {lang === 'bn' && m.englishName && (
-                    <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block mt-0.5">
-                      {m.englishName}
-                    </span>
-                  )}
-                  {lang === 'en' && (
-                    <span className="text-[10px] font-serif text-stone-400 tracking-wide block mt-0.5">
-                      {m.name}
+
+                  {/* Nickname */}
+                  {m.nickname && (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 mt-1">
+                      “{lang === 'en' ? tNickname(m.nickname) : m.nickname}”
                     </span>
                   )}
                 </div>
 
+                {/* Role & Interactive Phone Call Pill */}
                 <div className="w-full flex flex-col items-center gap-1.5 mt-3 pt-2.5 border-t border-stone-200/60">
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-900 text-[11px] font-bold border border-emerald-200/80 leading-tight">
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 group-hover:bg-emerald-100 text-emerald-950 text-[10px] font-bold border border-emerald-200 group-hover:border-emerald-300 leading-tight truncate max-w-full transition-colors">
                     {tRole(m.role)}
                   </span>
                   {m.phone && (
                     <a
-                      href={`tel:${m.phone.replace(/\s+/g, '')}`}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-stone-100 hover:bg-emerald-50 text-stone-700 hover:text-emerald-700 border border-stone-200 hover:border-emerald-300 text-[10px] font-mono font-bold transition-all shadow-2xs cursor-pointer group/tel"
-                      title={b('কল করুন', 'Call')}
+                      href={`tel:+91${m.phone}`}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-100/90 hover:bg-emerald-600 hover:text-white text-[10px] text-stone-600 font-mono font-medium border border-stone-200/80 hover:border-emerald-600 transition-all shadow-2xs active:scale-95 cursor-pointer"
+                      title={b(`কল করুন: ${m.phone}`, `Call: ${m.phone}`)}
                     >
-                      <Phone className="w-3 h-3 text-emerald-600 group-hover/tel:scale-110 transition-transform" />
+                      <Phone className="w-2.5 h-2.5 text-emerald-600 group-hover:text-white transition-colors" />
                       <span>{m.phone}</span>
                     </a>
                   )}
@@ -616,165 +756,303 @@ export default function SamitiPage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* ═══ 4. DEDICATED CIVIC PROJECTS GALLERY ═══ */}
-      <section id="samiti-gallery" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-sm">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-stone-100">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-900 text-[11px] font-bold uppercase tracking-wider mb-2">
-                <ImageIcon className="w-3.5 h-3.5 text-emerald-700" />
-                <span>{b('নাগরিক কাজের অ্যালবাম', 'Civic Projects Archive')}</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                {b('উন্নয়ন কর্মকাণ্ড ও পরিকাঠামো অ্যালবাম', 'Infrastructure Projects & Community Drives')}
-              </h2>
-            </div>
-
-            {/* Category Filter Pills */}
-            <div className="flex flex-wrap gap-1.5">
-              {[
-                { key: 'All', labelBn: 'সব ছবি', labelEn: 'All Photos' },
-                { key: 'Roads', labelBn: 'রাস্তা ও আলো', labelEn: 'Roads & Lights' },
-                { key: 'Greenery', labelBn: 'সবুজায়ন', labelEn: 'Greenery' },
-                { key: 'Sanitation', labelBn: 'পরিচ্ছন্নতা', labelEn: 'Sanitation' },
-                { key: 'Meetings', labelBn: 'নাগরিক সভা', labelEn: 'Meetings' }
-              ].map(cat => (
+          {/* Harmonized Heritage Pagination Navigation Dock */}
+          {totalMemberPages > 1 && (
+            <div className="flex flex-col items-center justify-center gap-2.5 mt-6">
+              <div className="flex items-center justify-center gap-3 sm:gap-4">
                 <button
-                  key={cat.key}
-                  onClick={() => setActiveCategory(cat.key)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                    activeCategory === cat.key
-                      ? 'bg-emerald-700 text-white font-bold shadow-xs'
-                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                  }`}
+                  type="button"
+                  onClick={prevMemberPage}
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#FFFDF9] border border-[#E5DAC8] hover:border-brand-maroon/50 hover:bg-[#FAF7F2] text-stone-700 hover:text-brand-maroon flex items-center justify-center shadow-xs transition-all duration-200 cursor-pointer active:scale-95"
+                  aria-label="Previous members"
                 >
-                  {lang === 'bn' ? cat.labelBn : cat.labelEn}
+                  <ChevronLeft className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                 </button>
-              ))}
-            </div>
-          </div>
 
-          {/* Photo Grid */}
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-6">
-            {filteredGallery.map((img, i) => (
-              <div
-                key={i}
-                onClick={() => openLightbox(img, i)}
-                className="group relative rounded-2xl overflow-hidden aspect-video bg-stone-100 border border-stone-200/80 shadow-xs hover:shadow-xl transition-all cursor-pointer"
-              >
-                <img
-                  src={img.src}
-                  alt={img.title || 'Civic Project'}
-                  onError={(e) => { e.currentTarget.src = '/assets/durga-hero.png'; }}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-4">
-                  <div className="flex justify-end">
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#FAF7F2] border border-[#E5DAC8] shadow-inner">
+                  {Array.from({ length: totalMemberPages }).map((_, idx) => (
                     <button
+                      key={idx}
                       type="button"
-                      title={b('ছবি ডাউনলোড করুন', 'Download Photo')}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        triggerDownload(img.src, `${img.title || 'samiti-photo'}.jpg`);
-                      }}
-                      className="p-2 rounded-full bg-black/60 hover:bg-emerald-600 text-white backdrop-blur-md transition-colors"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-emerald-600/80 text-white inline-block mb-1">
-                      {t(img.category) || 'Samiti'}
-                    </span>
-                    <h4 className="text-white text-sm font-bold truncate">{t(img.title)}</h4>
-                  </div>
+                      onClick={() => setActiveMemberPage(idx)}
+                      className={`transition-all duration-300 rounded-full cursor-pointer ${
+                        (activeMemberPage % totalMemberPages) === idx
+                          ? 'w-7 sm:w-9 h-2 bg-brand-maroon'
+                          : 'w-2 h-2 bg-amber-900/25 hover:bg-amber-900/40'
+                      }`}
+                      aria-label={`Go to member page ${idx + 1}`}
+                    />
+                  ))}
                 </div>
 
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                  <div className="w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white">
-                    <ZoomIn className="w-5 h-5" />
-                  </div>
-                </div>
+                <button
+                  type="button"
+                  onClick={nextMemberPage}
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#FFFDF9] border border-[#E5DAC8] hover:border-brand-maroon/50 hover:bg-[#FAF7F2] text-stone-700 hover:text-brand-maroon flex items-center justify-center shadow-xs transition-all duration-200 cursor-pointer active:scale-95"
+                  aria-label="Next members"
+                >
+                  <ChevronRight className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                </button>
               </div>
-            ))}
-          </div>
+
+              {/* Page Counter Label */}
+              <span className="text-[11px] font-mono text-stone-500 bg-white px-2.5 py-0.5 rounded-full border border-stone-200/70 shadow-2xs">
+                {b('পরিষদ পাতা', 'Page')} {toDigits(activeMemberPage + 1)} / {toDigits(totalMemberPages)}
+              </span>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* ═══ 5. DEDICATED SAMITI FINANCIALS & AUDITED ACCOUNTS ═══ */}
-      <section id="samiti-finance" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-sm">
-          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 text-[11px] font-bold uppercase tracking-wider mb-2">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>{b('নাগরিক স্বচ্ছতা ও অডিট হিসাব', 'Civic Accounts & Transparency')}</span>
+      {/* ═══ 4. SAMITI CIVIC GALLERY (SIDE-WISE CONTROLLING CAROUSEL) ═══ */}
+      <section id="samiti-gallery" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+          <div>
+            <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
+              <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
+              <span>{b('বাস্তবায়িত প্রকল্পের প্রতিচ্ছবি', 'Field Work & Progress Documentation')}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
-              {b('উন্নয়ন তহবিল, পরিকাঠামো বাজেট ও', 'Welfare Fund, Infrastructure Accounts &')} <span className="text-emerald-700">{b('অডিট রিপোর্ট', 'Audited Statements')}</span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
+              {b('পরিকাঠামো উন্নয়ন ও', 'Infrastructure Development &')} <span className="text-brand-maroon">{b('নাগরিক উদ্যোগ', 'Civic Drives')}</span>
             </h2>
-            <p className="text-stone-500 text-xs sm:text-sm mt-1">
-              {b('সোনালী পার্কের আবাসিক চাঁদা, রাস্তাঘাট মেরামত এবং নাগরিক ব্যয়ের সম্পূর্ণ নিরীক্ষিত বিবরণী।', 'Audited public records of resident maintenance collections, road repair investments, and sanitation outlays.')}
+            <p className="text-sm sm:text-base text-stone-600 mt-2 leading-relaxed max-w-2xl">
+              {b('সোনালী পার্ক উন্নয়ন সমিতির বিভিন্ন নাগরিক উদ্যোগ, সাধারণ সভা এবং উন্নয়নমূলক কর্মকাণ্ডের প্রামাণ্য চিত্রমালা।', 'Documentary photo gallery of civic initiatives, community meetings, and development activities of Sonali Park Unnayan Samiti.')}
             </p>
           </div>
 
-          {/* Metric Cards */}
-          <div className="grid sm:grid-cols-3 gap-4 mb-8">
-            <div className="p-6 rounded-2xl bg-emerald-50/50 border border-emerald-500/20 text-center">
-              <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider block mb-1">
-                {b('মোট বাৎসরিক কল্যাণ তহবিল', 'Total Maintenance Fund')}
+          <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
+            <Link
+              href="/gallery?wing=Samiti"
+              className="inline-flex items-center gap-2 pl-4 sm:pl-5 pr-2 py-1.5 rounded-full text-xs sm:text-sm font-bold btn-tactile-parchment text-stone-800 hover:text-brand-maroon whitespace-nowrap group shadow-xs"
+            >
+              <span>{b('সকল সমিতি ছবি দেখুন', 'View All Samiti Photos')}</span>
+              <span className="w-6 h-6 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-xs font-bold transition-colors">
+                →
               </span>
-              <h3 className="text-2xl sm:text-3xl font-black text-stone-900 font-mono mb-1">
-                {toDigits(settings.samitiTotalCollection || '₹ ১২,২০,০০০', lang)}
-              </h3>
-              <p className="text-[11px] text-stone-500">{b('আবাসিক মাসিক চাঁদা ও বিশেষ তহবিল', 'Monthly maintenance & civic fund')}</p>
-            </div>
+            </Link>
+          </div>
+        </div>
 
-            <div className="p-6 rounded-2xl bg-rose-50/50 border border-rose-500/20 text-center">
-              <span className="text-xs font-bold text-rose-800 uppercase tracking-wider block mb-1">
-                {b('মোট সামগ্রিক নাগরিক ব্যয়', 'Total Civic Expenditure')}
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-black text-rose-600 font-mono mb-1">
-                {toDigits(settings.samitiTotalExpense || '₹ ১১,৫০,০০০', lang)}
-              </h3>
-              <p className="text-[11px] text-stone-500">{b('নিরাপত্তা গার্ড, আলো, ড্রেন ও আবর্জনা', 'Guard wages, lighting & sanitation')}</p>
+        {samitiGalleryItems.length === 0 ? (
+          <div className="relative text-center py-16 px-6 bg-[#FFFDF9] rounded-3xl border border-dashed border-[#E5DAC8] flex flex-col items-center justify-center gap-3 max-w-2xl mx-auto shadow-xs">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 shadow-2xs">
+              <Camera className="w-7 h-7 text-brand-maroon" />
             </div>
+            <p className="font-serif text-sm sm:text-base text-stone-600">
+              {b('গ্যালারিতে এখনো কোনো ছবি যোগ করা হয়নি।', 'No gallery photos uploaded yet.')}
+            </p>
+          </div>
+        ) : (
+          (() => {
+            const currentPhoto = samitiGalleryItems[activeGalleryIndex % samitiGalleryItems.length] || samitiGalleryItems[0];
+            return (
+              <div className="w-full max-w-4xl mx-auto">
+                {/* 1. MLH-Style Floating Showcase Card */}
+                <div
+                  className="rounded-3xl bg-white border border-[#E5DAC8] shadow-[0_12px_40px_rgba(28,13,19,0.07)] p-2.5 sm:p-4.5 relative overflow-hidden group transition-all duration-300"
+                  onTouchStart={handleGalleryTouchStart}
+                  onTouchEnd={handleGalleryTouchEnd}
+                >
+                  {/* Photo Display Window */}
+                  <div
+                    className="relative w-full h-64 sm:h-80 md:h-[420px] rounded-2xl overflow-hidden bg-stone-900 cursor-pointer"
+                    onClick={() => setSelectedImage(currentPhoto)}
+                  >
+                    {/* Top Left Washi Moment Tape */}
+                    <div className="absolute top-3 left-3 z-20 pointer-events-none">
+                      <WashiTapePin
+                        text={b(`মুহূর্ত #${toDigits((activeGalleryIndex % samitiGalleryItems.length) + 1)}`, `Moment #${(activeGalleryIndex % samitiGalleryItems.length) + 1}`)}
+                        variant="emerald"
+                        className="text-[9px] sm:text-[10px]"
+                      />
+                    </div>
 
-            <div className="p-6 rounded-2xl bg-teal-50/50 border border-teal-500/20 text-center">
-              <span className="text-xs font-bold text-teal-800 uppercase tracking-wider block mb-1">
-                {b('প্রধান ব্যয়ের খাত', 'Major Development Head')}
-              </span>
-              <h3 className="text-lg sm:text-xl font-bold text-stone-900 leading-tight mb-1">
-                {lang === 'en' ? (t(settings.samitiMajorExpenseTitle) || 'Road Repairs & Drainage Dredging') : (settings.samitiMajorExpenseTitle || 'রাস্তা সংস্কার ও জলনিকাশি')}
-              </h3>
-              <p className="text-xs font-bold text-teal-700 font-mono">
-                {toDigits(settings.samitiMajorExpenseAmount || '₹ ৫,১০,০০০', lang)}
+                    {/* Top Right Year Chip */}
+                    <div className="absolute top-3 right-3 z-20 pointer-events-none">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white text-[10px] sm:text-xs font-serif font-bold shadow-xs">
+                        {toDigits(currentPhoto.year || selectedYear)}
+                      </span>
+                    </div>
+
+                    <img
+                      key={activeGalleryIndex}
+                      src={currentPhoto.src}
+                      alt={currentPhoto.title || 'Civic Moment'}
+                      onError={(e) => { e.currentTarget.src = '/assets/durga-hero.png'; }}
+                      className="w-full h-full object-cover group-hover:scale-102 transition-all duration-500 animate-in fade-in zoom-in-95 duration-300"
+                    />
+
+                    {/* Frosted Bottom Info Dock */}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-stone-950/95 via-stone-950/60 to-transparent p-3.5 sm:p-5 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                      <div className="min-w-0">
+                        <span className="text-[10px] sm:text-xs font-serif uppercase tracking-wider text-emerald-300 font-bold block mb-0.5">
+                          {t(currentPhoto.category) || b('নাগরিক মুহূর্ত', 'Civic Moments')}
+                        </span>
+                        <h3 className="text-white font-serif font-bold text-sm sm:text-lg md:text-xl truncate drop-shadow-sm">
+                          {t(currentPhoto.title)}
+                        </h3>
+                      </div>
+
+                      {/* Action Pills */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 text-white backdrop-blur-md border border-white/30 px-3 py-1.5 rounded-full font-bold text-xs shadow-xs transition-colors cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedImage(currentPhoto);
+                          }}
+                        >
+                          <ZoomIn className="w-3.5 h-3.5" />
+                          <span>{b('বড় করে দেখুন', 'Zoom')}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1.5 bg-brand-maroon hover:bg-[#881337] text-white px-3 py-1.5 rounded-full font-bold text-xs shadow-md transition-colors cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            triggerDownload(currentPhoto.src, `${currentPhoto.title || 'samiti-photo'}.jpg`);
+                          }}
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          <span>{b('ডাউনলোড', 'Download')}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Harmonized Heritage Pagination Navigation Dock */}
+                {samitiGalleryItems.length > 1 && (
+                  <>
+                    <div className="flex items-center justify-center gap-3 sm:gap-4 mt-5 sm:mt-6">
+                      <button
+                        type="button"
+                        onClick={prevGallery}
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#FFFDF9] border border-[#E5DAC8] hover:border-brand-maroon/50 hover:bg-[#FAF7F2] text-stone-700 hover:text-brand-maroon flex items-center justify-center shadow-xs transition-all duration-200 cursor-pointer active:scale-95"
+                        aria-label="Previous photo"
+                      >
+                        <ChevronLeft className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                      </button>
+
+                      <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FAF7F2] border border-[#E5DAC8] shadow-inner">
+                        {samitiGalleryItems.length <= 8 ? (
+                          samitiGalleryItems.map((_, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => setActiveGalleryIndex(idx)}
+                              className={`transition-all duration-300 rounded-full cursor-pointer ${
+                                (activeGalleryIndex % samitiGalleryItems.length) === idx
+                                  ? 'w-7 sm:w-9 h-2 bg-brand-maroon'
+                                  : 'w-2 h-2 bg-amber-900/25 hover:bg-amber-900/40'
+                              }`}
+                              aria-label={`Go to photo ${idx + 1}`}
+                            />
+                          ))
+                        ) : (
+                          <span className="font-serif font-bold text-xs text-stone-700 px-2 py-0.5 tabular-nums">
+                            {b(
+                              `${toDigits((activeGalleryIndex % samitiGalleryItems.length) + 1)} / ${toDigits(samitiGalleryItems.length)}`,
+                              `${(activeGalleryIndex % samitiGalleryItems.length) + 1} of ${samitiGalleryItems.length}`
+                            )}
+                          </span>
+                        )}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={nextGallery}
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#FFFDF9] border border-[#E5DAC8] hover:border-brand-maroon/50 hover:bg-[#FAF7F2] text-stone-700 hover:text-brand-maroon flex items-center justify-center shadow-xs transition-all duration-200 cursor-pointer active:scale-95"
+                        aria-label="Next photo"
+                      >
+                        <ChevronRight className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                      </button>
+                    </div>
+
+                    {/* 3. Interactive Thumbnail Discovery Strip */}
+                    <div className="flex items-center justify-start sm:justify-center gap-2 sm:gap-2.5 mt-4 sm:mt-5 overflow-x-auto py-1 px-2 scrollbar-hide max-w-full">
+                      {samitiGalleryItems.map((img, i) => {
+                        const isSelected = (activeGalleryIndex % samitiGalleryItems.length) === i;
+                        return (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => setActiveGalleryIndex(i)}
+                            className={`relative w-12 h-12 sm:w-15 sm:h-15 rounded-xl overflow-hidden shrink-0 transition-all duration-200 cursor-pointer ${
+                              isSelected
+                                ? 'ring-2 ring-brand-maroon ring-offset-2 scale-105 shadow-sm opacity-100'
+                                : 'opacity-55 hover:opacity-100 border border-stone-200 hover:border-stone-400'
+                            }`}
+                          >
+                            <img
+                              src={img.src}
+                              alt={img.title || ''}
+                              onError={(e) => { e.currentTarget.src = '/assets/durga-hero.png'; }}
+                              className="w-full h-full object-cover"
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })()
+        )}
+      </section>
+
+      {/* ═══ 5. SAMITI FINANCIALS & VERIFIED AUDITS (OVERVIEW) ═══ */}
+      <section id="samiti-finance" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-[#FFFDF9] rounded-3xl p-6 sm:p-10 border border-[#E5DAC8] shadow-xs">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 pb-5 border-b border-stone-200/80">
+            <div>
+              <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
+                <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
+                <span>{b('আর্থিক সততা ও দায়বদ্ধতা', 'Civic Integrity & Disclosures')}</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
+                {b('উন্নয়ন সমিতি তহবিল ও বার্ষিক', 'Samiti Civic Accounts & Annual')} <span className="text-brand-maroon">{b('অডিট বিবরণী', 'Audit Statements')}</span>
+              </h2>
+              <p className="text-sm sm:text-base text-stone-600 mt-2 leading-relaxed max-w-2xl">
+                {b('সোনালী পার্ক উন্নয়ন সমিতির বাৎসরিক আয়-ব্যয় এবং নিরীক্ষিত আর্থিক হিসাব বিবরণী।', 'Verified annual income-expenditure statements and audited accounts of Sonali Park Unnayan Samiti.')}
               </p>
+            </div>
+
+            <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
+              <Link
+                href="/transparency?wing=Samiti"
+                className="inline-flex items-center gap-2 pl-4 sm:pl-5 pr-2 py-1.5 rounded-full text-xs sm:text-sm font-bold btn-tactile-parchment text-stone-800 hover:text-brand-maroon whitespace-nowrap group shadow-xs"
+              >
+                <span>{b('সম্পূর্ণ হিসাব ও অডিট দেখুন', 'View Full Accounts & Audits')}</span>
+                <span className="w-6 h-6 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-xs font-bold transition-colors">
+                  →
+                </span>
+              </Link>
             </div>
           </div>
 
           {/* Audit Documents Download List */}
           <div className="space-y-3">
-            {samitiFinances.map((doc, idx) => (
+            {(showAllPdfs ? samitiFinances : samitiFinances.slice(0, 2)).map((doc, idx) => (
               <Link
                 key={idx}
-                href={`?viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(t(doc.title))}`}
-                scroll={false}
-                className="group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-stone-50 border border-stone-200/80 hover:border-emerald-600/40 hover:bg-white transition-all shadow-xs hover:shadow-md cursor-pointer"
+                href={`/transparency?wing=Samiti&viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(t(doc.title))}`}
+                className="group flex items-center justify-between p-3.5 sm:p-4.5 rounded-2xl bg-white border border-[#E8DFD1] hover:border-brand-maroon/40 transition-all shadow-2xs hover:shadow-xs cursor-pointer"
               >
                 <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200/90 text-emerald-700 flex items-center justify-center shrink-0">
                     <FileText className="w-5 h-5" />
                   </div>
                   <div className="min-w-0">
-                    <h4 className="font-serif font-bold text-sm sm:text-base text-stone-900 group-hover:text-emerald-700 transition-colors truncate">
+                    <h4 className="font-serif font-bold text-sm sm:text-base text-stone-900 group-hover:text-brand-maroon transition-colors truncate">
                       {t(doc.title)}
                     </h4>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-stone-200/70 text-stone-600">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF7F2] text-stone-600 border border-[#E8DFD1]">
                         {b('অডিট নথি', 'Audit Document')}
                       </span>
                       <span className="text-xs text-stone-400">
@@ -785,9 +1063,9 @@ export default function SamitiPage() {
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-700 font-bold text-xs group-hover:bg-emerald-700 group-hover:text-white transition-colors">
+                  <div className="btn-tactile-parchment inline-flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full text-stone-800 group-hover:text-brand-maroon font-bold text-xs">
                     <span>{b('দেখুন', 'View')}</span>
-                    <ExternalLink className="w-3 h-3" />
+                    <span className="text-xs">→</span>
                   </div>
                   <button
                     type="button"
@@ -797,7 +1075,7 @@ export default function SamitiPage() {
                       e.stopPropagation();
                       triggerDownload(doc.url, `${doc.title || 'samiti-audit'}.pdf`);
                     }}
-                    className="p-1.5 rounded-full bg-stone-200/80 hover:bg-emerald-700 hover:text-white text-stone-600 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-full bg-stone-100 hover:bg-brand-maroon hover:text-white text-stone-600 transition-colors cursor-pointer"
                   >
                     <Download className="w-4 h-4" />
                   </button>
@@ -805,20 +1083,32 @@ export default function SamitiPage() {
               </Link>
             ))}
           </div>
+
+          {/* See More / Show Less Toggle Button */}
+          {samitiFinances.length > 2 && (
+            <div className="flex justify-center pt-5">
+              <button
+                type="button"
+                onClick={() => setShowAllPdfs(prev => !prev)}
+                className="btn-tactile-parchment inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs sm:text-sm font-bold text-stone-700 hover:text-brand-maroon border border-[#E5DAC8] shadow-2xs hover:shadow-xs transition-all cursor-pointer active:scale-95"
+              >
+                <span>
+                  {showAllPdfs
+                    ? b('সংক্ষেপ করুন ↑', 'Show Less ↑')
+                    : b(`আরও অডিট নথি দেখুন (${toDigits(samitiFinances.length - 2)}টি) ↓`, `See More Audits (${samitiFinances.length - 2} More) ↓`)}
+                </span>
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
       {/* ═══ LIGHTBOX MODAL ═══ */}
       {selectedImage && (
         <div className="fixed inset-0 z-50 bg-[#0B1224]/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-8" onClick={() => setSelectedImage(null)}>
-          <button onClick={() => setSelectedImage(null)} className="absolute top-5 right-5 bg-white/10 hover:bg-white/20 text-white rounded-full p-2.5 transition z-50 border border-white/20">
+          <button onClick={() => setSelectedImage(null)} className="absolute top-5 right-5 bg-white/10 hover:bg-white/20 text-white rounded-full p-2.5 transition z-50 border border-white/20 cursor-pointer">
             <X className="w-5 h-5" />
           </button>
-          {filteredGallery.length > 1 && (
-            <button onClick={e => { e.stopPropagation(); navigateLightbox(-1); }} className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-3.5 border border-white/20 transition z-50">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7"/></svg>
-            </button>
-          )}
           <div className="relative flex flex-col items-center gap-4 max-w-5xl w-full" onClick={e => e.stopPropagation()}>
             <img src={selectedImage.src} alt={selectedImage.title} className="max-h-[75vh] max-w-full object-contain rounded-2xl shadow-2xl border border-white/10" />
             <div className="flex items-center justify-between w-full bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-6 py-3.5 gap-4">
@@ -836,13 +1126,7 @@ export default function SamitiPage() {
                 <Download className="w-4 h-4" /> {b('ডাউনলোড', 'Download')}
               </button>
             </div>
-            <span className="text-white/50 text-xs">{toDigits(lightboxIdx + 1, lang)} / {toDigits(filteredGallery.length, lang)}</span>
           </div>
-          {filteredGallery.length > 1 && (
-            <button onClick={e => { e.stopPropagation(); navigateLightbox(1); }} className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-3.5 border border-white/20 transition z-50">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7"/></svg>
-            </button>
-          )}
         </div>
       )}
     </main>

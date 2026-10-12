@@ -8,46 +8,46 @@ import { useLanguage } from '@/context/LanguageContext';
 
 const ROLES_BY_WING = {
   Puja: [
-    'সভাপতি (President)',
-    'কার্যকরী সভাপতি (Working President)',
-    'সহ-সভাপতি (Vice President)',
-    'সাধারণ সম্পাদক (General Secretary)',
-    'যুগ্ম সম্পাদক (Joint Secretary)',
-    'সহ-সম্পাদক (Assistant Secretary)',
-    'পূজা আহ্বায়ক (Puja Convener)',
-    'মণ্ডপ ও নির্মাণ (Pandal & Construction)',
-    'সাংস্কৃতিক সম্পাদক (Cultural Secretary)',
-    'প্রচার ও গণসংযোগ (Publicity)',
-    'কোষাধ্যক্ষ (Treasurer)',
-    'সহ-কোষাধ্যক্ষ (Asst. Treasurer)',
-    'কার্যকরী সদস্য (Executive Member)'
+    'সভাপতি',
+    'কার্যকরী সভাপতি',
+    'সহ-সভাপতি',
+    'সাধারণ সম্পাদক',
+    'যুগ্ম সম্পাদক',
+    'সহ-সম্পাদক',
+    'পূজা আহ্বায়ক',
+    'মণ্ডপ ও নির্মাণ',
+    'সাংস্কৃতিক সম্পাদক',
+    'প্রচার ও গণসংযোগ',
+    'কোষাধ্যক্ষ',
+    'সহ-কোষাধ্যক্ষ',
+    'কার্যকরী সদস্য'
   ],
   Club: [
-    'সভাপতি (President)',
-    'কার্যকরী সভাপতি (Working President)',
-    'সহ-সভাপতি (Vice President)',
-    'সাধারণ সম্পাদক (General Secretary)',
-    'সহ-সম্পাদক (Assistant Secretary)',
-    'ক্রীড়া সম্পাদক (Sports Secretary)',
-    'সহ-ক্রীড়া সম্পাদক (Asst. Sports Secretary)',
-    'সাংস্কৃতিক সম্পাদক (Cultural Secretary)',
-    'কোষাধ্যক্ষ (Treasurer)',
-    'যুবকল্যাণ আহ্বায়ক (Youth Welfare)',
-    'ইনডোর গেমস ইনচার্জ (Indoor Games In-Charge)',
-    'কার্যকরী সদস্য (Executive Member)'
+    'সভাপতি',
+    'কার্যকরী সভাপতি',
+    'সহ-সভাপতি',
+    'সাধারণ সম্পাদক',
+    'সহ-সম্পাদক',
+    'ক্রীড়া সম্পাদক',
+    'সহ-ক্রীড়া সম্পাদক',
+    'সাংস্কৃতিক সম্পাদক',
+    'কোষাধ্যক্ষ',
+    'যুবকল্যাণ আহ্বায়ক',
+    'ইনডোর গেমস ইনচার্জ',
+    'কার্যকরী সদস্য'
   ],
   Samiti: [
-    'সভাপতি (President)',
-    'কার্যকরী সভাপতি (Working President)',
-    'সহ-সভাপতি (Vice President)',
-    'সাধারণ সম্পাদক (General Secretary)',
-    'সহ-সম্পাদক (Assistant Secretary)',
-    'নিরাপত্তা আহ্বায়ক (Security In-Charge)',
-    'পরিকাঠামো ও ড্রেনেজ আহ্বায়ক (Civic & Drainage)',
-    'কোষাধ্যক্ষ (Treasurer)',
-    'পরিচ্ছন্নতা ও স্বাস্থ্য আহ্বায়ক (Sanitation & Health)',
-    'লেন প্রতিনিধি (Lane Representative)',
-    'কার্যকরী সদস্য (Executive Member)'
+    'সভাপতি',
+    'কার্যকরী সভাপতি',
+    'সহ-সভাপতি',
+    'সাধারণ সম্পাদক',
+    'সহ-সম্পাদক',
+    'নিরাপত্তা আহ্বায়ক',
+    'পরিকাঠামো ও ড্রেনেজ আহ্বায়ক',
+    'কোষাধ্যক্ষ',
+    'পরিচ্ছন্নতা ও স্বাস্থ্য আহ্বায়ক',
+    'লেন প্রতিনিধি',
+    'কার্যকরী সদস্য'
   ]
 };
 
@@ -66,15 +66,16 @@ export function parseMemberRole(role) {
     cleanRole = parts[0].trim();
     phone = parts[1].replace(/phone|tel|m\.|m:/gi, '').trim();
   }
+  cleanRole = cleanRole.replace(/\s*\([A-Za-z\s/&,.-]+\)/g, '').trim();
   return { wing, cleanRole, phone };
 }
 
 export default function CommitteeManagerPage() {
-  const { lang, b } = useLanguage();
+  const { lang, b, tRole } = useLanguage();
   const [members, setMembers] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
-    role: 'সভাপতি (President)',
+    role: 'সভাপতি',
     wing: 'Puja',
     phone: '',
     year: new Date().getFullYear().toString()
@@ -88,6 +89,7 @@ export default function CommitteeManagerPage() {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterWing, setFilterWing] = useState('Puja');
+  const [filterYear, setFilterYear] = useState('ALL');
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -324,7 +326,7 @@ export default function CommitteeManagerPage() {
             {/* Wing / Pillar Selector */}
             <div>
               <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
-                {b('সংগঠনের শাখা (Wing / Pillar)', 'Wing / Pillar')} <span className="text-rose-500">*</span>
+                {b('সংগঠনের শাখা', 'Wing / Pillar')} <span className="text-rose-500">*</span>
               </label>
               <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-100 rounded-xl">
                 <button
@@ -386,7 +388,7 @@ export default function CommitteeManagerPage() {
 
             <div>
               <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                {b('পূর্ণ নাম (Full Name)', 'Full Name')} <span className="text-rose-500">*</span>
+                {b('পূর্ণ নাম', 'Full Name')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
@@ -401,7 +403,7 @@ export default function CommitteeManagerPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('বছর (Year)', 'Year')}
+                  {b('বছর', 'Year')}
                 </label>
                 <input
                   type="number"
@@ -442,7 +444,7 @@ export default function CommitteeManagerPage() {
                     className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-base sm:text-xs font-medium focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon outline-none"
                   >
                     {(ROLES_BY_WING[formData.wing] || ROLES_BY_WING.Puja).map((r) => (
-                      <option key={r} value={r}>{r}</option>
+                      <option key={r} value={r}>{tRole ? tRole(r) : r}</option>
                     ))}
                   </select>
                 )}
@@ -452,7 +454,7 @@ export default function CommitteeManagerPage() {
             {/* Phone Number Field */}
             <div>
               <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                {b('ফোন নম্বর (Phone Number - ঐচ্ছিক)', 'Phone Number (Optional)')}
+                {b('ফোন নম্বর (ঐচ্ছিক)', 'Phone Number (Optional)')}
               </label>
               <input
                 type="text"
@@ -462,14 +464,14 @@ export default function CommitteeManagerPage() {
                 className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon outline-none"
               />
               <p className="text-[10px] text-stone-400 mt-1">
-                {b('ডাকনাম বা ইংরেজি নাম নামের বন্ধনীতে লিখুন, যেমন: ছোটকা দাস (বাপি) (CHOTKA DAS)', 'Include nickname or English in brackets: Name (Nickname) (ENGLISH)')}
+                {b('ডাকনাম বা বিকল্প নাম লিখুন, যেমন: ছোটকা দাস (বাপি)', 'Include nickname if needed, e.g. Name (Nickname)')}
               </p>
             </div>
 
             {/* Profile Photo Upload */}
             <div>
               <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                {b('সদস্যের ছবি (Profile Photo)', 'Profile Photo')}
+                {b('সদস্যের ছবি', 'Profile Photo')}
               </label>
 
               <div
@@ -552,6 +554,17 @@ export default function CommitteeManagerPage() {
             {/* Wing Filter Pills */}
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-[10px] font-bold text-stone-400 mr-1 uppercase tracking-wider">{b('শাখা:', 'Wing:')}</span>
+              <button
+                type="button"
+                onClick={() => setFilterWing('ALL')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  filterWing === 'ALL'
+                    ? 'bg-stone-900 text-white font-bold shadow-xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                }`}
+              >
+                {b('সকল', 'All')}
+              </button>
               <button
                 type="button"
                 onClick={() => setFilterWing('Puja')}
@@ -674,17 +687,17 @@ export default function CommitteeManagerPage() {
                   <div className="flex items-center gap-1 shrink-0 ml-2">
                     <button
                       onClick={() => handleEdit(member)}
-                      className="p-1.5 rounded-lg text-stone-500 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
+                      className="p-2 sm:p-1.5 rounded-xl text-stone-500 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
                       title={b('সম্পাদনা', 'Edit')}
                     >
-                      <Edit2 className="w-3.5 h-3.5" />
+                      <Edit2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                     </button>
                     <button
                       onClick={() => setDeleteConfirmId(member.id)}
-                      className="p-1.5 rounded-lg text-stone-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                      className="p-2 sm:p-1.5 rounded-xl text-stone-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
                       title={b('মুছুন', 'Delete')}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                     </button>
                   </div>
                 </div>

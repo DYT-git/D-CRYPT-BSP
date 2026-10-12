@@ -1,7 +1,30 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import fs from 'fs';
+import path from 'path';
 
 export const dynamic = 'force-dynamic';
+
+const SEED_PATH = path.join(process.cwd(), 'prisma', 'seed-data.json');
+
+function readSeedData() {
+  try {
+    if (fs.existsSync(SEED_PATH)) {
+      return JSON.parse(fs.readFileSync(SEED_PATH, 'utf8'));
+    }
+  } catch (err) {
+    console.error('Error reading seed-data.json:', err);
+  }
+  return { settings: [] };
+}
+
+function writeSeedData(data) {
+  try {
+    fs.writeFileSync(SEED_PATH, JSON.stringify(data, null, 2), 'utf8');
+  } catch (err) {
+    console.error('Error writing seed-data.json:', err);
+  }
+}
 
 // Default settings if none exist in DB
 const DEFAULT_SETTINGS = {
@@ -22,6 +45,12 @@ const DEFAULT_SETTINGS = {
   totalExpense: '₹ 13,85,000',
   majorExpenseTitle: 'Pandal Construction',
   majorExpenseAmount: '₹ 6,00,000',
+
+  // Emergency Flash Overlay Settings
+  popupEnabled: 'false',
+  popupTitle: '',
+  popupMessage: '',
+  popupExpiresAt: '',
 
   // Sonali Sangha Club Defaults
   clubHeroTitle: 'সোনালী সঙ্ঘ',
@@ -44,12 +73,22 @@ const DEFAULT_SETTINGS = {
 
 export async function GET() {
   try {
-    const settings = await prisma.siteSetting.findMany();
     const settingsMap = { ...DEFAULT_SETTINGS };
-    
-    settings.forEach(setting => {
-      settingsMap[setting.key] = setting.value;
-    });
+
+    try {
+      const settings = await prisma.siteSetting.findMany();
+      settings.forEach(setting => {
+        settingsMap[setting.key] = setting.value;
+      });
+    } catch (dbErr) {
+      console.warn('Settings DB fetch error, falling back to seed-data.json:', dbErr.message);
+      const seed = readSeedData();
+      if (Array.isArray(seed.settings)) {
+        seed.settings.forEach(setting => {
+          settingsMap[setting.key] = setting.value;
+        });
+      }
+    }
 
     return NextResponse.json(settingsMap);
   } catch (error) {
@@ -61,17 +100,39 @@ export async function GET() {
 export async function POST(request) {
   try {
     const data = await request.json();
-    
-    // Use transaction to upsert all settings
-    const operations = Object.entries(data).map(([key, value]) => {
-      return prisma.siteSetting.upsert({
-        where: { key },
-        update: { value: String(value) },
-        create: { key, value: String(value) }
-      });
-    });
 
-    await prisma.$transaction(operations);
+    // 1. Try DB Upsert
+    try {
+      const operations = Object.entries(data).map(([key, value]) => {
+        return prisma.siteSetting.upsert({
+          where: { key },
+          update: { value: String(value) },
+          create: { key, value: String(value) }
+        });
+      });
+      await prisma.$transaction(operations);
+    } catch (dbErr) {
+      console.warn('Settings DB save error:', dbErr.message);
+    }
+
+    // 2. Always sync to seed-data.json
+    try {
+      const seed = readSeedData();
+      if (!Array.isArray(seed.settings)) seed.settings = [];
+
+      Object.entries(data).forEach(([key, value]) => {
+        const existing = seed.settings.find(s => s.key === key);
+        if (existing) {
+          existing.value = String(value);
+        } else {
+          seed.settings.push({ key, value: String(value) });
+        }
+      });
+
+      writeSeedData(seed);
+    } catch (seedErr) {
+      console.warn('Failed to sync settings to seed-data.json:', seedErr.message);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -313,7 +313,7 @@ export default function SettingsManagerPage() {
               <div className="p-4 rounded-xl border border-stone-200 bg-stone-50/50 space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold text-stone-800 uppercase tracking-wider">
-                    {b('প্রধান রং (Primary)', 'Primary Color')}
+                    {b('প্রধান রং', 'Primary Color')}
                   </label>
                   <span className="text-xs font-mono font-bold text-stone-600">{settings.primaryColor}</span>
                 </div>
@@ -338,7 +338,7 @@ export default function SettingsManagerPage() {
               <div className="p-4 rounded-xl border border-stone-200 bg-stone-50/50 space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold text-stone-800 uppercase tracking-wider">
-                    {b('অ্যাকসেন্ট রং (Accent)', 'Secondary Color')}
+                    {b('অ্যাকসেন্ট রং', 'Secondary Color')}
                   </label>
                   <span className="text-xs font-mono font-bold text-stone-600">{settings.secondaryColor}</span>
                 </div>
@@ -448,7 +448,7 @@ export default function SettingsManagerPage() {
 
             <div>
               <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                {b('শীর্ষ মারকুই ঘোষণা বার্তা (Top Announcement Marquee)', 'Top Running Announcement Marquee')}
+                {b('শীর্ষ মারকুই ঘোষণা বার্তা', 'Top Running Announcement Marquee')}
               </label>
               <textarea
                 rows="2"
@@ -462,7 +462,7 @@ export default function SettingsManagerPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('হিরো প্রধান শিরোনাম (Hero Heading)', 'Hero Main Heading')}
+                  {b('হিরো প্রধান শিরোনাম', 'Hero Main Heading')}
                 </label>
                 <input
                   type="text"
@@ -475,7 +475,7 @@ export default function SettingsManagerPage() {
 
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('হিরো সাব-হেডিং (Hero Subtitle)', 'Hero Subtitle')}
+                  {b('হিরো সাব-হেডিং', 'Hero Subtitle')}
                 </label>
                 <input
                   type="text"
@@ -489,7 +489,7 @@ export default function SettingsManagerPage() {
 
             <div className="w-full sm:w-48">
               <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                {b('পূজার বর্ষ সংখ্যা (Edition)', 'Festival Edition (Years)')}
+                {b('পূজার বর্ষ সংখ্যা', 'Festival Edition (Years)')}
               </label>
               <input
                 type="text"
@@ -519,7 +519,7 @@ export default function SettingsManagerPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('কাউন্টডাউন শিরোনাম (Countdown Heading)', 'Countdown Heading')}
+                  {b('কাউন্টডাউন শিরোনাম', 'Countdown Heading')}
                 </label>
                 <input
                   type="text"
@@ -532,7 +532,7 @@ export default function SettingsManagerPage() {
 
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('লক্ষ্য তারিখ ও সময় (Target Date & Time)', 'Target Date & Time')}
+                  {b('লক্ষ্য তারিখ ও সময়', 'Target Date & Time')}
                 </label>
                 <input
                   type="datetime-local"
@@ -547,7 +547,7 @@ export default function SettingsManagerPage() {
             <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/80 space-y-2">
               <span className="text-xs font-bold text-stone-700 flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-brand-maroon" />
-                {b('২০২৬ শারদোৎসব দ্রুত প্রিসেট (Quick Presets)', 'Durga Puja 2026 Presets')}
+                {b('২০২৬ শারদোৎসব দ্রুত প্রিসেট', 'Durga Puja 2026 Presets')}
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {[
@@ -590,7 +590,7 @@ export default function SettingsManagerPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('থিমের নাম (বাংলায়)', 'Theme Title (Bengali)')}
+                  {b('থিমের শিরোনাম', 'Theme Title')}
                 </label>
                 <input
                   type="text"
@@ -603,7 +603,7 @@ export default function SettingsManagerPage() {
 
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('Theme Subtitle (English)', 'Theme Subtitle (English)')}
+                  {b('থিম সাব-টাইটেল', 'Theme Subtitle')}
                 </label>
                 <input
                   type="text"
@@ -664,7 +664,7 @@ export default function SettingsManagerPage() {
             <div className="border-b border-stone-100 pb-3">
               <h2 className="text-sm font-bold text-stone-900 flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-brand-maroon" />
-                <span>{b('আর্থিক স্বচ্ছতা সারসংক্ষেপ (/transparency)', 'Financial Summary (/transparency)')}</span>
+                <span>{b('আর্থিক স্বচ্ছতা সারসংক্ষেপ', 'Financial Summary')}</span>
               </h2>
               <p className="text-xs text-stone-500 mt-0.5">
                 {b('নাগরিকদের জন্য স্বচ্ছতা পেজে প্রদর্শিত মূল বাজেট পরিসংখ্যান', 'Key financial figures displayed on the public transparency page')}
@@ -674,7 +674,7 @@ export default function SettingsManagerPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('মোট আদায় / সংগ্রহ (Total Collection)', 'Total Collection')}
+                  {b('মোট আদায় / সংগ্রহ', 'Total Collection')}
                 </label>
                 <input
                   type="text"
@@ -687,7 +687,7 @@ export default function SettingsManagerPage() {
 
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('মোট খরচ (Total Expenditure)', 'Total Expenditure')}
+                  {b('মোট খরচ', 'Total Expenditure')}
                 </label>
                 <input
                   type="text"
@@ -702,7 +702,7 @@ export default function SettingsManagerPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('প্রধান ব্যয়ের খাত (Major Expense Head)', 'Major Expense Head')}
+                  {b('প্রধান ব্যয়ের খাত', 'Major Expense Head')}
                 </label>
                 <input
                   type="text"
@@ -715,7 +715,7 @@ export default function SettingsManagerPage() {
 
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('প্রধান ব্যয়ের পরিমাণ (Major Expense Amount)', 'Major Expense Amount')}
+                  {b('প্রধান ব্যয়ের পরিমাণ', 'Major Expense Amount')}
                 </label>
                 <input
                   type="text"
@@ -736,7 +736,7 @@ export default function SettingsManagerPage() {
               <div>
                 <h2 className="text-sm font-bold text-stone-900 flex items-center gap-2">
                   <Trophy className="w-4 h-4 text-amber-600" />
-                  <span>{b('সোনালী সঙ্ঘ ক্লাব সেটিংস (/club)', 'Sonali Sangha Club Settings (/club)')}</span>
+                  <span>{b('সোনালী সঙ্ঘ ক্লাব সেটিংস', 'Sonali Sangha Club Settings')}</span>
                 </h2>
                 <p className="text-xs text-stone-500 mt-0.5">
                   {b('ক্লাবের প্রধান শিরোনাম, ভূমিকা বার্তা এবং বাৎসরিক ক্রীড়া ও সাংস্কৃতিক বাজেট পরিচালনা করুন', 'Manage club hero titles, mission tagline, and annual sports/cultural financial totals')}
@@ -755,7 +755,7 @@ export default function SettingsManagerPage() {
 
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('ক্লাবের প্রধান শিরোনাম (Club Hero Title)', 'Club Hero Title')}
+                  {b('ক্লাবের প্রধান শিরোনাম', 'Club Hero Title')}
                 </label>
                 <input
                   type="text"
@@ -769,7 +769,7 @@ export default function SettingsManagerPage() {
 
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('ক্লাব বিবরণ ও বার্তা (Club Tagline & Intro)', 'Club Tagline & Intro')}
+                  {b('ক্লাব বিবরণ ও বার্তা', 'Club Tagline & Intro')}
                 </label>
                 <textarea
                   rows={3}
@@ -787,7 +787,7 @@ export default function SettingsManagerPage() {
                 <div>
                   <h3 className="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
                     <ImageIcon className="w-3.5 h-3.5 text-amber-600" />
-                    <span>{b('ক্লাব হিরো ব্যানার ছবি (Club Hero Banner Image)', 'Club Hero Banner Image')}</span>
+                    <span>{b('ক্লাব হিরো ব্যানার ছবি', 'Club Hero Banner Image')}</span>
                   </h3>
                   <p className="text-[11px] text-stone-500 mt-0.5">
                     {b('স্ট্যান্ডার্ড ১৬:৯ ল্যান্ডস্কেপ অনুপাতের ছবি ব্যবহার করুন (অনুপাত 16:9)', 'Standard 16:9 landscape aspect ratio banner')}
@@ -832,7 +832,7 @@ export default function SettingsManagerPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    {b('ছবির পাথ বা ইউআরএল (Image URL / Path)', 'Image URL or Asset Path')}
+                    {b('ছবির পাথ বা ইউআরএল', 'Image URL or Asset Path')}
                   </label>
                   <input
                     type="text"
@@ -882,13 +882,13 @@ export default function SettingsManagerPage() {
             {/* Club Financial Metrics */}
             <div className="p-4 rounded-xl border border-stone-200 bg-stone-50/50 space-y-4">
               <h3 className="text-xs font-bold text-stone-800 uppercase tracking-wider">
-                {b('ক্লাব আর্থিক সারসংক্ষেপ (Club Accounts & Transparency)', 'Club Accounts & Financial Metrics')}
+                {b('ক্লাব আর্থিক সারসংক্ষেপ', 'Club Accounts & Financial Metrics')}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    {b('মোট বাৎসরিক তহবিল (Total Club Collection)', 'Total Club Collection')}
+                    {b('মোট বাৎসরিক তহবিল', 'Total Club Collection')}
                   </label>
                   <input
                     type="text"
@@ -902,7 +902,7 @@ export default function SettingsManagerPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    {b('মোট সামগ্রিক খরচ (Total Expenditure)', 'Total Expenditure')}
+                    {b('মোট সামগ্রিক খরচ', 'Total Expenditure')}
                   </label>
                   <input
                     type="text"
@@ -918,7 +918,7 @@ export default function SettingsManagerPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    {b('প্রধান ব্যয়ের খাত (Major Expense Head)', 'Major Expense Head')}
+                    {b('প্রধান ব্যয়ের খাত', 'Major Expense Head')}
                   </label>
                   <input
                     type="text"
@@ -931,7 +931,7 @@ export default function SettingsManagerPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    {b('প্রধান ব্যয়ের পরিমাণ (Major Expense Amount)', 'Major Expense Amount')}
+                    {b('প্রধান ব্যয়ের পরিমাণ', 'Major Expense Amount')}
                   </label>
                   <input
                     type="text"
@@ -953,7 +953,7 @@ export default function SettingsManagerPage() {
               <div>
                 <h2 className="text-sm font-bold text-stone-900 flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <span>{b('উন্নয়ন সমিতি সেটিংস (/samiti)', 'Sonali Park Unnayan Samiti Settings (/samiti)')}</span>
+                  <span>{b('উন্নয়ন সমিতি সেটিংস', 'Sonali Park Unnayan Samiti Settings')}</span>
                 </h2>
                 <p className="text-xs text-stone-500 mt-0.5">
                   {b('নাগরিক উন্নয়ন পরিষদের ব্যানার, পরিচিতি বার্তা এবং পরিকাঠামো অডিট বাজেট পরিচালনা করুন', 'Manage civic RWA hero headline, community intro, and infrastructure welfare budgets')}
@@ -972,7 +972,7 @@ export default function SettingsManagerPage() {
 
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('সমিতির প্রধান শিরোনাম (Samiti Hero Title)', 'Samiti Hero Title')}
+                  {b('সমিতির প্রধান শিরোনাম', 'Samiti Hero Title')}
                 </label>
                 <input
                   type="text"
@@ -986,7 +986,7 @@ export default function SettingsManagerPage() {
 
               <div>
                 <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('সমিতি পরিচিতি ও বার্তা (Samiti Tagline & Mission)', 'Samiti Tagline & Mission')}
+                  {b('সমিতি পরিচিতি ও বার্তা', 'Samiti Tagline & Mission')}
                 </label>
                 <textarea
                   rows={3}
@@ -1004,7 +1004,7 @@ export default function SettingsManagerPage() {
                 <div>
                   <h3 className="text-xs font-bold text-emerald-900 uppercase tracking-wider flex items-center gap-1.5">
                     <ImageIcon className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>{b('সমিতি হিরো ব্যানার ছবি (Samiti Hero Banner Image)', 'Samiti Hero Banner Image')}</span>
+                    <span>{b('সমিতি হিরো ব্যানার ছবি', 'Samiti Hero Banner Image')}</span>
                   </h3>
                   <p className="text-[11px] text-stone-500 mt-0.5">
                     {b('স্ট্যান্ডার্ড ১৬:৯ ল্যান্ডস্কেপ অনুপাতের ছবি ব্যবহার করুন (অনুপাত 16:9)', 'Standard 16:9 landscape aspect ratio banner')}
@@ -1049,7 +1049,7 @@ export default function SettingsManagerPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    {b('ছবির পাথ বা ইউআরএল (Image URL / Path)', 'Image URL or Asset Path')}
+                    {b('ছবির পাথ বা ইউআরএল', 'Image URL or Asset Path')}
                   </label>
                   <input
                     type="text"
@@ -1099,13 +1099,13 @@ export default function SettingsManagerPage() {
             {/* Samiti Financial Metrics */}
             <div className="p-4 rounded-xl border border-stone-200 bg-stone-50/50 space-y-4">
               <h3 className="text-xs font-bold text-stone-800 uppercase tracking-wider">
-                {b('নাগরিক কল্যাণ তহবিল ও পরিকাঠামো বাজেট (Civic Fund & Outlay)', 'Civic Maintenance Fund & Outlay')}
+                {b('নাগরিক কল্যাণ তহবিল ও পরিকাঠামো বাজেট', 'Civic Maintenance Fund & Outlay')}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    {b('মোট বাৎসরিক কল্যাণ তহবিল (Total Maintenance Fund)', 'Total Maintenance Fund')}
+                    {b('মোট বাৎসরিক কল্যাণ তহবিল', 'Total Maintenance Fund')}
                   </label>
                   <input
                     type="text"
@@ -1119,7 +1119,7 @@ export default function SettingsManagerPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    {b('মোট সামগ্রিক নাগরিক ব্যয় (Total Civic Expenditure)', 'Total Civic Expenditure')}
+                    {b('মোট সামগ্রিক নাগরিক ব্যয়', 'Total Civic Expenditure')}
                   </label>
                   <input
                     type="text"
@@ -1135,7 +1135,7 @@ export default function SettingsManagerPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    {b('প্রধান পরিকাঠামো খাত (Major Development Head)', 'Major Development Head')}
+                    {b('প্রধান পরিকাঠামো খাত', 'Major Development Head')}
                   </label>
                   <input
                     type="text"
@@ -1148,7 +1148,7 @@ export default function SettingsManagerPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    {b('প্রধান খাতের ব্যয়ের পরিমাণ (Major Development Amount)', 'Major Development Amount')}
+                    {b('প্রধান খাতের ব্যয়ের পরিমাণ', 'Major Development Amount')}
                   </label>
                   <input
                     type="text"

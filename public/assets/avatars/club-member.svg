@@ -1,34 +1,44 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1F2937"/>
-      <stop offset="50%" stop-color="#111827"/>
-      <stop offset="100%" stop-color="#030712"/>
+    <linearGradient id="clubBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
     </linearGradient>
-    <radialGradient id="spotlight" cx="50%" cy="35%" r="60%">
-      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.25"/>
-      <stop offset="60%" stop-color="#D97706" stop-opacity="0.08"/>
-      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    <radialGradient id="clubSpotlight" cx="50%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.28"/>
+      <stop offset="55%" stop-color="#ea580c" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="amber" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FDE68A"/>
-      <stop offset="50%" stop-color="#F59E0B"/>
-      <stop offset="100%" stop-color="#B45309"/>
+    <linearGradient id="clubAmber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
     </linearGradient>
   </defs>
-  <rect width="400" height="500" fill="url(#bgGrad)"/>
-  <rect width="400" height="500" fill="url(#spotlight)"/>
-  <g opacity="0.1" stroke="#F59E0B" stroke-width="1.5" fill="none">
+
+  <!-- Background -->
+  <rect width="400" height="500" fill="url(#clubBgGrad)"/>
+  <rect width="400" height="500" fill="url(#clubSpotlight)"/>
+
+  <!-- Energy / Sport & Cultural Ring Graphics -->
+  <g opacity="0.18" stroke="#f59e0b" stroke-width="1.5" fill="none">
     <circle cx="200" cy="180" r="130"/>
     <circle cx="200" cy="180" r="105" stroke-dasharray="6,4"/>
+    <circle cx="200" cy="180" r="80" stroke-opacity="0.5"/>
   </g>
-  <circle cx="200" cy="160" r="55" fill="#E2E8F0"/>
-  <path d="M 120 320 C 120 230, 280 230, 280 320 Z" fill="#F1F5F9"/>
-  <path d="M 140 320 C 140 250, 260 250, 260 320 Z" fill="#1E293B"/>
-  <!-- Emblem Badge -->
-  <circle cx="200" cy="290" r="34" fill="url(#amber)" stroke="#FFFFFF" stroke-width="2"/>
-  <text x="200" y="298" text-anchor="middle" font-size="24" fill="#111827">⭐</text>
-  <!-- Banner -->
-  <rect x="50" y="410" width="300" height="44" rx="22" fill="#111827" stroke="#F59E0B" stroke-width="1.5"/>
-  <text x="200" y="438" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="14" fill="#FDE68A">EXECUTIVE MEMBER</text>
+
+  <!-- Silhouette -->
+  <circle cx="200" cy="155" r="54" fill="#f1f5f9"/>
+  <path d="M 115 325 C 115 230, 285 230, 285 325 Z" fill="#f8fafc"/>
+  <path d="M 135 325 C 135 248, 265 248, 265 325 Z" fill="#1e1b4b"/>
+
+  <!-- Club Crest Emblem -->
+  <circle cx="200" cy="285" r="32" fill="url(#clubAmber)" stroke="#ffffff" stroke-width="2.5"/>
+  <!-- Star & Torch Icon -->
+  <path d="M 200 268 L 204 278 L 215 280 L 207 288 L 209 299 L 200 293 L 191 299 L 193 288 L 185 280 L 196 278 Z" fill="#1e1b4b"/>
+
+  <!-- Modern Banner -->
+  <rect x="50" y="410" width="300" height="44" rx="22" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="200" y="438" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" letter-spacing="1.5" fill="#fde68a">CLUB EXECUTIVE MEMBER</text>
 </svg>

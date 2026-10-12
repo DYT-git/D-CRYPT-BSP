@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <linearGradient id="samitiBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="40%" stop-color="#022c22"/>
+      <stop offset="100%" stop-color="#021c15"/>
+    </linearGradient>
+    <radialGradient id="emeraldSpotlight" cx="50%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.3"/>
+      <stop offset="50%" stop-color="#059669" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#022c22" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="emeraldGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="60%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="500" fill="url(#samitiBgGrad)"/>
+  <rect width="400" height="500" fill="url(#emeraldSpotlight)"/>
+
+  <!-- Geometric Decorative Aura -->
+  <g opacity="0.15" stroke="#34d399" stroke-width="1.5" fill="none">
+    <circle cx="200" cy="180" r="130"/>
+    <circle cx="200" cy="180" r="105" stroke-dasharray="6,4"/>
+    <circle cx="200" cy="180" r="80" stroke-opacity="0.5"/>
+  </g>
+
+  <!-- Silhouette -->
+  <!-- Head -->
+  <circle cx="200" cy="155" r="54" fill="#f1f5f9"/>
+  <!-- Torso & Collared Kurta/Suit -->
+  <path d="M 115 325 C 115 230, 285 230, 285 325 Z" fill="#e2e8f0"/>
+  <path d="M 135 325 C 135 248, 265 248, 265 325 Z" fill="#064e3b"/>
+
+  <!-- Civic / Laurel Badge -->
+  <circle cx="200" cy="285" r="32" fill="url(#goldGradient)" stroke="#ffffff" stroke-width="2.5"/>
+  <!-- Leaf / Community Civic Icon -->
+  <path d="M 200 268 C 192 278, 190 292, 200 302 C 210 292, 208 278, 200 268 Z" fill="#064e3b"/>
+  <path d="M 194 286 C 187 290, 185 297, 192 300" stroke="#064e3b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M 206 286 C 213 290, 215 297, 208 300" stroke="#064e3b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Dignified Badge Label -->
+  <rect x="50" y="410" width="300" height="44" rx="22" fill="#022c22" stroke="#10b981" stroke-width="1.5"/>
+  <text x="200" y="438" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" letter-spacing="1.5" fill="#a7f3d0">SAMITI EXECUTIVE MEMBER</text>
+</svg>

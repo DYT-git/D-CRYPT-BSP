@@ -45,6 +45,7 @@ export async function GET() {
     let notices = [];
     let gallery = [];
     let events = [];
+    let finances = [];
 
     // 1. Try fetching from database
     try {
@@ -57,6 +58,7 @@ export async function GET() {
       notices = await prisma.notice.findMany({ take: 10, orderBy: { id: 'desc' } });
       gallery = await prisma.gallery.findMany({ take: 6, orderBy: { id: 'desc' } });
       events = await prisma.event.findMany({ take: 5, orderBy: { id: 'desc' } });
+      finances = await prisma.finance.findMany({ take: 5, orderBy: { id: 'desc' } });
     } catch (dbErr) {
       // Fallback to seed-data.json
       const seed = readSeedData();
@@ -66,9 +68,11 @@ export async function GET() {
           customAnnouncements = JSON.parse(annSetting.value);
         } catch {}
       }
-      notices = (seed.notices || []).slice(0, 10).reverse();
-      gallery = (seed.gallery || []).slice(-6).reverse();
+      notices = (seed.notices || []).slice(0, 10).sort((a, b) => (b.id || 0) - (a.id || 0));
+      gallery = (seed.gallery || []).slice(0, 6).sort((a, b) => (b.id || 0) - (a.id || 0));
       events = (seed.events || []).slice(0, 5);
+      const rawFin = seed.finance || seed.finances || [];
+      finances = rawFin.slice(0, 5).sort((a, b) => (b.id || 0) - (a.id || 0));
     }
 
     // 2. Synthesize all notifications
@@ -93,19 +97,27 @@ export async function GET() {
 
     // B. Notices Synthesized Notifications
     notices.forEach(n => {
+      let subtitle = n.subtitle || '';
+      let text = n.text || '';
+      const subMatch = text.match(/^\[\[SUBTITLE:(.*?)\]\]\n?/s);
+      if (subMatch) {
+        subtitle = subMatch[1].trim();
+        text = text.replace(/^\[\[SUBTITLE:.*?\]\]\n?/s, '').trim();
+      }
+
       const wing = detectWing(n.title);
       const cleaned = cleanTitle(n.title);
-      let targetLink = '/#notices';
-      if (wing === 'club') targetLink = '/club#club-notices';
-      if (wing === 'samiti') targetLink = '/samiti#samiti-notices';
+      let targetLink = `/notifications?wing=${wing}&id=${n.id}`;
 
       allNotifications.push({
         id: `notice-${n.id}`,
         type: 'notice',
         wing,
         title: cleaned,
-        message: n.text ? (n.text.length > 90 ? n.text.slice(0, 90) + '...' : n.text) : '',
+        subtitle,
+        message: subtitle || (text ? (text.length > 90 ? text.slice(0, 90) + '...' : text) : ''),
         link: targetLink,
+        pdfUrl: n.pdfUrl || null,
         isUrgent: !!n.isUrgent,
         createdAt: n.date ? `${n.date}T10:00:00.000Z` : new Date().toISOString(),
         isCustom: false
@@ -134,6 +146,31 @@ export async function GET() {
         isUrgent: false,
         createdAt: itemDate,
         image: g.src,
+        isCustom: false
+      });
+    });
+
+    // D. Financial Audit Document Notifications
+    finances.forEach((f, idx) => {
+      const wing = detectWing(f.title);
+      const cleaned = cleanTitle(f.title);
+      const wingLabel = wing === 'club' ? 'সোনালী সঙ্ঘ' : wing === 'samiti' ? 'উন্নয়ন সমিতি' : 'শারদীয়া পূজা';
+      const targetLink = `/transparency?wing=${wing === 'club' ? 'Club' : wing === 'samiti' ? 'Samiti' : 'Puja'}&viewPdf=${encodeURIComponent(f.url)}&pdfTitle=${encodeURIComponent(cleaned)}`;
+
+      const itemDate = f.createdAt 
+        ? new Date(f.createdAt).toISOString() 
+        : new Date(Date.now() - 1000 * 60 * 60 * (idx + 3)).toISOString();
+
+      allNotifications.push({
+        id: `finance-${f.id}`,
+        type: 'audit',
+        wing,
+        title: `নতুন অডিট: ${cleaned}`,
+        message: `${f.year} সালের ${wingLabel} শাখার অডিট সার্কুলার ও ব্যালেন্স শীট প্রকাশিত হয়েছে।`,
+        link: targetLink,
+        pdfUrl: f.url,
+        isUrgent: false,
+        createdAt: itemDate,
         isCustom: false
       });
     });
