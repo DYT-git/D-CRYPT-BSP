@@ -325,120 +325,17 @@ export default function SamitiPage() {
         </div>
       </section>
 
-      {/* ═══ 1. OUR ACTIVITIES & CIVIC INITIATIVES (WHAT WE DO / CHARTER) ═══ */}
-      <section id="samiti-charter" className="scroll-mt-24">
-      </section>
-      <section id="samiti-activities" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-            {b('আবাসিক কল্যাণ ও', 'Residential Welfare &')} <span className="text-emerald-800">{b('নাগরিক সেবা উদ্যোগ', 'Civic Action')}</span>
-          </h2>
-          <p className="text-stone-600 text-xs sm:text-sm md:text-base mt-2 max-w-xl mx-auto leading-relaxed">
-            {b(
-              'বাঁশদ্রোণী সোনালী পার্কের নাগরিক পরিষেবা, পরিকাঠামো ও সামগ্রিক জীবনযাত্রার উন্নয়ন রূপরেখা।',
-              'Comprehensive civic services, infrastructure roadmap, and community development at Bansdroni Sonali Park.'
-            )}
-          </p>
-        </div>
-
-        {/* Minimal Animated Roadmap Showcase Card */}
-        <div className="relative max-w-4xl mx-auto bg-gradient-to-br from-[#FFFDF9] via-[#FAF7F2] to-emerald-50/30 rounded-3xl p-6 sm:p-10 border border-[#E5DAC8] shadow-[0_8px_30px_rgba(6,78,59,0.05)] overflow-hidden group">
-          {/* Top Decorative Washi Tape */}
-          <div className="absolute -top-3.5 left-7 sm:left-10 z-20 pointer-events-none">
-            <WashiTapePin text={b('কর্মকাণ্ড রূপরেখা • ২০২৬-২৭', 'Action Roadmap • 2026-27')} variant="emerald" />
-          </div>
-
-          {/* Ambient Background Aura */}
-          <div className="absolute -right-16 -top-16 w-56 h-56 bg-emerald-200/20 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-300/30 transition-all duration-700" />
-          <div className="absolute -left-16 -bottom-16 w-56 h-56 bg-amber-200/15 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col items-center text-center">
-            {/* Animated Pulsing Icon Stage */}
-            <div className="relative mb-5">
-              <div className="absolute inset-0 rounded-full bg-emerald-400/25 blur-md animate-pulse" />
-              <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border border-emerald-200/90 text-emerald-700 flex items-center justify-center shadow-md">
-                <Sparkles className="w-8 h-8 text-emerald-600 animate-bounce duration-1000" />
-              </div>
-            </div>
-
-            {/* Showcase Title & Subtitle */}
-            <h3 className="text-lg sm:text-2xl font-serif font-black text-stone-900 tracking-tight mb-2">
-              {b('উদ্যোগ ও কার্যক্রম রূপরেখা শীঘ্রই আপডেট করা হচ্ছে...', 'Civic Activities & Initiatives Roadmap Updating Soon...')}
-            </h3>
-            <p className="font-serif text-xs sm:text-sm text-stone-600 max-w-xl leading-relaxed mb-6 sm:mb-8">
-              {b(
-                'নাগরিক সেবা, নিকাশি ও রাস্তা সংস্কার, এলইডি পথবাতি আধুনিকায়ন ও পরিবেশবান্ধব সবুজায়ন প্রকল্পের পূর্ণাঙ্গ প্রতিবেদন অতি শীঘ্রই সবিস্তারে প্রকাশিত হবে।',
-                'Detailed reports and timelines for drainage maintenance, LED streetlighting, 24x7 security, and environmental drives will be published here shortly.'
-              )}
-            </p>
-
-            {/* Sleek Interactive Preview Pills */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 w-full max-w-2xl mb-7">
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-white/90 border border-emerald-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-xs transition-all flex flex-col items-center gap-1.5">
-                <Wrench className="w-4 h-4 text-emerald-700" />
-                <span className="font-serif font-bold text-xs text-stone-800 leading-snug">{b('নিকাশি সংস্কার', 'Drainage')}</span>
-                <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/70 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  {b('পরিকল্পনাধীন', 'Planning')}
-                </span>
-              </div>
-
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-white/90 border border-emerald-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-xs transition-all flex flex-col items-center gap-1.5">
-                <Lightbulb className="w-4 h-4 text-amber-700" />
-                <span className="font-serif font-bold text-xs text-stone-800 leading-snug">{b('পথবাতি সেবা', 'Lighting')}</span>
-                <span className="text-[10px] font-mono text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/70 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  {b('চলমান', 'Active')}
-                </span>
-              </div>
-
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-white/90 border border-emerald-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-xs transition-all flex flex-col items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-800" />
-                <span className="font-serif font-bold text-xs text-stone-800 leading-snug">{b('নিরাপত্তা ও গার্ড', 'Security')}</span>
-                <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/70 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  {b('নিয়মিত', 'Routine')}
-                </span>
-              </div>
-
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-white/90 border border-emerald-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-xs transition-all flex flex-col items-center gap-1.5">
-                <TreePine className="w-4 h-4 text-teal-700" />
-                <span className="font-serif font-bold text-xs text-stone-800 leading-snug">{b('সবুজায়ন প্রকল্প', 'Greenery')}</span>
-                <span className="text-[10px] font-mono text-teal-800 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200/70 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
-                  {b('আগামী প্রকল্প', 'Upcoming')}
-                </span>
-              </div>
-            </div>
-
-            {/* Live Status Indicator Bar */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#E5DAC8] text-stone-600 text-xs shadow-2xs">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-              <span className="font-serif text-[11px] sm:text-xs text-stone-700">
-                {b('পরবর্তী সাধারণ সভায় অনুমোদনের পর বিস্তারিত রূপরেখা সংযোজন করা হবে', 'Full action schedule will be added following general body review')}
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ 2. SAMITI NOTICES (SIDE-WISE CONTROLLING CAROUSEL) ═══ */}
-      <section id="samiti-notices" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+      {/* ═══ 1. SAMITI NOTICES (SIDE-WISE CONTROLLING CAROUSEL) ═══ */}
+      <section id="samiti-notices" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
-              <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
-              <span>{b('জরুরি প্রশাসনিক সার্কুলার', 'Administrative Circulars')}</span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+              <span>{b('সমিতির বার্তা', 'Civic Desk')}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-              {b('উন্নয়ন সমিতির সাধারণ', 'Unnayan Samiti Public')} <span className="text-brand-maroon">{b('বিজ্ঞপ্তি ও নির্দেশিকা', 'Notices & Guidelines')}</span>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
+              {b('উন্নয়ন সমিতির আনুষ্ঠানিক বিজ্ঞপ্তি', 'Unnayan Samiti Official Notices')}
             </h2>
-            <p className="text-sm sm:text-base text-stone-600 mt-2 leading-relaxed max-w-2xl">
-              {b('ড্রেন পরিষ্কার, পথবাতি মেরামত, সাধারণ সভা ও আবাসিক নির্দেশিকা সংক্রান্ত আনুষ্ঠানিক বিজ্ঞপ্তি।', 'Official circulars regarding drain works, road repairs, resident meetings, and civic guidelines.')}
-            </p>
           </div>
 
           <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
@@ -667,20 +564,17 @@ export default function SamitiPage() {
         )}
       </section>
 
-      {/* ═══ 3. SAMITI COMMITTEE (SIDE-WISE CONTROLLING CAROUSEL) ═══ */}
-      <section id="samiti-committee" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+      {/* ═══ 2. SAMITI COMMITTEE (SIDE-WISE CONTROLLING CAROUSEL) ═══ */}
+      <section id="samiti-committee" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
-              <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
-              <span>{b('নির্বাচিত দায়িত্বপ্রাপ্ত প্রতিনিধি • ২০২৬–২০২৮', 'Elected Representatives • 2026–2028')}</span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+              <span>{b('পরিচালনা পরিষদ', 'Executive Board')}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-              {b('উন্নয়ন সমিতির কর্মকর্তা ও', 'Unnayan Samiti Executive')} <span className="text-brand-maroon">{b('পরিচালনা পরিষদ', 'Board')}</span>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
+              {b('উন্নয়ন সমিতির কার্যনির্বাহী পরিষদ', 'Unnayan Samiti Executive Council')}
             </h2>
-            <p className="text-sm sm:text-base text-stone-600 mt-2 leading-relaxed max-w-2xl">
-              {b('বাঁশদ্রোণী সোনালী পার্কের নাগরিক উন্নয়ন ও আবাসিক কল্যাণ পরিচালনার শীর্ষ কর্মকর্তা পরিষদ।', 'Leading office-bearers and civic conveners responsible for resident welfare, roads, and security.')}
-            </p>
           </div>
 
           <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
@@ -805,20 +699,17 @@ export default function SamitiPage() {
         </div>
       </section>
 
-      {/* ═══ 4. SAMITI CIVIC GALLERY (SIDE-WISE CONTROLLING CAROUSEL) ═══ */}
-      <section id="samiti-gallery" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+      {/* ═══ 3. SAMITI CIVIC GALLERY (SIDE-WISE CONTROLLING CAROUSEL) ═══ */}
+      <section id="samiti-gallery" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
-              <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
-              <span>{b('বাস্তবায়িত প্রকল্পের প্রতিচ্ছবি', 'Field Work & Progress Documentation')}</span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+              <span>{b('নাগরিক অ্যালবাম', 'Civic Archive')}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-              {b('পরিকাঠামো উন্নয়ন ও', 'Infrastructure Development &')} <span className="text-brand-maroon">{b('নাগরিক উদ্যোগ', 'Civic Drives')}</span>
+            <h2 className={`text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug`}>
+              {b('নাগরিক সেবা ও সমাজকল্যাণ চিত্রমালা', 'Civic Welfare & Community Gallery')}
             </h2>
-            <p className="text-sm sm:text-base text-stone-600 mt-2 leading-relaxed max-w-2xl">
-              {b('সোনালী পার্ক উন্নয়ন সমিতির বিভিন্ন নাগরিক উদ্যোগ, সাধারণ সভা এবং উন্নয়নমূলক কর্মকাণ্ডের প্রামাণ্য চিত্রমালা।', 'Documentary photo gallery of civic initiatives, community meetings, and development activities of Sonali Park Unnayan Samiti.')}
-            </p>
           </div>
 
           <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
@@ -1008,18 +899,15 @@ export default function SamitiPage() {
       {/* ═══ 5. SAMITI FINANCIALS & VERIFIED AUDITS (OVERVIEW) ═══ */}
       <section id="samiti-finance" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-[#FFFDF9] rounded-3xl p-6 sm:p-10 border border-[#E5DAC8] shadow-xs">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 pb-5 border-b border-stone-200/80">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 pb-4 border-b border-stone-200/80">
             <div>
-              <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
-                <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
-                <span>{b('আর্থিক সততা ও দায়বদ্ধতা', 'Civic Integrity & Disclosures')}</span>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                <span>{b('আর্থিক স্বচ্ছতা', 'Audited Accounts')}</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-                {b('উন্নয়ন সমিতি তহবিল ও বার্ষিক', 'Samiti Civic Accounts & Annual')} <span className="text-brand-maroon">{b('অডিট বিবরণী', 'Audit Statements')}</span>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
+                {b('উন্নয়ন সমিতির বাজেট ও অডিট রিপোর্ট', 'Unnayan Samiti Accounts & Audits')}
               </h2>
-              <p className="text-sm sm:text-base text-stone-600 mt-2 leading-relaxed max-w-2xl">
-                {b('সোনালী পার্ক উন্নয়ন সমিতির বাৎসরিক আয়-ব্যয় এবং নিরীক্ষিত আর্থিক হিসাব বিবরণী।', 'Verified annual income-expenditure statements and audited accounts of Sonali Park Unnayan Samiti.')}
-              </p>
             </div>
 
             <div className="flex items-center justify-end w-full sm:w-auto shrink-0">

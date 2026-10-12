@@ -191,21 +191,14 @@ function NotificationsContent() {
         </div>
 
         {/* ═══ Header Section ═══ */}
-        <header className="max-w-3xl mx-auto text-center mb-10 sm:mb-12 px-2">
-          <div className="inline-flex items-center justify-center gap-2.5 mb-3 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em]">
-            <span className="w-5 h-0.5 bg-brand-maroon/50 rounded-full" />
-            <span>{b('পাড়াবাসীর জ্ঞাতব্য ও জরুরি বার্তা', 'Community Dispatches & Announcements')}</span>
-            <span className="w-5 h-0.5 bg-brand-maroon/50 rounded-full" />
+        <header className="max-w-3xl mx-auto text-center mb-8 sm:mb-10 px-2">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
+            <span>{b('পাড়ার বার্তা', 'Notice Board')}</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-3 tracking-tight leading-tight">
-            {b('আনুষ্ঠানিক সার্কুলার ও', 'Official Circulars &')} <span className="text-brand-maroon">{b('বুলেটিন', 'Bulletins')}</span>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-black text-stone-900 tracking-tight leading-snug">
+            {b('আনুষ্ঠানিক সার্কুলার ও', 'Official Circulars &')} <span className="text-brand-maroon">{b('বিজ্ঞপ্তি কেন্দ্র', 'Notice Center')}</span>
           </h1>
-          <p className="text-xs sm:text-sm md:text-base text-stone-600 font-light leading-relaxed max-w-2xl mx-auto">
-            {b(
-              'শারদীয়া দুর্গাপূজা, বাঁশদ্রোণী সোনালী সঙ্ঘ ক্লাব এবং সোনালী পার্ক উন্নয়ন সমিতির সমস্ত সক্রিয় নোটিশ, সার্কুলার ও অফিসিয়াল PDF নির্দেশিকা।',
-              'Official circulars, guidelines, and downloadable PDFs from Durga Puja, Sonali Sangha Club, and Unnayan Samiti.'
-            )}
-          </p>
         </header>
 
         {/* ═══ UPPER PILLAR SELECTOR (3 Wings: Puja, Club, Samiti) ═══ */}

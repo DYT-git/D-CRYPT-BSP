@@ -316,55 +316,25 @@ export default function ClubPage() {
             </div>
 
             {/* Club Subtitle & Tagline */}
-            <p className="text-base sm:text-lg md:text-xl text-stone-200 font-normal max-w-2xl leading-relaxed drop-shadow-sm mb-6">
+            <p className="text-base sm:text-lg md:text-xl text-stone-200 font-normal max-w-2xl leading-relaxed drop-shadow-sm mb-2">
               {lang === 'en'
                 ? (t(settings.clubHeroTagline) || 'The athletic, cultural, and youth epicenter of Bansdroni Sonali Park. Fostering sporting excellence, cultural unity, and humanitarian welfare since 1952.')
                 : (settings.clubHeroTagline || 'বাঁশদ্রোণী সোনালী পার্কের সংস্কৃতি, ক্রীড়া ও যুবকল্যাণের প্রাণকেন্দ্র। খেলাধুলা, সাংস্কৃতিক অনুষ্ঠান এবং রক্তদান শিবিরের মাধ্যমে সমাজের সেবায় আমরা নিয়োজিত।')}
             </p>
-
-            {/* Quick Exploration Navigation Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-2.5">
-              <a
-                href="#club-notices"
-                className="px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-bold border border-white/25 backdrop-blur-md transition-all shadow-xs"
-              >
-                📢 {b('বিজ্ঞপ্তি', 'Notices')}
-              </a>
-              <a
-                href="#club-committee"
-                className="px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-bold border border-white/25 backdrop-blur-md transition-all shadow-xs"
-              >
-                👥 {b('পরিচালনা পরিষদ', 'Committee')}
-              </a>
-              <a
-                href="#club-gallery"
-                className="px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-bold border border-white/25 backdrop-blur-md transition-all shadow-xs"
-              >
-                📸 {b('ফটো অ্যালবাম', 'Gallery')}
-              </a>
-              <a
-                href="#club-finance"
-                className="px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-bold border border-white/25 backdrop-blur-md transition-all shadow-xs"
-              >
-                📑 {b('হিসাব ও অডিট', 'Accounts')}
-              </a>
-            </div>
           </div>
         </div>
       </section>
 
       {/* ═══ 1. CLUB INFRASTRUCTURE & AMENITIES (OVERVIEW) ═══ */}
-      <section id="club-overview" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">
-            {b('খেলাধুলা, সংস্কৃতি ও', 'Athletics, Culture &')} <span className="text-brand-maroon">{b('সমাজসেবা', 'Youth Epics')}</span>
+      <section id="club-overview" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
+        <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+            <span>{b('ক্লাব কার্যক্রম', 'Club Amenities')}</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
+            {b('খেলাধুলা, সংস্কৃতি ও', 'Athletics, Culture &')} <span className="text-brand-maroon">{b('সমাজসেবা', 'Social Welfare')}</span>
           </h2>
-          <p className="text-stone-600 text-sm mt-2">
-            {b(
-              'সোনালী পার্কের ক্লাবভবনে আধুনিক সুযোগ-সুবিধা ও ক্রীড়া সরঞ্জাম দিয়ে সজ্জিত একটি প্রাণবন্ত পরিবেশ রয়েছে।',
-              'Equipped with modern indoor recreational arenas, gymnasium equipment, and vibrant cultural facilities.'
-            )}
-          </p>
         </div>
 
         <div className="grid md:grid-cols-4 gap-4 sm:gap-6">
@@ -431,19 +401,16 @@ export default function ClubPage() {
       </section>
 
       {/* ═══ 2. CLUB NOTICES (SIDE-WISE CONTROLLING CAROUSEL) ═══ */}
-      <section id="club-notices" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+      <section id="club-notices" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
-              <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
-              <span>{b('সদস্য ও পাড়াবাসীর জ্ঞাতব্য', 'Member Dispatches & Updates')}</span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+              <span>{b('ক্লাব বার্তা', 'Club Desk')}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-              {b('সোনালী সঙ্ঘের বুলেটিন ও', 'Sonali Sangha Bulletins &')} <span className="text-brand-maroon">{b('আনুষ্ঠানিক বিজ্ঞপ্তি', 'Official Circulars')}</span>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
+              {b('সোনালী সঙ্ঘের আনুষ্ঠানিক বিজ্ঞপ্তি', 'Sonali Sangha Official Notices')}
             </h2>
-            <p className="text-sm sm:text-base text-stone-600 mt-2 leading-relaxed max-w-2xl">
-              {b('সোনালী সঙ্ঘ ক্লাবের ক্রীড়া প্রতিযোগিতা, রক্তদান শিবির ও সাংস্কৃতিক কর্মকাণ্ডের সাম্প্রতিক নোটিশ ও সার্কুলার।', 'Official circulars regarding sports schedules, blood donation drives, and cultural programs.')}
-            </p>
           </div>
 
           <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
@@ -673,19 +640,16 @@ export default function ClubPage() {
       </section>
 
       {/* ═══ 3. CLUB COMMITTEE (SIDE-WISE CONTROLLING CAROUSEL) ═══ */}
-      <section id="club-committee" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+      <section id="club-committee" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
-              <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
-              <span>{b('ক্লাব সংগঠক ও কাণ্ডারী • ২০২৬–২০২৮', 'Club Stewards & Organizers • 2026–2028')}</span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+              <span>{b('পরিচালনা পরিষদ', 'Executive Board')}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-              {b('সোনালী সঙ্ঘের কর্মকর্তা ও', 'Sonali Sangha Executive')} <span className="text-brand-maroon">{b('পরিচালনা পরিষদ', 'Council')}</span>
+            <h2 className={`text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug`}>
+              {b('সোনালী সঙ্ঘের কর্মকর্তা ও পরিষদ', 'Sonali Sangha Executive Council')}
             </h2>
-            <p className="text-sm sm:text-base text-stone-600 mt-2 leading-relaxed max-w-2xl">
-              {b('বাঁশদ্রোণী সোনালী পার্ক ক্লাবের সমাজকল্যাণ ও ক্রীড়া কর্মকাণ্ড পরিচালনার শীর্ষ কর্মকর্তা পরিষদ।', 'Leading office-bearers and executive conveners responsible for sports, cultural, and welfare operations.')}
-            </p>
           </div>
 
           <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
@@ -811,19 +775,16 @@ export default function ClubPage() {
       </section>
 
       {/* ═══ 4. CLUB PHOTO GALLERY (SIDE-WISE CONTROLLING CAROUSEL) ═══ */}
-      <section id="club-gallery" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-5 border-b border-stone-200/70">
+      <section id="club-gallery" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
-              <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
-              <span>{b('মাঠ ও মঞ্চের ঝলক', 'Visual Recaps & Highlights')}</span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+              <span>{b('ক্লাব অ্যালবাম', 'Photo Archive')}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-              {b('ক্রীড়া প্রতিযোগিতা ও সামাজিক', 'Athletic Tournaments &')} <span className="text-brand-maroon">{b('উৎসবের অ্যালবাম', 'Community Celebrations')}</span>
+            <h2 className={`text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug`}>
+              {b('ক্রীড়া প্রতিযোগিতা ও স্মরণীয় মুহূর্ত', 'Athletics & Community Moments')}
             </h2>
-            <p className="text-sm sm:text-base text-stone-600 mt-2 leading-relaxed max-w-2xl">
-              {b('সোনালী সঙ্ঘের খেলাধুলা, সাংস্কৃতিক উৎসব, যুবকল্যাণ এবং সামাজিক কর্মকাণ্ডের স্মরণীয় মুহূর্তসমূহ।', 'Memorable moments of sports events, cultural festivals, youth activities, and community welfare by Sonali Sangha.')}
-            </p>
           </div>
 
           <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
@@ -1013,18 +974,15 @@ export default function ClubPage() {
       {/* ═══ 5. CLUB FINANCIALS & VERIFIED AUDITS (OVERVIEW) ═══ */}
       <section id="club-finance" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-[#FFFDF9] rounded-3xl p-6 sm:p-10 border border-[#E5DAC8] shadow-xs">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 pb-5 border-b border-stone-200/80">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 pb-4 border-b border-stone-200/80">
             <div>
-              <div className="flex items-center gap-2 mb-2 text-brand-maroon font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
-                <span className="w-4 h-0.5 bg-brand-maroon/70 rounded-full" />
-                <span>{b('স্বচ্ছ হিসেব ও দায়বদ্ধতা', 'Fiscal Disclosures & Ledger')}</span>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+                <span>{b('আর্থিক স্বচ্ছতা', 'Audited Accounts')}</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-                {b('সোনালী সঙ্ঘ তহবিল, বাজেট ও', 'Sonali Sangha Accounts, Budget &')} <span className="text-brand-maroon">{b('অডিট রিপোর্ট', 'Audit Statements')}</span>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
+                {b('সোনালী সঙ্ঘের বাজেট ও অডিট রিপোর্ট', 'Sonali Sangha Accounts & Audits')}
               </h2>
-              <p className="text-sm sm:text-base text-stone-600 mt-2 leading-relaxed max-w-2xl">
-                {b('সোনালী সঙ্ঘ ক্লাবের বাৎসরিক আয়-ব্যয় এবং নিরীক্ষিত আর্থিক স্টেটমেন্ট সবার জন্য উন্মুক্ত।', 'Transparent audited annual accounts and financial balance sheets of Sonali Sangha Club.')}
-              </p>
             </div>
 
             <div className="flex items-center justify-end w-full sm:w-auto shrink-0">
