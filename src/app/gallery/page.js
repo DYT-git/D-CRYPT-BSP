@@ -6,6 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import YearSelector from "@/components/YearSelector";
 import { Download, X, ZoomIn, Image as ImageIcon } from 'lucide-react';
 import { triggerDownload } from "@/utils/download";
+import { getImageWing } from "@/utils/gallery";
 import { 
   DurgaDeviEmblemIcon, 
   ClubCrestIcon, 
@@ -28,11 +29,11 @@ const FALLBACK_CLUB_PHOTOS = [
 ];
 
 const FALLBACK_SAMITI_PHOTOS = [
-  { src: '/assets/durga-hero.png', title: 'পাড়ার প্রধান রাস্তা ও ড্রেন সংস্কার কাজ', category: 'Roads', wing: 'Samiti', year: 2026 },
+  { src: '/assets/durga-hero.png', title: 'পাড়ার অভ্যন্তরীণ রাস্তা ও পথবাতি সংস্কার কাজ', category: 'Roads', wing: 'Samiti', year: 2026 },
   { src: '/assets/durga-morning.png', title: 'পরিবেশ দিবস উপলক্ষে বাৎসরিক বৃক্ষরোপণ', category: 'Greenery', wing: 'Samiti', year: 2026 },
   { src: '/assets/durga-evening.png', title: 'পাড়ার বাসিন্দাদের সাধারণ বার্ষিক সভা', category: 'Meetings', wing: 'Samiti', year: 2026 },
   { src: '/assets/durga-afternoon.png', title: 'নতুন এলইডি পথবাতি স্থাপন অভিযান', category: 'Roads', wing: 'Samiti', year: 2025 },
-  { src: '/assets/durga-hero.jpg', title: 'বর্ষাপূর্ব ড্রেন পরিষ্কার ও ডেঙ্গি প্রতিরোধ স্প্রে', category: 'Sanitation', wing: 'Samiti', year: 2025 }
+  { src: '/assets/durga-hero.jpg', title: 'বর্ষাপূর্ব পাড়ার পরিচ্ছন্নতা ও ডেঙ্গি প্রতিরোধ স্প্রে', category: 'Sanitation', wing: 'Samiti', year: 2025 }
 ];
 
 function GalleryContent() {
@@ -73,44 +74,18 @@ function GalleryContent() {
     const rawAll = (data.gallery || []).filter(g => g.year === selectedYear);
 
     if (activeWing === 'Puja') {
-      const list = rawAll.filter(g => 
-        !g.program?.includes('Club') && 
-        !g.program?.includes('Sports') && 
-        !g.program?.includes('Samiti') && 
-        g.category !== 'Club' && 
-        g.category !== 'Samiti' && 
-        g.category !== 'Sports' && 
-        g.category !== 'Roads' && 
-        g.category !== 'Greenery'
-      );
+      const list = rawAll.filter(g => getImageWing(g) === 'Puja');
       return list.slice().sort((a, b) => (b.id || 0) - (a.id || 0));
     }
 
     if (activeWing === 'Club') {
-      let list = rawAll.filter(g => 
-        g.program === 'Club & Sports' || 
-        g.program === 'Annual Sports' || 
-        g.program === 'Social Work' || 
-        g.program === 'Cultural Event' || 
-        g.category === 'Club' || 
-        g.category === 'Sports' || 
-        g.category === 'Blood Donation' || 
-        g.category === 'Cultural'
-      );
+      let list = rawAll.filter(g => getImageWing(g) === 'Club');
       if (list.length === 0) list = FALLBACK_CLUB_PHOTOS;
       return list.slice().sort((a, b) => (b.id || 0) - (a.id || 0));
     }
 
     if (activeWing === 'Samiti') {
-      let list = rawAll.filter(g => 
-        g.program === 'Unnayan Samiti' || 
-        g.category === 'Samiti' || 
-        g.category === 'Roads' || 
-        g.category === 'Greenery' || 
-        g.category === 'Sanitation' || 
-        g.category === 'Civic' || 
-        g.category === 'Meetings'
-      );
+      let list = rawAll.filter(g => getImageWing(g) === 'Samiti');
       if (list.length === 0) list = FALLBACK_SAMITI_PHOTOS;
       return list.slice().sort((a, b) => (b.id || 0) - (a.id || 0));
     }
@@ -121,36 +96,10 @@ function GalleryContent() {
   // Photo counts per wing
   const counts = useMemo(() => {
     const rawAll = (data.gallery || []).filter(g => g.year === selectedYear);
-    const pCount = rawAll.filter(g => 
-      !g.program?.includes('Club') && 
-      !g.program?.includes('Sports') && 
-      !g.program?.includes('Samiti') && 
-      g.category !== 'Club' && 
-      g.category !== 'Samiti' && 
-      g.category !== 'Sports' && 
-      g.category !== 'Roads' && 
-      g.category !== 'Greenery'
-    ).length;
-    const cList = rawAll.filter(g => 
-      g.program === 'Club & Sports' || 
-      g.program === 'Annual Sports' || 
-      g.program === 'Social Work' || 
-      g.program === 'Cultural Event' || 
-      g.category === 'Club' || 
-      g.category === 'Sports' || 
-      g.category === 'Blood Donation' || 
-      g.category === 'Cultural'
-    );
+    const pCount = rawAll.filter(g => getImageWing(g) === 'Puja').length;
+    const cList = rawAll.filter(g => getImageWing(g) === 'Club');
     const cCount = cList.length > 0 ? cList.length : FALLBACK_CLUB_PHOTOS.length;
-    const sList = rawAll.filter(g => 
-      g.program === 'Unnayan Samiti' || 
-      g.category === 'Samiti' || 
-      g.category === 'Roads' || 
-      g.category === 'Greenery' || 
-      g.category === 'Sanitation' || 
-      g.category === 'Civic' || 
-      g.category === 'Meetings'
-    );
+    const sList = rawAll.filter(g => getImageWing(g) === 'Samiti');
     const sCount = sList.length > 0 ? sList.length : FALLBACK_SAMITI_PHOTOS.length;
     return { Puja: pCount, Club: cCount, Samiti: sCount };
   }, [data.gallery, selectedYear]);
@@ -185,25 +134,19 @@ function GalleryContent() {
   };
 
   return (
-    <main className="bg-[#FAF7F2] min-h-screen pt-24 sm:pt-28 pb-24 selection:bg-brand-maroon selection:text-white">
+    <main className="bg-[#FAF7F2] min-h-screen pt-28 sm:pt-32 pb-24 selection:bg-brand-maroon selection:text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <YearSelector />
       </div>
 
-      {/* ═══ Clean Editorial Header ═══ */}
-      <header className="max-w-3xl mx-auto text-center mt-10 sm:mt-12 mb-8 sm:mb-10 px-4">
+      {/* ═══ Clean Editorial Header (Minimal & Spacious) ═══ */}
+      <header className="max-w-3xl mx-auto text-center mt-6 sm:mt-8 mb-8 sm:mb-10 px-4">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-2 tracking-tight leading-tight">
           {b('স্মৃতির সুর ও', 'Moments & Visual')} <span className="text-brand-maroon">{b('প্রতিচ্ছবি', 'Memories')}</span>
         </h1>
-        <div className="flex justify-center mb-3">
+        <div className="flex justify-center mt-3">
           <FestiveWaveAccent className="w-16 h-2 text-amber-500/80" />
         </div>
-        <p className="text-sm sm:text-base md:text-lg text-stone-600 font-light leading-relaxed">
-          {b(
-            'বাঁশদ্রোণী সোনালী পার্কের পূজা, ক্লাব ও উন্নয়ন সমিতির উৎসব, ক্রীড়া ও সমাজসেবামূলক রঙিন অ্যালবাম।',
-            'Photographic archives of Durga Puja, Sonali Sangha Club sports, and Unnayan Samiti civic welfare at Bansdroni Sonali Park.'
-          )}
-        </p>
       </header>
 
       {/* ═══ 3-Pillar Wing Selector Tabs ═══ */}

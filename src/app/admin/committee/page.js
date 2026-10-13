@@ -38,15 +38,18 @@ const ROLES_BY_WING = {
   ],
   Samiti: [
     'সভাপতি',
-    'কার্যকরী সভাপতি',
     'সহ-সভাপতি',
     'সাধারণ সম্পাদক',
     'সহ-সম্পাদক',
-    'নিরাপত্তা আহ্বায়ক',
-    'পরিকাঠামো ও ড্রেনেজ আহ্বায়ক',
     'কোষাধ্যক্ষ',
+    'সহ-কোষাধ্যক্ষ',
+    'অফিস ও সম্পত্তি ব্যবস্থাপনা',
+    'সমস্যা ও সমাধান বিভাগ',
+    'সাংস্কৃতিক ও অনুষ্ঠান ব্যবস্থাপনা',
+    'উন্নয়ন পরিষদ সদস্য',
+    'নিরাপত্তা আহ্বায়ক',
+    'পরিকাঠামো ও নাগরিক সুবিধা আহ্বায়ক',
     'পরিচ্ছন্নতা ও স্বাস্থ্য আহ্বায়ক',
-    'লেন প্রতিনিধি',
     'কার্যকরী সদস্য'
   ]
 };
@@ -56,7 +59,7 @@ export function parseMemberRole(role) {
   let wing = 'Puja';
   let rest = role;
   if (rest.startsWith('[Club]')) { wing = 'Club'; rest = rest.replace('[Club]', '').trim(); }
-  else if (rest.startsWith('[Samiti]')) { wing = 'Samiti'; rest = rest.replace('[Samiti]', '').trim(); }
+  else if (rest.startsWith('[Samiti]') || rest.startsWith('[Samity]')) { wing = 'Samiti'; rest = rest.replace(/^\[(Samiti|Samity)\]/i, '').trim(); }
   else if (rest.startsWith('[Puja]')) { wing = 'Puja'; rest = rest.replace('[Puja]', '').trim(); }
 
   let cleanRole = rest;
@@ -88,7 +91,7 @@ export default function CommitteeManagerPage() {
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterWing, setFilterWing] = useState('Puja');
+  const [filterWing, setFilterWing] = useState('ALL');
   const [filterYear, setFilterYear] = useState('ALL');
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const fileInputRef = useRef(null);
@@ -110,13 +113,77 @@ export default function CommitteeManagerPage() {
   const fetchMembers = async () => {
     try {
       const res = await fetch('/api/data');
-      const data = await res.json();
-      if (data.members) {
-        setMembers([...data.members].sort((a, b) => (a.id || 0) - (b.id || 0)));
+      if (res.ok) {
+        const data = await res.json();
+        if (data.members) {
+          setMembers([...data.members].sort((a, b) => (a.id || 0) - (b.id || 0)));
+        }
       }
     } catch (err) {
       console.error('Failed to load committee members', err);
     }
+  };
+
+  const optimizeImageForWeb = async (imgFile, maxDimension = 1200, quality = 0.85) => {
+    if (typeof window === 'undefined') return imgFile;
+    if (!imgFile.type?.startsWith('image/') || imgFile.type === 'image/gif' || imgFile.type === 'image/svg+xml') {
+      return imgFile;
+    }
+    if (imgFile.size <= 600 * 1024) return imgFile;
+
+    return new Promise((resolve) => {
+      try {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new window.Image();
+          img.onload = () => {
+            try {
+              let width = img.width;
+              let height = img.height;
+              if (width <= maxDimension && height <= maxDimension && imgFile.size < 1.2 * 1024 * 1024) {
+                resolve(imgFile);
+                return;
+              }
+              if (width > maxDimension || height > maxDimension) {
+                if (width > height) {
+                  height = Math.round((height * maxDimension) / width);
+                  width = maxDimension;
+                } else {
+                  width = Math.round((width * maxDimension) / height);
+                  height = maxDimension;
+                }
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              if (!ctx) { resolve(imgFile); return; }
+              ctx.drawImage(img, 0, 0, width, height);
+              canvas.toBlob(
+                (blob) => {
+                  if (!blob || blob.size >= imgFile.size) {
+                    resolve(imgFile);
+                  } else {
+                    const newName = imgFile.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                    resolve(new File([blob], newName, { type: 'image/jpeg', lastModified: Date.now() }));
+                  }
+                },
+                'image/jpeg',
+                quality
+              );
+            } catch {
+              resolve(imgFile);
+            }
+          };
+          img.onerror = () => resolve(imgFile);
+          img.src = e.target.result;
+        };
+        reader.onerror = () => resolve(imgFile);
+        reader.readAsDataURL(imgFile);
+      } catch {
+        resolve(imgFile);
+      }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -126,8 +193,9 @@ export default function CommitteeManagerPage() {
       let finalImageUrl = currentImageUrl;
 
       if (file) {
+        const optimizedFile = await optimizeImageForWeb(file, 1200, 0.85);
         const uploadData = new FormData();
-        uploadData.append('file', file);
+        uploadData.append('file', optimizedFile);
         uploadData.append('type', 'committee');
 
         const uploadRes = await fetch('/api/admin/upload', {
@@ -135,10 +203,11 @@ export default function CommitteeManagerPage() {
           body: uploadData,
         });
 
-        if (uploadRes.ok) {
-          const uploadResult = await uploadRes.json();
-          finalImageUrl = uploadResult.url;
+        const uploadResult = await uploadRes.json().catch(() => ({}));
+        if (!uploadRes.ok || !uploadResult.success) {
+          throw new Error(uploadResult.error || `Photo upload failed with status ${uploadRes.status}`);
         }
+        finalImageUrl = uploadResult.url || (uploadResult.urls && uploadResult.urls[0]) || currentImageUrl;
       }
 
       let encodedRole = `[${formData.wing}] ${formData.role.trim()}`;
@@ -159,13 +228,13 @@ export default function CommitteeManagerPage() {
           })
         });
 
-        if (res.ok) {
-          setMessage(b('সদস্য তথ্য সফলভাবে আপডেট হয়েছে!', 'Member updated successfully!'));
-          handleCancelEdit();
-          fetchMembers();
-        } else {
-          setMessage(b('সদস্য তথ্য আপডেট ব্যর্থ হয়েছে।', 'Failed to update member.'));
+        const resData = await res.json().catch(() => ({}));
+        if (!res.ok || !resData.success) {
+          throw new Error(resData.error || b('সদস্য তথ্য আপডেট ব্যর্থ হয়েছে।', 'Failed to update member.'));
         }
+        setMessage(b('সদস্য তথ্য সফলভাবে আপডেট হয়েছে!', 'Member updated successfully!'));
+        handleCancelEdit();
+        fetchMembers();
       } else {
         const res = await fetch('/api/admin/committee', {
           method: 'POST',
@@ -178,17 +247,17 @@ export default function CommitteeManagerPage() {
           })
         });
 
-        if (res.ok) {
-          setMessage(b('নতুন কমিটি সদস্য যুক্ত হয়েছে!', 'New member added successfully!'));
-          setFormData(prev => ({ ...prev, name: '', phone: '' }));
-          setFile(null);
-          setPreviewUrl(null);
-          setCurrentImageUrl(null);
-          if (fileInputRef.current) fileInputRef.current.value = '';
-          fetchMembers();
-        } else {
-          setMessage(b('নতুন সদস্য যোগ করা যায়নি।', 'Failed to add member.'));
+        const resData = await res.json().catch(() => ({}));
+        if (!res.ok || !resData.success) {
+          throw new Error(resData.error || b('নতুন সদস্য যোগ করা যায়নি।', 'Failed to add member.'));
         }
+        setMessage(b('নতুন কমিটি সদস্য যুক্ত হয়েছে!', 'New member added successfully!'));
+        setFormData(prev => ({ ...prev, name: '', phone: '' }));
+        setFile(null);
+        setPreviewUrl(null);
+        setCurrentImageUrl(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        fetchMembers();
       }
     } catch (err) {
       setMessage(b('ত্রুটি: ' + err.message, 'Error: ' + err.message));
@@ -248,6 +317,13 @@ export default function CommitteeManagerPage() {
   };
 
   const availableYears = ['ALL', ...Array.from(new Set(members.map(m => String(m.year))))];
+
+  const wingCounts = {
+    ALL: members.length,
+    Puja: members.filter(m => parseMemberRole(m.role).wing === 'Puja').length,
+    Club: members.filter(m => parseMemberRole(m.role).wing === 'Club').length,
+    Samiti: members.filter(m => parseMemberRole(m.role).wing === 'Samiti').length
+  };
 
   const filteredMembers = members.filter(m => {
     const parsed = parseMemberRole(m.role);
@@ -563,7 +639,7 @@ export default function CommitteeManagerPage() {
                     : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                 }`}
               >
-                {b('সকল', 'All')}
+                {b('সকল', 'All')} ({wingCounts.ALL})
               </button>
               <button
                 type="button"
@@ -574,7 +650,7 @@ export default function CommitteeManagerPage() {
                     : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                 }`}
               >
-                🌺 {b('দুর্গোৎসব', 'Puja')}
+                🌺 {b('দুর্গোৎসব', 'Puja')} ({wingCounts.Puja})
               </button>
               <button
                 type="button"
@@ -585,7 +661,7 @@ export default function CommitteeManagerPage() {
                     : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                 }`}
               >
-                🏆 {b('ক্লাব', 'Club')}
+                🏆 {b('ক্লাব', 'Club')} ({wingCounts.Club})
               </button>
               <button
                 type="button"
@@ -596,7 +672,7 @@ export default function CommitteeManagerPage() {
                     : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                 }`}
               >
-                🏛️ {b('সমিতি', 'Samiti')}
+                🏛️ {b('সমিতি', 'Samiti')} ({wingCounts.Samiti})
               </button>
             </div>
 

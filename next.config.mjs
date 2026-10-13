@@ -1,6 +1,18 @@
+import dns from 'dns';
+try {
+  dns.setDefaultResultOrder?.('ipv4first');
+} catch {}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

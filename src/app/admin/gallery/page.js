@@ -2,9 +2,12 @@
 import { useState, useEffect, useRef } from 'react';
 import {
   Trash2, Image as ImageIcon, RefreshCw, UploadCloud, Check,
-  Copy, Eye, Search, X, AlertTriangle
+  Copy, Eye, Search, X, AlertTriangle, LayoutGrid, Grid, List,
+  CheckSquare, Square, Loader2, Edit2
 } from 'lucide-react';
-import { useLanguage } from '@/context/LanguageContext';
+import { useLanguage, parseBilingual } from '@/context/LanguageContext';
+import BilingualInput from '@/components/admin/BilingualInput';
+import { getImageWing } from '@/utils/gallery';
 
 const WINGS = [
   {
@@ -38,40 +41,16 @@ const WINGS = [
     icon: '🏛️',
     colorClasses: 'bg-emerald-50 border-emerald-300 text-emerald-900 font-bold shadow-xs ring-1 ring-emerald-200',
     tagBg: 'bg-emerald-100 text-emerald-900 border-emerald-200',
-    placeholder: 'যেমন: পাড়ার প্রধান রাস্তা ও ড্রেন সংস্কার কাজ'
+    placeholder: 'যেমন: পাড়ার অভ্যন্তরীণ রাস্তা ও পথবাতি সংস্কার কাজ'
   }
 ];
 
 function getWingForImage(img) {
-  if (!img) return 'Puja';
-  if (
-    img.program === 'Club & Sports' ||
-    img.program === 'Annual Sports' ||
-    img.program === 'Social Work' ||
-    img.program === 'Cultural Event' ||
-    img.category === 'Club' ||
-    img.category === 'Sports' ||
-    img.category === 'Blood Donation' ||
-    img.category === 'Cultural'
-  ) {
-    return 'Club';
-  }
-  if (
-    img.program === 'Unnayan Samiti' ||
-    img.category === 'Samiti' ||
-    img.category === 'Roads' ||
-    img.category === 'Greenery' ||
-    img.category === 'Sanitation' ||
-    img.category === 'Civic' ||
-    img.category === 'Meetings'
-  ) {
-    return 'Samiti';
-  }
-  return 'Puja';
+  return getImageWing(img);
 }
 
 export default function GalleryManagerPage() {
-  const { lang, b } = useLanguage();
+  const { lang, b, t } = useLanguage();
   const [images, setImages] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]); // array of { id, file, name, size, previewUrl }
   const [uploadProgress, setUploadProgress] = useState(null); // { current, total, percent }
@@ -84,9 +63,9 @@ export default function GalleryManagerPage() {
   // Form data: Title, default current year, date and time
   const [formData, setFormData] = useState({
     title: '',
-    year: new Date().getFullYear().toString(),
-    dateStr: new Date().toISOString().split('T')[0],
-    timeStr: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+    year: '2026',
+    dateStr: '',
+    timeStr: '',
     directUrl: ''
   });
 
@@ -99,8 +78,26 @@ export default function GalleryManagerPage() {
   const [copiedId, setCopiedId] = useState(null);
   const [previewModalImg, setPreviewModalImg] = useState(null);
 
+  // Laptop File Manager Style: View modes ('mini' | 'grid' | 'list') and Multi-Selection
+  const [viewMode, setViewMode] = useState('mini');
+  const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+
+  // Photo Caption Editing State
+  const [editingPhoto, setEditingPhoto] = useState(null);
+  const [editCaption, setEditCaption] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
+
   useEffect(() => {
     fetchImages();
+    const now = new Date();
+    setFormData(prev => ({
+      ...prev,
+      year: now.getFullYear().toString(),
+      dateStr: now.toISOString().split('T')[0],
+      timeStr: now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })
+    }));
   }, []);
 
   // Cleanup object URLs on unmount
@@ -127,9 +124,88 @@ export default function GalleryManagerPage() {
     }
   };
 
+  // Client-side image optimizer using Canvas (smoothly downscales multi-megabyte photos to web-ready JPEG)
+  const optimizeImageForWeb = async (file, maxDimension = 1920, quality = 0.85) => {
+    if (typeof window === 'undefined') return file;
+    if (!file.type?.startsWith('image/') || file.type === 'image/gif' || file.type === 'image/svg+xml') {
+      return file;
+    }
+    // Files already under 800KB do not need compression
+    if (file.size <= 800 * 1024) {
+      return file;
+    }
+
+    return new Promise((resolve) => {
+      try {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new window.Image();
+          img.onload = () => {
+            try {
+              let width = img.width;
+              let height = img.height;
+
+              if (width <= maxDimension && height <= maxDimension && file.size < 1.5 * 1024 * 1024) {
+                resolve(file);
+                return;
+              }
+
+              if (width > maxDimension || height > maxDimension) {
+                if (width > height) {
+                  height = Math.round((height * maxDimension) / width);
+                  width = maxDimension;
+                } else {
+                  width = Math.round((width * maxDimension) / height);
+                  height = maxDimension;
+                }
+              }
+
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              if (!ctx) {
+                resolve(file);
+                return;
+              }
+
+              ctx.drawImage(img, 0, 0, width, height);
+              canvas.toBlob(
+                (blob) => {
+                  if (!blob || blob.size >= file.size) {
+                    resolve(file);
+                  } else {
+                    const newName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                    const optimizedFile = new File([blob], newName, {
+                      type: 'image/jpeg',
+                      lastModified: Date.now()
+                    });
+                    resolve(optimizedFile);
+                  }
+                },
+                'image/jpeg',
+                quality
+              );
+            } catch {
+              resolve(file);
+            }
+          };
+          img.onerror = () => resolve(file);
+          img.src = e.target?.result;
+        };
+        reader.onerror = () => resolve(file);
+        reader.readAsDataURL(file);
+      } catch {
+        resolve(file);
+      }
+    });
+  };
+
   const addFiles = (fileList) => {
     if (!fileList || fileList.length === 0) return;
-    const incoming = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+    const incoming = Array.from(fileList).filter(f => 
+      f.type?.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp|avif)$/i.test(f.name)
+    );
     if (incoming.length === 0) {
       setMessage(b('শুধুমাত্র ইমেজ ফাইল (PNG, JPG, WebP) নির্বাচন করুন।', 'Only image files (PNG, JPG, WebP) are allowed.'));
       setTimeout(() => setMessage(''), 3000);
@@ -188,38 +264,104 @@ export default function GalleryManagerPage() {
 
     setUploading(true);
     setMessage('');
-    setUploadProgress({ current: 0, total: selectedFiles.length || 1, percent: 15 });
+    setUploadProgress({ current: 0, total: selectedFiles.length || 1, percent: 10 });
 
     try {
       const activeWing = WINGS.find(w => w.id === selectedWing) || WINGS[0];
-      const baseTitle = formData.title.trim() || activeWing.labelBn;
       const uploadYear = parseInt(formData.year, 10) || new Date().getFullYear();
 
+      // Resolve bilingual title with auto-translate if only one language is filled
+      let titleObj = parseBilingual(formData.title);
+      if (!titleObj.bn.trim() && !titleObj.en.trim()) {
+        titleObj = { bn: activeWing.labelBn, en: activeWing.labelEn };
+      } else {
+        try {
+          if (titleObj.bn.trim() && !titleObj.en.trim()) {
+            const trRes = await fetch('/api/admin/translate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: titleObj.bn.trim(), from: 'bn', to: 'en' })
+            });
+            const trData = await trRes.json().catch(() => ({}));
+            if (trData.success && trData.translatedText) titleObj.en = trData.translatedText;
+          } else if (titleObj.en.trim() && !titleObj.bn.trim()) {
+            const trRes = await fetch('/api/admin/translate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: titleObj.en.trim(), from: 'en', to: 'bn' })
+            });
+            const trData = await trRes.json().catch(() => ({}));
+            if (trData.success && trData.translatedText) titleObj.bn = trData.translatedText;
+          }
+        } catch (trErr) {
+          console.warn('Auto-translation gallery upload fallback:', trErr);
+        }
+      }
+
+      const formatPhotoTitle = (idx, total) => {
+        if (total <= 1) return JSON.stringify(titleObj);
+        return JSON.stringify({
+          bn: `${titleObj.bn} (${idx + 1})`,
+          en: `${titleObj.en} (${idx + 1})`
+        });
+      };
+
       if (selectedFiles.length > 0) {
-        // Upload batch of files to /api/admin/upload
-        const fileData = new FormData();
-        selectedFiles.forEach(item => {
-          fileData.append('files', item.file);
-        });
-        fileData.append('type', 'gallery');
+        const total = selectedFiles.length;
+        const uploadedUrls = [];
+        const failedFiles = [];
 
-        setUploadProgress({ current: 1, total: selectedFiles.length, percent: 50 });
+        // Upload files with real-time per-file progress reporting & automatic downscaling
+        for (let i = 0; i < total; i++) {
+          const item = selectedFiles[i];
+          const currentNum = i + 1;
+          const pct = Math.round((i / total) * 85) + 10;
+          setUploadProgress({ current: currentNum, total, percent: pct });
 
-        const uploadRes = await fetch('/api/admin/upload', {
-          method: 'POST',
-          body: fileData,
-        });
+          try {
+            // 1. Optimize image client-side if needed (prevents 15MB camera raw payloads)
+            const fileToUpload = await optimizeImageForWeb(item.file);
 
-        if (!uploadRes.ok) throw new Error('File upload failed');
-        const uploadResult = await uploadRes.json();
-        const uploadedUrls = uploadResult.urls || [uploadResult.url];
+            // 2. Upload file to /api/admin/upload
+            const fileData = new FormData();
+            fileData.append('file', fileToUpload);
+            fileData.append('type', 'gallery');
 
-        setUploadProgress({ current: selectedFiles.length, total: selectedFiles.length, percent: 85 });
+            const uploadRes = await fetch('/api/admin/upload', {
+              method: 'POST',
+              body: fileData,
+            });
+
+            const uploadResult = await uploadRes.json().catch(() => ({}));
+
+            if (!uploadRes.ok || !uploadResult.success) {
+              const errMsg = uploadResult.error || `Upload failed for ${item.name} (status ${uploadRes.status})`;
+              throw new Error(errMsg);
+            }
+
+            const url = uploadResult.url || (uploadResult.urls && uploadResult.urls[0]);
+            if (!url) {
+              throw new Error(`Server returned no image URL for ${item.name}`);
+            }
+
+            uploadedUrls.push(url);
+          } catch (fileErr) {
+            console.error(`Error uploading file ${item.name}:`, fileErr);
+            failedFiles.push({ name: item.name, reason: fileErr.message });
+          }
+        }
+
+        if (uploadedUrls.length === 0) {
+          const details = failedFiles.map(f => f.reason).filter(Boolean).join('; ') || 'Server error';
+          throw new Error(details);
+        }
+
+        setUploadProgress({ current: total, total, percent: 95 });
 
         // Save batch entries to /api/admin/gallery
         const batchItems = uploadedUrls.map((url, idx) => ({
           year: uploadYear,
-          title: selectedFiles.length > 1 ? `${baseTitle} (${idx + 1})` : baseTitle,
+          title: formatPhotoTitle(idx, uploadedUrls.length),
           program: activeWing.programName,
           category: activeWing.categoryName,
           src: url
@@ -231,9 +373,22 @@ export default function GalleryManagerPage() {
           body: JSON.stringify({ items: batchItems })
         });
 
-        if (!dbRes.ok) throw new Error('Database save failed');
+        const dbResult = await dbRes.json().catch(() => ({}));
+        if (!dbRes.ok || !dbResult.success) {
+          throw new Error(dbResult.error || b('গ্যালারি ডাটাবেস সেভ ব্যর্থ হয়েছে।', 'Failed to save gallery records in database.'));
+        }
 
-        setMessage(b(`${uploadedUrls.length}টি ছবি সফলভাবে ${activeWing.labelBn} গ্যালারিতে প্রকাশ করা হয়েছে!`, `Successfully published ${uploadedUrls.length} photos to ${activeWing.labelEn} gallery!`));
+        if (failedFiles.length > 0) {
+          setMessage(b(
+            `${uploadedUrls.length}টি ছবি সফলভাবে ${activeWing.labelBn} গ্যালারিতে প্রকাশ করা হয়েছে (${failedFiles.length}টি ছবি ব্যর্থ হয়েছে)।`,
+            `Published ${uploadedUrls.length} photos to ${activeWing.labelEn} gallery (${failedFiles.length} photos failed).`
+          ));
+        } else {
+          setMessage(b(
+            `${uploadedUrls.length}টি ছবি সফলভাবে ${activeWing.labelBn} গ্যালারিতে প্রকাশ করা হয়েছে!`,
+            `Successfully published ${uploadedUrls.length} photos to ${activeWing.labelEn} gallery!`
+          ));
+        }
         clearAllFiles();
       } else if (formData.directUrl.trim()) {
         const dbRes = await fetch('/api/admin/gallery', {
@@ -241,14 +396,17 @@ export default function GalleryManagerPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             year: uploadYear,
-            title: baseTitle,
+            title: JSON.stringify(titleObj),
             program: activeWing.programName,
             category: activeWing.categoryName,
             src: formData.directUrl.trim()
           })
         });
 
-        if (!dbRes.ok) throw new Error('Database save failed');
+        const dbResult = await dbRes.json().catch(() => ({}));
+        if (!dbRes.ok || !dbResult.success) {
+          throw new Error(dbResult.error || b('গ্যালারি ডাটাবেস সেভ ব্যর্থ হয়েছে।', 'Failed to save gallery record in database.'));
+        }
         setMessage(b('ছবি সফলভাবে গ্যালারিতে প্রকাশ করা হয়েছে!', 'Photo successfully published to gallery!'));
       }
 
@@ -261,7 +419,7 @@ export default function GalleryManagerPage() {
       setFilterWing(selectedWing === 'puja' ? 'Puja' : selectedWing === 'club' ? 'Club' : 'Samiti');
       fetchImages();
 
-      setTimeout(() => setMessage(''), 4500);
+      setTimeout(() => setMessage(''), 5000);
     } catch (err) {
       setMessage(b('আপলোড ব্যর্থ হয়েছে: ' + err.message, 'Upload failed: ' + err.message));
     } finally {
@@ -295,6 +453,127 @@ export default function GalleryManagerPage() {
     navigator.clipboard.writeText(src);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const toggleSelectPhoto = (id, e) => {
+    if (e) e.stopPropagation();
+    setSelectedPhotoIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  };
+
+  const selectAllPhotos = () => {
+    const allIds = filteredImages.map(img => img.id);
+    setSelectedPhotoIds(allIds);
+  };
+
+  const deselectAllPhotos = () => {
+    setSelectedPhotoIds([]);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedPhotoIds.length === 0) return;
+    setBulkDeleting(true);
+    try {
+      const res = await fetch('/api/admin/gallery', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: selectedPhotoIds })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        setMessage(b(
+          `${selectedPhotoIds.length}টি ছবি সফলভাবে মুছে ফেলা হয়েছে!`,
+          `Successfully deleted ${selectedPhotoIds.length} photos!`
+        ));
+        setSelectedPhotoIds([]);
+        setIsBulkDeleteModalOpen(false);
+        fetchImages();
+        setTimeout(() => setMessage(''), 4000);
+      } else {
+        setMessage(b('মুছতে ব্যর্থ হয়েছে: ' + (data.error || 'Server error'), 'Failed to delete: ' + (data.error || 'Server error')));
+      }
+    } catch (err) {
+      setMessage(b('ত্রুটি: ' + err.message, 'Error: ' + err.message));
+    } finally {
+      setBulkDeleting(false);
+      setIsBulkDeleteModalOpen(false);
+    }
+  };
+
+  const startEditCaption = (photo) => {
+    setEditingPhoto(photo);
+    const parsed = parseBilingual(photo.title);
+    setEditCaption(JSON.stringify(parsed));
+  };
+
+  const cancelEditCaption = () => {
+    setEditingPhoto(null);
+    setEditCaption('');
+    setSavingEdit(false);
+  };
+
+  const handleSaveCaption = async (e) => {
+    if (e) e.preventDefault();
+    if (!editingPhoto) return;
+
+    let titleObj = parseBilingual(editCaption);
+    if (!titleObj.bn.trim() && !titleObj.en.trim()) {
+      setMessage(b('অনুগ্রহ করে ছবির শিরোনাম লিখুন।', 'Please enter photo caption.'));
+      return;
+    }
+
+    setSavingEdit(true);
+
+    // Auto-translate missing language before updating
+    try {
+      if (titleObj.bn.trim() && !titleObj.en.trim()) {
+        const trRes = await fetch('/api/admin/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: titleObj.bn.trim(), from: 'bn', to: 'en' })
+        });
+        const trData = await trRes.json().catch(() => ({}));
+        if (trData.success && trData.translatedText) titleObj.en = trData.translatedText;
+      } else if (titleObj.en.trim() && !titleObj.bn.trim()) {
+        const trRes = await fetch('/api/admin/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: titleObj.en.trim(), from: 'en', to: 'bn' })
+        });
+        const trData = await trRes.json().catch(() => ({}));
+        if (trData.success && trData.translatedText) titleObj.bn = trData.translatedText;
+      }
+    } catch (trErr) {
+      console.warn('Auto translation caption fallback:', trErr);
+    }
+
+    const finalTitle = JSON.stringify(titleObj);
+
+    try {
+      const res = await fetch('/api/admin/gallery', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingPhoto.id,
+          title: finalTitle
+        })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        setMessage(b('ছবির শিরোনাম সফলভাবে আপডেট করা হয়েছে!', 'Photo caption updated successfully!'));
+        setEditingPhoto(null);
+        setEditCaption('');
+        fetchImages();
+        setTimeout(() => setMessage(''), 3500);
+      } else {
+        setMessage(b('আপডেট ব্যর্থ হয়েছে: ' + (data.error || 'Server error'), 'Failed to update: ' + (data.error || 'Server error')));
+      }
+    } catch (err) {
+      setMessage(b('ত্রুটি: ' + err.message, 'Error: ' + err.message));
+    } finally {
+      setSavingEdit(false);
+    }
   };
 
   const filteredImages = images.filter(img => {
@@ -365,8 +644,8 @@ export default function GalleryManagerPage() {
               <UploadCloud className="w-4 h-4 text-rose-600" />
               <span>{b('নতুন ছবি আপলোড ফর্ম', 'Upload New Image')}</span>
             </span>
-            <span className="text-[11px] font-mono text-stone-400">
-              {formData.dateStr} • {formData.timeStr}
+            <span className="text-[11px] font-mono text-stone-400" suppressHydrationWarning>
+              {formData.dateStr && formData.timeStr ? `${formData.dateStr} • ${formData.timeStr}` : ''}
             </span>
           </div>
 
@@ -399,20 +678,15 @@ export default function GalleryManagerPage() {
               </p>
             </div>
 
-            {/* 2. IMAGE TITLE FIELD */}
-            <div>
-              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                {b('ছবির শিরোনাম', 'Image Title')} <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder={activeWingObj.placeholder}
-                className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon outline-none"
-              />
-            </div>
+            {/* 2. IMAGE TITLE FIELD (Bilingual with Auto-Translate) */}
+            <BilingualInput
+              label={b('ছবির শিরোনাম / ক্যাপশন', 'Photo Title / Caption')}
+              value={formData.title}
+              onChange={(val) => setFormData(prev => ({ ...prev, title: val }))}
+              placeholderBn={activeWingObj.placeholder || 'যেমন: মণ্ডপ সজ্জা ও প্রতিমা দর্শন'}
+              placeholderEn="e.g. Pandal Decoration & Idol Darshan"
+              helpText={b('বাংলা বা ইংরেজিতে লিখলে অটো-অনুবাদ ব্যবহার করে অন্য ভাষা তৈরি হবে।', 'Type in Bengali or English; click Auto-Translate to sync.')}
+            />
 
             {/* 3. AUTO DEFAULT YEAR, DATE & TIME */}
             <div className="grid grid-cols-3 gap-2.5 items-center">
@@ -514,7 +788,9 @@ export default function GalleryManagerPage() {
                     {selectedFiles.map((item, idx) => (
                       <div
                         key={item.id}
-                        className="group relative aspect-square rounded-xl overflow-hidden bg-black/5 border border-stone-200 shadow-2xs flex flex-col justify-between"
+                        onClick={() => setPreviewModalImg({ src: item.previewUrl, title: item.name })}
+                        className="group relative aspect-square rounded-xl overflow-hidden bg-black/5 border border-stone-200 shadow-2xs flex flex-col justify-between cursor-pointer hover:ring-2 hover:ring-brand-maroon/30 transition-all"
+                        title={b('বড় করে দেখতে ক্লিক করুন', 'Click to preview full size')}
                       >
                         <img
                           src={item.previewUrl}
@@ -532,10 +808,10 @@ export default function GalleryManagerPage() {
                             e.stopPropagation();
                             removeFile(item.id);
                           }}
-                          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center shadow-xs transition-transform active:scale-90 cursor-pointer"
+                          className="absolute top-1 right-1 w-7 h-7 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center shadow-xs transition-transform active:scale-90 cursor-pointer"
                           title={b('বাদ দিন', 'Remove photo')}
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-3.5 h-3.5" />
                         </button>
                         {/* Size Pill */}
                         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-1.5 py-1">
@@ -629,66 +905,277 @@ export default function GalleryManagerPage() {
           </form>
         </div>
 
-        {/* ═══ Right Column: Published Gallery Grid (Newest First) ═══ */}
-        <div className="lg:col-span-7 bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-4">
+        {/* ═══ Right Column: Published Gallery Grid (File Manager Style View Modes & Multi-Select) ═══ */}
+        <div className="lg:col-span-7 bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-xs space-y-3.5">
+          {/* Top Bar: Title, Search & File Manager View Switcher */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-100">
             <div>
-              <h2 className="text-sm font-bold text-stone-900">
-                {b(`প্রকাশিত ছবি (${filteredImages.length})`, `Published Photos (${filteredImages.length})`)}
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-bold text-stone-900">
+                  {b(`প্রকাশিত ছবি (${filteredImages.length})`, `Published Photos (${filteredImages.length})`)}
+                </h2>
+                {selectedPhotoIds.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-full bg-brand-maroon text-white text-[10px] font-bold">
+                    {b(`${selectedPhotoIds.length} নির্বাচিত`, `${selectedPhotoIds.length} selected`)}
+                  </span>
+                )}
+              </div>
               <p className="text-[11px] text-stone-400">
                 {b('সর্বশেষ আপলোড করা ছবি সর্বদা প্রথমে থাকে', 'Latest uploaded photos appear first')}
               </p>
             </div>
 
-            {/* Search */}
-            <div className="relative w-full sm:w-44">
-              <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={b('ছবি খুঁজুন...', 'Search photos...')}
-                className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-7 pr-2.5 py-1.5 text-xs focus:bg-white focus:ring-1 focus:ring-brand-maroon outline-none"
-              />
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Search */}
+              <div className="relative w-full sm:w-36">
+                <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={b('খুঁজুন...', 'Search...')}
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl pl-7 pr-2.5 py-1 text-xs focus:bg-white focus:ring-1 focus:ring-brand-maroon outline-none"
+                />
+              </div>
+
+              {/* Laptop File Manager View Mode Switcher */}
+              <div className="flex items-center bg-stone-100 p-0.5 rounded-xl border border-stone-200/80 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('mini')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    viewMode === 'mini'
+                      ? 'bg-white text-stone-900 shadow-2xs font-bold'
+                      : 'text-stone-500 hover:text-stone-900'
+                  }`}
+                  title={b('মিনি ভিউ (ল্যাপটপ ফাইল ম্যানেজার)', 'Mini View (Compact File Manager)')}
+                >
+                  <Grid className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline text-[11px]">{b('মিনি', 'Mini')}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setViewMode('grid')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    viewMode === 'grid'
+                      ? 'bg-white text-stone-900 shadow-2xs font-bold'
+                      : 'text-stone-500 hover:text-stone-900'
+                  }`}
+                  title={b('গ্রিড ভিউ (কার্ড)', 'Grid View (Cards)')}
+                >
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline text-[11px]">{b('গ্রিড', 'Grid')}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setViewMode('list')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    viewMode === 'list'
+                      ? 'bg-white text-stone-900 shadow-2xs font-bold'
+                      : 'text-stone-500 hover:text-stone-900'
+                  }`}
+                  title={b('তালিকা ভিউ (ফাইল ডিটেইলস)', 'List View (File Details)')}
+                >
+                  <List className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline text-[11px]">{b('তালিকা', 'List')}</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Wing Filter Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-stone-100">
-            {[
-              { id: 'ALL', bn: 'সকল ছবি', en: 'All Photos', count: images.length },
-              { id: 'Puja', bn: '🌺 শারদীয়া পূজা', en: '🌺 Durga Puja', count: images.filter(g => getWingForImage(g) === 'Puja').length },
-              { id: 'Club', bn: '🏆 সোনালী সঙ্ঘ', en: '🏆 Sonali Club', count: images.filter(g => getWingForImage(g) === 'Club').length },
-              { id: 'Samiti', bn: '🏛️ উন্নয়ন সমিতি', en: '🏛️ Unnayan Samiti', count: images.filter(g => getWingForImage(g) === 'Samiti').length },
-            ].map(tab => (
+          {/* Wing Filter Tabs & Select All Quick Button */}
+          <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 border-b border-stone-100 flex-wrap sm:flex-nowrap">
+            <div className="flex items-center gap-1.5 overflow-x-auto">
+              {[
+                { id: 'ALL', bn: 'সকল', en: 'All', count: images.length },
+                { id: 'Puja', bn: '🌺 পূজা', en: '🌺 Puja', count: images.filter(g => getWingForImage(g) === 'Puja').length },
+                { id: 'Club', bn: '🏆 ক্লাব', en: '🏆 Club', count: images.filter(g => getWingForImage(g) === 'Club').length },
+                { id: 'Samiti', bn: '🏛️ সমিতি', en: '🏛️ Samiti', count: images.filter(g => getWingForImage(g) === 'Samiti').length },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setFilterWing(tab.id)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                    filterWing === tab.id
+                      ? 'bg-stone-900 text-white shadow-xs font-bold'
+                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                  }`}
+                >
+                  <span>{lang === 'bn' ? tab.bn : tab.en}</span>
+                  <span className="ml-1 opacity-70">({tab.count})</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Quick Select All / Deselect Toggle */}
+            {filteredImages.length > 0 && (
               <button
-                key={tab.id}
                 type="button"
-                onClick={() => setFilterWing(tab.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
-                  filterWing === tab.id
-                    ? 'bg-stone-900 text-white shadow-xs font-bold'
-                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                }`}
+                onClick={selectedPhotoIds.length === filteredImages.length ? deselectAllPhotos : selectAllPhotos}
+                className="text-[11px] font-bold text-stone-600 hover:text-brand-maroon flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer shrink-0"
               >
-                <span>{lang === 'bn' ? tab.bn : tab.en}</span>
-                <span className="ml-1 opacity-70">({tab.count})</span>
+                {selectedPhotoIds.length === filteredImages.length ? (
+                  <>
+                    <CheckSquare className="w-3.5 h-3.5 text-brand-maroon" />
+                    <span>{b('সব বাদ দিন', 'Deselect All')}</span>
+                  </>
+                ) : (
+                  <>
+                    <Square className="w-3.5 h-3.5 text-stone-400" />
+                    <span>{b('সব নির্বাচন', 'Select All')}</span>
+                  </>
+                )}
               </button>
-            ))}
+            )}
           </div>
 
-          {/* Image Grid (Scrollable, newest first) */}
-          <div className="overflow-y-auto max-h-[680px] pr-1">
+          {/* ═══ Multi-Select Floating / Sticky Batch Action Bar ═══ */}
+          {selectedPhotoIds.length > 0 && (
+            <div className="p-2.5 px-3 rounded-xl bg-rose-50/80 border border-brand-maroon/30 flex items-center justify-between gap-3 shadow-2xs animate-in fade-in duration-200">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-brand-maroon animate-pulse" />
+                <span className="text-xs font-bold text-stone-900">
+                  {b(`${selectedPhotoIds.length}টি ছবি নির্বাচিত`, `${selectedPhotoIds.length} photos selected`)}
+                </span>
+                <span className="text-stone-300">|</span>
+                <button
+                  type="button"
+                  onClick={deselectAllPhotos}
+                  className="text-[11px] font-semibold text-stone-500 hover:text-stone-800 hover:underline cursor-pointer"
+                >
+                  {b('বাতিল', 'Cancel')}
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsBulkDeleteModalOpen(true)}
+                  className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>{b(`একসাথে মুছুন (${selectedPhotoIds.length})`, `Delete (${selectedPhotoIds.length})`)}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ═══ Photo Viewports (Mini View vs Grid vs Details List) ═══ */}
+          <div className="overflow-y-auto max-h-[640px] pr-1">
             {filteredImages.length === 0 ? (
               <div className="text-center py-20 text-stone-400 text-xs">
                 <ImageIcon className="w-8 h-8 mx-auto mb-2 opacity-30" />
                 {b('কোনো ছবি পাওয়া যায়নি।', 'No images found.')}
               </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            ) : viewMode === 'mini' ? (
+              /* ─── 1. MINI VIEW: High-density laptop file manager icons ─── */
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6 gap-2">
                 {filteredImages.map((img) => {
                   const wing = getWingForImage(img);
+                  const isSelected = selectedPhotoIds.includes(img.id);
+                  const tagIcon = wing === 'Club' ? '🏆' : wing === 'Samiti' ? '🏛️' : '🌺';
+
+                  return (
+                    <div
+                      key={img.id}
+                      onClick={() => toggleSelectPhoto(img.id)}
+                      className={`group relative aspect-square rounded-xl overflow-hidden border cursor-pointer transition-all ${
+                        isSelected
+                          ? 'ring-2 ring-brand-maroon border-brand-maroon shadow-sm bg-rose-50/20'
+                          : 'border-stone-200 bg-stone-100 hover:border-brand-maroon/60 hover:shadow-2xs'
+                      }`}
+                      title={t(img.title) || 'Photo'}
+                    >
+                      <img
+                        src={img.src}
+                        alt={t(img.title) || 'Photo'}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                        loading="lazy"
+                      />
+
+                      {/* Multi-select Checkbox (top-left) */}
+                      <div
+                        onClick={(e) => toggleSelectPhoto(img.id, e)}
+                        className={`absolute top-1 left-1 z-10 w-5 h-5 rounded-md flex items-center justify-center transition-all ${
+                          isSelected
+                            ? 'bg-brand-maroon text-white shadow-xs'
+                            : 'bg-black/50 text-white opacity-0 group-hover:opacity-100 backdrop-blur-xs hover:bg-black/80'
+                        }`}
+                      >
+                        {isSelected ? <Check className="w-3 h-3 stroke-[3]" /> : <Square className="w-3 h-3 text-white/80" />}
+                      </div>
+
+                      {/* Wing Badge (top-right) */}
+                      <span className="absolute top-1 right-1 text-[10px] drop-shadow-sm pointer-events-none">
+                        {tagIcon}
+                      </span>
+
+                      {/* Hover Overlay with Preview, Edit & Copy */}
+                      <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 p-1">
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); setPreviewModalImg(img); }}
+                          className="w-6 h-6 rounded-md bg-white/95 text-stone-800 hover:bg-white hover:scale-110 flex items-center justify-center shadow-xs cursor-pointer"
+                          title={b('বড় করে দেখুন', 'Zoom Preview')}
+                        >
+                          <Eye className="w-3 h-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); startEditCaption(img); }}
+                          className="w-6 h-6 rounded-md bg-white/95 text-brand-maroon hover:bg-rose-50 hover:scale-110 flex items-center justify-center shadow-xs cursor-pointer"
+                          title={b('শিরোনাম সম্পাদনা', 'Edit Caption')}
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); copyCdnUrl(img.src, img.id); }}
+                          className="w-6 h-6 rounded-md bg-white/95 text-stone-800 hover:bg-white hover:scale-110 flex items-center justify-center shadow-xs cursor-pointer"
+                          title={b('লিংক কপি', 'Copy URL')}
+                        >
+                          {copiedId === img.id ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); setDeleteConfirmId(img.id); }}
+                          className="w-6 h-6 rounded-md bg-white/95 text-rose-600 hover:bg-rose-50 hover:scale-110 flex items-center justify-center shadow-xs cursor-pointer"
+                          title={b('মুছুন', 'Delete')}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+
+                      {/* Compact Bottom Gradient Title */}
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-1 px-1.5 pt-3 pointer-events-none">
+                        <p className="text-[10px] font-semibold text-white truncate leading-tight">
+                          {t(img.title) || 'Photo'}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : viewMode === 'list' ? (
+              /* ─── 2. LIST VIEW: Laptop file manager details table ─── */
+              <div className="divide-y divide-stone-100 border border-stone-200 rounded-xl overflow-hidden bg-white">
+                {/* List Header */}
+                <div className="bg-stone-50 p-2.5 px-3 flex items-center gap-3 text-[11px] font-bold text-stone-500 uppercase tracking-wider select-none">
+                  <span className="w-5 text-center">✓</span>
+                  <span className="w-10 text-center">{b('ছবি', 'Photo')}</span>
+                  <span className="flex-1 min-w-0">{b('শিরোনাম ও বিবরণ', 'Title & Filename')}</span>
+                  <span className="w-24 hidden sm:block">{b('শাখা', 'Wing')}</span>
+                  <span className="w-12 text-center hidden md:block">{b('সাল', 'Year')}</span>
+                  <span className="w-24 text-right">{b('অ্যাকশন', 'Actions')}</span>
+                </div>
+
+                {/* Rows */}
+                {filteredImages.map((img) => {
+                  const wing = getWingForImage(img);
+                  const isSelected = selectedPhotoIds.includes(img.id);
                   const tagInfo = wing === 'Club'
                     ? { icon: '🏆', text: b('ক্লাব', 'Club'), bg: 'bg-amber-100 text-amber-900 border-amber-200' }
                     : wing === 'Samiti'
@@ -698,10 +1185,101 @@ export default function GalleryManagerPage() {
                   return (
                     <div
                       key={img.id}
-                      className="group bg-white rounded-xl border border-stone-200 overflow-hidden shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between"
+                      onClick={() => toggleSelectPhoto(img.id)}
+                      className={`p-2 px-3 flex items-center gap-3 transition-colors hover:bg-stone-50/80 cursor-pointer ${
+                        isSelected ? 'bg-rose-50/50' : ''
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={(e) => toggleSelectPhoto(img.id, e)}
+                        className="w-5 h-5 flex items-center justify-center cursor-pointer shrink-0"
+                      >
+                        {isSelected ? <CheckSquare className="w-4 h-4 text-brand-maroon" /> : <Square className="w-4 h-4 text-stone-300 hover:text-stone-500" />}
+                      </button>
+
+                      <div className="w-10 h-10 rounded-lg overflow-hidden bg-stone-100 shrink-0 border border-stone-200">
+                        <img src={img.src} alt={img.title} className="w-full h-full object-cover" loading="lazy" />
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-stone-900 truncate">
+                          {t(img.title) || 'Untitled Photo'}
+                        </p>
+                        <p className="text-[10px] text-stone-400 font-mono truncate">
+                          {img.src.split('/').pop()}
+                        </p>
+                      </div>
+
+                      <div className="w-24 hidden sm:block shrink-0">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${tagInfo.bg}`}>
+                          {tagInfo.icon} {tagInfo.text}
+                        </span>
+                      </div>
+
+                      <span className="w-12 text-center font-mono text-xs text-stone-500 hidden md:block shrink-0">
+                        {img.year}
+                      </span>
+
+                      <div className="w-24 flex items-center justify-end gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewModalImg(img)}
+                          className="p-1.5 rounded-lg text-stone-500 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
+                          title={b('বড় করে দেখুন', 'Zoom Preview')}
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => startEditCaption(img)}
+                          className="p-1.5 rounded-lg text-stone-500 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
+                          title={b('শিরোনাম সম্পাদনা', 'Edit Caption')}
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => copyCdnUrl(img.src, img.id)}
+                          className="p-1.5 rounded-lg text-stone-500 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
+                          title={b('লিংক কপি', 'Copy URL')}
+                        >
+                          {copiedId === img.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteConfirmId(img.id)}
+                          className="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                          title={b('মুছুন', 'Delete')}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              /* ─── 3. GRID VIEW: Standard Card Grid ─── */
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {filteredImages.map((img) => {
+                  const wing = getWingForImage(img);
+                  const isSelected = selectedPhotoIds.includes(img.id);
+                  const tagInfo = wing === 'Club'
+                    ? { icon: '🏆', text: b('ক্লাব', 'Club'), bg: 'bg-amber-100 text-amber-900 border-amber-200' }
+                    : wing === 'Samiti'
+                    ? { icon: '🏛️', text: b('সমিতি', 'Samiti'), bg: 'bg-emerald-100 text-emerald-900 border-emerald-200' }
+                    : { icon: '🌺', text: b('পূজা', 'Puja'), bg: 'bg-rose-100 text-rose-900 border-rose-200' };
+
+                  return (
+                    <div
+                      key={img.id}
+                      className={`group bg-white rounded-xl border overflow-hidden shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between ${
+                        isSelected ? 'ring-2 ring-brand-maroon border-brand-maroon' : 'border-stone-200'
+                      }`}
                     >
                       {/* Thumbnail Container */}
-                      <div className="relative aspect-4/3 bg-stone-100 overflow-hidden">
+                      <div className="relative aspect-4/3 bg-stone-100 overflow-hidden cursor-pointer" onClick={() => toggleSelectPhoto(img.id)}>
                         <img
                           src={img.src}
                           alt={img.title || 'Photo'}
@@ -709,50 +1287,70 @@ export default function GalleryManagerPage() {
                           loading="lazy"
                         />
 
+                        {/* Checkbox (top-left) */}
+                        <div
+                          onClick={(e) => toggleSelectPhoto(img.id, e)}
+                          className={`absolute top-2 left-2 z-10 w-6 h-6 rounded-lg flex items-center justify-center transition-all ${
+                            isSelected
+                              ? 'bg-brand-maroon text-white shadow-xs'
+                              : 'bg-black/50 text-white opacity-0 group-hover:opacity-100 backdrop-blur-xs hover:bg-black/80'
+                          }`}
+                        >
+                          {isSelected ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : <Square className="w-3.5 h-3.5 text-white/80" />}
+                        </div>
+
                         {/* Top Badge */}
-                        <div className="absolute top-1.5 left-1.5 flex items-center gap-1">
+                        <div className="absolute top-2 right-2 flex items-center gap-1">
                           <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${tagInfo.bg}`}>
                             {tagInfo.icon} {tagInfo.text}
                           </span>
                         </div>
 
-                        {/* Overlay with Preview and Copy (Accessible on Mobile) */}
-                        <div className="absolute inset-0 bg-black/40 opacity-0 sm:opacity-0 group-hover:opacity-100 hover:opacity-100 focus-within:opacity-100 transition-opacity flex items-center justify-center gap-1.5 sm:gap-2 p-2">
+                        {/* Overlay with Preview, Edit, Copy and Delete */}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-2" onClick={(e) => e.stopPropagation()}>
                           <button
                             type="button"
                             onClick={() => setPreviewModalImg(img)}
-                            className="p-2 sm:p-1.5 rounded-xl bg-white/95 text-stone-800 hover:bg-white hover:scale-110 transition-all cursor-pointer shadow-xs min-w-[36px] min-h-[36px] flex items-center justify-center"
+                            className="w-8 h-8 rounded-xl bg-white/95 text-stone-800 hover:bg-white hover:scale-110 transition-all cursor-pointer shadow-xs flex items-center justify-center"
                             title={b('বড় করে দেখুন', 'Preview Zoom')}
                           >
-                            <Eye className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => startEditCaption(img)}
+                            className="w-8 h-8 rounded-xl bg-white/95 text-brand-maroon hover:bg-rose-50 hover:scale-110 transition-all cursor-pointer shadow-xs flex items-center justify-center"
+                            title={b('শিরোনাম সম্পাদনা', 'Edit Caption')}
+                          >
+                            <Edit2 className="w-4 h-4" />
                           </button>
                           <button
                             type="button"
                             onClick={() => copyCdnUrl(img.src, img.id)}
-                            className="p-2 sm:p-1.5 rounded-xl bg-white/95 text-stone-800 hover:bg-white hover:scale-110 transition-all cursor-pointer shadow-xs min-w-[36px] min-h-[36px] flex items-center justify-center"
+                            className="w-8 h-8 rounded-xl bg-white/95 text-stone-800 hover:bg-white hover:scale-110 transition-all cursor-pointer shadow-xs flex items-center justify-center"
                             title={b('লিংক কপি', 'Copy Link')}
                           >
                             {copiedId === img.id ? (
-                              <Check className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-emerald-600" />
+                              <Check className="w-4 h-4 text-emerald-600" />
                             ) : (
-                              <Copy className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                              <Copy className="w-4 h-4" />
                             )}
                           </button>
                           <button
                             type="button"
                             onClick={() => setDeleteConfirmId(img.id)}
-                            className="p-2 sm:p-1.5 rounded-xl bg-white/95 text-rose-600 hover:bg-rose-50 hover:scale-110 transition-all cursor-pointer shadow-xs min-w-[36px] min-h-[36px] flex items-center justify-center"
+                            className="w-8 h-8 rounded-xl bg-white/95 text-rose-600 hover:bg-rose-50 hover:scale-110 transition-all cursor-pointer shadow-xs flex items-center justify-center"
                             title={b('মুছুন', 'Delete Photo')}
                           >
-                            <Trash2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
 
                       {/* Info Footer */}
                       <div className="p-2.5">
-                        <h4 className="text-xs font-bold text-stone-800 truncate" title={img.title}>
-                          {img.title || 'Untitled Photo'}
+                        <h4 className="text-xs font-bold text-stone-800 truncate" title={t(img.title)}>
+                          {t(img.title) || 'Untitled Photo'}
                         </h4>
                         <div className="flex items-center justify-between mt-1 text-[10px] text-stone-400 font-mono">
                           <span>{img.year}</span>
@@ -800,6 +1398,53 @@ export default function GalleryManagerPage() {
         </div>
       )}
 
+      {/* Bulk Delete Confirmation Modal */}
+      {isBulkDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-5 max-w-sm w-full shadow-xl border border-stone-200 text-center space-y-3 animate-in fade-in duration-150">
+            <div className="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-stone-900">
+                {b(`${selectedPhotoIds.length}টি ছবি মুছে ফেলতে চান?`, `Delete ${selectedPhotoIds.length} photos?`)}
+              </h3>
+              <p className="text-xs text-stone-500 mt-1">
+                {b(
+                  `নির্বাচিত ${selectedPhotoIds.length}টি ছবি গ্যালারি ও ডাটাবেস থেকে স্থায়ীভাবে মুছে যাবে। এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না।`,
+                  `All ${selectedPhotoIds.length} selected photos will be permanently deleted. This action cannot be undone.`
+                )}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setIsBulkDeleteModalOpen(false)}
+                disabled={bulkDeleting}
+                className="flex-1 py-2 rounded-xl border border-stone-200 text-xs font-semibold text-stone-700 hover:bg-stone-50 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {b('বাতিল', 'Cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkDelete}
+                disabled={bulkDeleting}
+                className="flex-1 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+              >
+                {bulkDeleting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>{b('মুছছে...', 'Deleting...')}</span>
+                  </>
+                ) : (
+                  <span>{b('সব মুছে ফেলুন', 'Delete All')}</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Fullsize Preview Modal */}
       {previewModalImg && (
         <div
@@ -811,7 +1456,7 @@ export default function GalleryManagerPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-3 bg-stone-900 text-white flex items-center justify-between">
-              <span className="text-xs font-bold truncate">{previewModalImg.title}</span>
+              <span className="text-xs font-bold truncate">{t(previewModalImg.title)}</span>
               <button
                 onClick={() => setPreviewModalImg(null)}
                 className="text-stone-400 hover:text-white p-1 rounded-lg cursor-pointer"
@@ -822,9 +1467,78 @@ export default function GalleryManagerPage() {
             <div className="bg-black flex items-center justify-center max-h-[75vh]">
               <img
                 src={previewModalImg.src}
-                alt={previewModalImg.title}
+                alt={t(previewModalImg.title)}
                 className="max-h-[75vh] w-auto object-contain"
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ Edit Caption Modal ═══ */}
+      {editingPhoto && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-5 sm:p-6 max-w-lg w-full shadow-2xl border border-stone-200 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-brand-maroon inline-block" />
+                <h3 className="font-bold text-stone-900 text-sm sm:text-base">
+                  {b('ছবির শিরোনাম ও ক্যাপশন সম্পাদনা', 'Edit Photo Title / Caption')}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={cancelEditCaption}
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Thumbnail Preview */}
+            <div className="flex items-center gap-3 p-2.5 bg-stone-50 rounded-xl border border-stone-200">
+              <img
+                src={editingPhoto.src}
+                alt="Thumbnail"
+                className="w-14 h-14 rounded-lg object-cover border border-stone-200 shrink-0"
+              />
+              <div className="min-w-0 text-xs space-y-0.5">
+                <p className="font-bold text-stone-800 truncate">{t(editingPhoto.title)}</p>
+                <p className="text-stone-400 font-mono text-[11px] truncate">{editingPhoto.src.split('/').pop()}</p>
+                <span className="inline-block px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 font-bold text-[10px]">
+                  {editingPhoto.year}
+                </span>
+              </div>
+            </div>
+
+            {/* Bilingual Caption Input with 1-click Auto-Translate */}
+            <BilingualInput
+              label={b('ছবির শিরোনাম / ক্যাপশন', 'Photo Title / Caption')}
+              value={editCaption}
+              onChange={(val) => setEditCaption(val)}
+              placeholderBn="যেমন: ২০২৬ মণ্ডপ সজ্জা ও আলোকসজ্জা"
+              placeholderEn="e.g. 2026 Pandal Decoration & Lighting"
+              helpText={b('বাংলা বা ইংরেজি যেকোনো একটি লিখুন, এরপর অটো-অনুবাদ ব্যবহার করে অন্য ভাষা তৈরি করুন।', 'Type in Bengali or English; use Auto-Translate to sync.')}
+            />
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={cancelEditCaption}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer"
+              >
+                {b('বাতিল', 'Cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveCaption}
+                disabled={savingEdit}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-brand-maroon text-white hover:bg-[#881337] transition-all shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {savingEdit && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
+                <span>{savingEdit ? b('সংরক্ষণ হচ্ছে...', 'Saving...') : b('সংরক্ষণ করুন', 'Save Changes')}</span>
+              </button>
             </div>
           </div>
         </div>

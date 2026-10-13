@@ -156,17 +156,65 @@ export async function POST(request) {
   }
 }
 
-export async function DELETE(request) {
+export async function PUT(request) {
   try {
-    const { id } = await request.json();
+    const data = await request.json();
+    const id = parseInt(data.id, 10);
     if (!id) {
       return NextResponse.json({ error: 'Image ID is required' }, { status: 400 });
     }
-    const numId = parseInt(id, 10);
+
+    const updateData = {};
+    if (data.title !== undefined) updateData.title = String(data.title).trim();
+    if (data.year !== undefined) updateData.year = parseInt(data.year, 10) || new Date().getFullYear();
+    if (data.program !== undefined) updateData.program = data.program;
+    if (data.category !== undefined) updateData.category = data.category;
+
+    let updatedImage = null;
+    try {
+      updatedImage = await prisma.gallery.update({
+        where: { id },
+        data: updateData
+      });
+    } catch (dbErr) {
+      console.warn('Gallery DB update fallback:', dbErr.message);
+      updatedImage = { id, ...updateData };
+    }
+
+    // Sync seed-data.json
+    try {
+      const seed = readSeedData();
+      if (Array.isArray(seed.gallery)) {
+        seed.gallery = seed.gallery.map(item => item.id === id ? { ...item, ...updateData } : item);
+        writeSeedData(seed);
+      }
+    } catch (seedErr) {
+      console.warn('Failed to update seed-data.json:', seedErr.message);
+    }
+
+    return NextResponse.json({ success: true, image: updatedImage });
+  } catch (error) {
+    console.error('Gallery update error:', error);
+    return NextResponse.json({ error: 'Failed to update gallery image: ' + error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    const body = await request.json().catch(() => ({}));
+    const rawIds = Array.isArray(body.ids)
+      ? body.ids
+      : (body.id !== undefined && body.id !== null ? [body.id] : []);
+
+    const targetIds = rawIds.map(i => parseInt(i, 10)).filter(i => !isNaN(i));
+
+    if (targetIds.length === 0) {
+      return NextResponse.json({ error: 'Image ID or IDs array is required' }, { status: 400 });
+    }
 
     try {
-      await prisma.gallery.delete({
-        where: { id: numId }
+      await prisma.gallery.deleteMany({
+        where: { id: { in: targetIds } }
       });
     } catch (dbErr) {
       console.warn('Gallery DB delete error:', dbErr.message);
@@ -176,16 +224,17 @@ export async function DELETE(request) {
     try {
       const seed = readSeedData();
       if (Array.isArray(seed.gallery)) {
-        seed.gallery = seed.gallery.filter(g => g.id !== numId);
+        const idSet = new Set(targetIds);
+        seed.gallery = seed.gallery.filter(g => !idSet.has(g.id));
         writeSeedData(seed);
       }
     } catch (seedErr) {
-      console.warn('Failed to delete gallery image from seed-data.json:', seedErr.message);
+      console.warn('Failed to delete gallery image(s) from seed-data.json:', seedErr.message);
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, count: targetIds.length });
   } catch (error) {
     console.error('Gallery delete error:', error);
-    return NextResponse.json({ error: 'Failed to delete gallery image' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete gallery image(s)' }, { status: 500 });
   }
 }

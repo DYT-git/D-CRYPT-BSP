@@ -30,10 +30,10 @@ function writeSeedData(data) {
 const DEFAULT_SETTINGS = {
   heroHeading: 'শারদ প্রাতে মায়ের আগমন...',
   heroSubHeading: 'আনন্দ আর আলোয় সাজুক ভুবন।',
-  heroTagline: '🍁 শরতের নীল আকাশ আর শিউলির গন্ধে মেতেছে বাঁশদ্রোণী... সোনালী পার্কে মা আসছেন বছর ঘুরে! ৭৪তম বর্ষের মহা উৎসবে আপনাদের সাদর আমন্ত্রণ 🙏',
+  heroTagline: '🍁 শরতের নীল আকাশ আর শিউলির গন্ধে মেতেছে বাঁশদ্রোণী... সোনালী পার্কে মা আসছেন বছর ঘুরে! এই মহা উৎসবে আপনাদের সাদর আমন্ত্রণ 🙏',
   countdownDate: '2026-10-17T00:00:00+05:30',
   countdownHeading: 'মহাষ্টমী আসতে আর মাত্র',
-  currentYear: '74',
+  currentYear: '',
   primaryColor: '#9D3535',   // Deep Rose Red
   secondaryColor: '#C9922A', // Antique Gold
   themeTitle: '"অতীতের আয়নায় আগামী"',
@@ -56,19 +56,19 @@ const DEFAULT_SETTINGS = {
   clubHeroTitle: 'সোনালী সঙ্ঘ',
   clubHeroTagline: 'বাঁশদ্রোণী সোনালী পার্কের সংস্কৃতি, ক্রীড়া ও যুবকল্যাণের প্রাণকেন্দ্র। খেলাধুলা, সাংস্কৃতিক অনুষ্ঠান এবং রক্তদান শিবিরের মাধ্যমে সমাজের সেবায় আমরা নিয়োজিত।',
   clubHeroImage: '/assets/club-hero-banner.jpg',
-  clubTotalCollection: '₹ ৮,৫০,০০০',
-  clubTotalExpense: '₹ ৭,৯৫,০০০',
-  clubMajorExpenseTitle: 'ক্রীড়া টুর্নামেন্ট ও উৎসব',
-  clubMajorExpenseAmount: '₹ ৩,৫০,০০০',
+  clubTotalCollection: '',
+  clubTotalExpense: '',
+  clubMajorExpenseTitle: 'ক্রীড়া টুর্নামেন্ট ও যুবকল্যাণ',
+  clubMajorExpenseAmount: '',
 
-  // Sonali Park Unnayan Samiti Defaults
+  // Sonali Park Unnayan Samity Defaults
   samitiHeroTitle: 'সোনালী পার্ক',
   samitiHeroTagline: 'আমাদের পাড়ার নিরাপত্তা, পরিচ্ছন্নতা, রাস্তাঘাট ও নাগরিকদের দৈনন্দিন স্বাচ্ছন্দ্য রক্ষায় সার্বক্ষণিক নিয়োজিত রেজিস্টার্ড উন্নয়ন পরিষদ।',
   samitiHeroImage: '/assets/samiti-hero-banner.jpg',
-  samitiTotalCollection: '₹ ১২,২০,০০০',
-  samitiTotalExpense: '₹ ১১,৫০,০০০',
-  samitiMajorExpenseTitle: 'রাস্তা সংস্কার ও জলনিকাশি',
-  samitiMajorExpenseAmount: '₹ ৫,১০,০০০'
+  samitiTotalCollection: '',
+  samitiTotalExpense: '',
+  samitiMajorExpenseTitle: 'অভ্যন্তরীণ লেন, পথবাতি ও সিসিটিভি',
+  samitiMajorExpenseAmount: ''
 };
 
 export async function GET() {

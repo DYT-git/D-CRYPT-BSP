@@ -4,6 +4,7 @@ import { Sun, Sunset, Moon, Bell, Share2, Check, ChevronLeft, ChevronRight, File
 import Countdown from "@/components/Countdown";
 import HeroParticles from "@/components/HeroParticles";
 import { triggerDownload } from "@/utils/download";
+import { getImageWing } from "@/utils/gallery";
 import Link from "next/link";
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -179,53 +180,81 @@ export default function HomePage() {
       dateNumEn: '16',
       monthBn: 'অক্টোবর ২০২৬',
       monthEn: 'Oct 2026',
-      ceremonyBn: 'কল্পারম্ভ, দেবীর বোধন ও অধিবাস',
-      ceremonyEn: 'Kalparambha, Bodhon & Adhibas',
+      ceremonyBn: 'বোধন, আমন্ত্রণ ও অধিবাস',
+      ceremonyEn: 'Bodhon, Amantran & Adhibas',
+      panjikaBn: '২৮শে আশ্বিন • ষষ্ঠী রাত্রি ৩/৪৭ পর্যন্ত',
       rituals: [
-        { timeBn: 'সকাল ৮:০০', timeEn: '8:00 AM', labelBn: 'কল্পারম্ভ ও বিহিত পূজা', labelEn: 'Kalparambha & Puja' },
-        { timeBn: 'সন্ধ্যা ৬:৩০', timeEn: '6:30 PM', labelBn: 'দেবীর বোধন ও আমন্ত্রণ', labelEn: 'Bodhon & Adhibas' },
+        { timeBn: 'পূর্বাহ্ণ মধ্যে', timeEn: 'Forenoon', labelBn: 'শ্রী শ্রী দুর্গাষষ্ঠী বিহিত পূজা', labelEn: 'Shashti Vihita Puja' },
+        { timeBn: 'সায়ংকালে', timeEn: 'Evening', labelBn: 'দেবীর বোধন, আমন্ত্রণ ও অধিবাস', labelEn: 'Bodhon & Adhibas' },
       ],
       headerGrad: 'from-[#9F1239] to-[#881337]',
       dateColor: 'text-[#9F1239]',
       Icon: ShashtiBilvaIcon,
     },
     {
-      id: 'saptami',
-      tithiBn: 'মহাসপ্তমী',
-      tithiEn: 'Maha Saptami',
+      id: 'saptami-day1',
+      tithiBn: 'মহাসপ্তমী (দিন ১)',
+      tithiEn: 'Maha Saptami (Day 1)',
       weekdayBn: 'শনিবার',
       weekdayEn: 'Saturday',
       dateNumBn: '১৭',
       dateNumEn: '17',
       monthBn: 'অক্টোবর ২০২৬',
       monthEn: 'Oct 2026',
-      ceremonyBn: 'নবপত্রিকা স্নান ও সপ্তমী বিহিত পূজা',
-      ceremonyEn: 'Nabapatrika Snan & Puja',
+      ceremonyBn: 'নবপত্রিকা প্রবেশ ও স্থাপন',
+      ceremonyEn: 'Nabapatrika Pravesh & Sthapan',
+      panjikaBn: '২৯শে আশ্বিন • সপ্তমী অহোরাত্র',
       rituals: [
-        { timeBn: 'ভোর ৬:৩০', timeEn: '6:30 AM', labelBn: 'গঙ্গায় নবপত্রিকা স্নান', labelEn: 'Nabapatrika Holy Snan' },
-        { timeBn: 'সকাল ১০:০০', timeEn: '10:00 AM', labelBn: 'সার্বজনীন পুষ্পাঞ্জলি', labelEn: 'Community Pushpanjali' },
+        { timeBn: 'সকাল ৭:০৪ গতে', timeEn: 'After 7:04 AM', labelBn: 'নবপত্রিকা প্রবেশ ও স্থাপন', labelEn: 'Nabapatrika Pravesh' },
+        { timeBn: 'পূর্বাহ্ণ মধ্যে', timeEn: 'Forenoon', labelBn: 'সপ্তমীবিহিত পূজা প্রশস্তা', labelEn: 'Saptami Vihita Puja' },
       ],
       headerGrad: 'from-emerald-700 to-emerald-900',
       dateColor: 'text-emerald-800',
       Icon: SaptamiNabapatrikaIcon,
     },
     {
-      id: 'ashtami',
-      tithiBn: 'মহাষ্টমী',
-      tithiEn: 'Maha Ashtami',
+      id: 'saptami-day2',
+      tithiBn: 'মহাসপ্তমী (দিন ২)',
+      tithiEn: 'Maha Saptami (Day 2)',
       weekdayBn: 'রবিবার',
       weekdayEn: 'Sunday',
       dateNumBn: '১৮',
       dateNumEn: '18',
       monthBn: 'অক্টোবর ২০২৬',
       monthEn: 'Oct 2026',
-      ceremonyBn: 'পুষ্পাঞ্জলি, কুমারী পূজা ও সন্ধিপূজা',
-      ceremonyEn: 'Pushpanjali, Kumari & Sandhi Puja',
+      ceremonyBn: 'মহাষ্টমীর অঞ্জলি ও অধিক পূজা',
+      ceremonyEn: 'Maha Ashtami Anjali & Adhik Puja',
+      panjikaBn: '৩০শে আশ্বিন • সপ্তমী প্রাতঃ ৫/৫৩ পর্যন্ত',
+      specialBadge: 'মহাষ্টমী অঞ্জলি প্রদান',
+      specialBadgeEn: 'Maha Ashtami Anjali',
       rituals: [
-        { timeBn: 'সকাল ৯:৪৫', timeEn: '9:45 AM', labelBn: 'মহাষ্টমীর পুষ্পাঞ্জলি', labelEn: 'Maha Ashtami Anjali' },
-        { timeBn: 'সন্ধ্যা', timeEn: 'Evening', labelBn: 'সন্ধিপূজা ও ১০৮ প্রদীপ', labelEn: 'Sandhi Puja & 108 Lamps' },
+        { timeBn: 'বিশেষ ঘোষণা', timeEn: 'Special Notice', labelBn: '🌺 মহাষ্টমীর অঞ্জলী প্রদান', labelEn: 'Maha Ashtami Pushpanjali' },
+        { timeBn: 'রাত্রি ১০:৫৯', timeEn: '10:59 PM', labelBn: 'দেবীর অর্ধরাত্রি বিহিত পূজা', labelEn: 'Ardharatri Vihita Puja' },
       ],
-      headerGrad: 'from-amber-700 to-amber-900',
+      headerGrad: 'from-amber-600 to-amber-800',
+      dateColor: 'text-amber-800',
+      Icon: AshtamiDhunuchiIcon,
+    },
+    {
+      id: 'ashtami',
+      tithiBn: 'মহাষ্টমী ও সন্ধিপূজা',
+      tithiEn: 'Maha Ashtami & Sandhi Puja',
+      weekdayBn: 'সোমবার',
+      weekdayEn: 'Monday',
+      dateNumBn: '১৯',
+      dateNumEn: '19',
+      monthBn: 'অক্টোবর ২০২৬',
+      monthEn: 'Oct 2026',
+      ceremonyBn: 'কল্পারম্ভ ও মহতী সন্ধিপূজা',
+      ceremonyEn: 'Kalparambha & Sandhi Puja',
+      panjikaBn: '১লা কার্তিক • অষ্টমী দিবা ৭/৫০ পর্যন্ত',
+      specialBadge: 'সন্ধিপূজা: দিবা ৭:২৬ - ৮:১৪',
+      specialBadgeEn: 'Sandhi Puja: 7:26 - 8:14 AM',
+      rituals: [
+        { timeBn: 'দিবা ৭:০৫ গতে', timeEn: 'After 7:05 AM', labelBn: 'মহাষ্টম্যাদি কল্পারম্ভ পূজা', labelEn: 'Ashtami Kalparambha' },
+        { timeBn: 'দিবা ৭:২৬ – ৮:১৪', timeEn: '7:26 – 8:14 AM', labelBn: 'সন্ধিপূজা (বলিদান ৭:৫০)', labelEn: 'Sandhi Puja (Balidan 7:50 AM)' },
+      ],
+      headerGrad: 'from-amber-700 to-amber-950',
       dateColor: 'text-amber-800',
       Icon: AshtamiDhunuchiIcon,
     },
@@ -233,17 +262,18 @@ export default function HomePage() {
       id: 'navami',
       tithiBn: 'মহানবমী',
       tithiEn: 'Maha Navami',
-      weekdayBn: 'সোমবার',
-      weekdayEn: 'Monday',
-      dateNumBn: '১৯',
-      dateNumEn: '19',
+      weekdayBn: 'মঙ্গলবার',
+      weekdayEn: 'Tuesday',
+      dateNumBn: '২০',
+      dateNumEn: '20',
       monthBn: 'অক্টোবর ২০২৬',
       monthEn: 'Oct 2026',
-      ceremonyBn: 'মহাহোম, যজ্ঞ ও মহাভোগ বিতরণ',
-      ceremonyEn: 'Maha Homa & Bhog Distribution',
+      ceremonyBn: 'বিহিত পূজা ও ব্রত সমাপন',
+      ceremonyEn: 'Navami Puja & Vrata Samapan',
+      panjikaBn: '২রা কার্তিক • নবমী দিবা ৯/০১ পর্যন্ত',
       rituals: [
-        { timeBn: 'সকাল ১১:০০', timeEn: '11:00 AM', labelBn: 'মহাহোম ও নবমী যজ্ঞ', labelEn: 'Maha Homa & Yajna' },
-        { timeBn: 'দুপুর ১:০০', timeEn: '1:00 PM', labelBn: 'সার্বজনীন মহাভোগ বিতরণ', labelEn: 'Community Mahabhog' },
+        { timeBn: 'পূর্বাহ্ণ মধ্যে', timeEn: 'Forenoon', labelBn: 'মহানবমী কল্পারম্ভ ও বিহিত পূজা', labelEn: 'Navami Kalparambha & Puja' },
+        { timeBn: 'পূর্বাহ্ণ মধ্যে', timeEn: 'Forenoon', labelBn: 'দেবীর নবরাত্রিক ব্রত সমাপন', labelEn: 'Navaratrik Vrata Samapan' },
       ],
       headerGrad: 'from-orange-700 to-orange-900',
       dateColor: 'text-orange-800',
@@ -253,17 +283,18 @@ export default function HomePage() {
       id: 'dashami',
       tithiBn: 'বিজয়া দশমী',
       tithiEn: 'Bijoya Dashami',
-      weekdayBn: 'মঙ্গলবার',
-      weekdayEn: 'Tuesday',
-      dateNumBn: '২০',
-      dateNumEn: '20',
+      weekdayBn: 'বুধবার',
+      weekdayEn: 'Wednesday',
+      dateNumBn: '২১',
+      dateNumEn: '21',
       monthBn: 'অক্টোবর ২০২৬',
       monthEn: 'Oct 2026',
-      ceremonyBn: 'দর্পণ বিসর্জন, সিঁদুর খেলা ও বরণ',
-      ceremonyEn: 'Darpan Bisarjan & Sindoor Khela',
+      ceremonyBn: 'অপরাজিতা পূজা, সিঁদুর খেলা ও বিসর্জন',
+      ceremonyEn: 'Aparajita Puja & Bisarjan',
+      panjikaBn: '৩রা কার্তিক • দশমী দিবা ১০/৪৭ পর্যন্ত',
       rituals: [
-        { timeBn: 'সকাল ৯:৪৫', timeEn: '9:45 AM', labelBn: 'দর্পণ বিসর্জন ও সমাপন', labelEn: 'Darpan Bisarjan' },
-        { timeBn: 'সকাল ১০:৩০', timeEn: '10:30 AM', labelBn: 'সিঁদুর খেলা ও দেবী বরণ', labelEn: 'Sindoor Khela & Baran' },
+        { timeBn: 'পূর্বাহ্ণ মধ্যে', timeEn: 'Forenoon', labelBn: 'অপরাজিতা পূজা ও বিজয়া দশমীকৃত্য', labelEn: 'Aparajita Puja & Rituals' },
+        { timeBn: 'কুলাচারানুসারে', timeEn: 'Traditional', labelBn: 'সিঁদুর খেলা ও প্রতিমা বিসর্জন', labelEn: 'Sindoor Khela & Immersion' },
       ],
       headerGrad: 'from-rose-900 to-[#500619]',
       dateColor: 'text-rose-900',
@@ -271,9 +302,9 @@ export default function HomePage() {
     },
   ];
 
-  const galleryList = (data.gallery.filter(g => g.year === selectedYear).length > 0
-    ? data.gallery.filter(g => g.year === selectedYear)
-    : data.gallery).slice(0, 10);
+  const pujaPhotos = (data.gallery || []).filter(g => getImageWing(g) === 'Puja');
+  const currentYearPuja = pujaPhotos.filter(g => g.year === selectedYear);
+  const galleryList = (currentYearPuja.length > 0 ? currentYearPuja : pujaPhotos).slice(0, 10);
 
   const nextGallery = () => {
     if (galleryList.length === 0) return;
@@ -300,7 +331,7 @@ export default function HomePage() {
     setGalleryTouchStart(null);
   };
 
-  const notices = data.notices.filter(n => n.year === selectedYear && !n.title?.startsWith('[Club]') && !n.title?.startsWith('[Samiti]')).slice(0, 5);
+  const notices = data.notices.filter(n => n.year === selectedYear && !n.title?.startsWith('[Club]') && !n.title?.startsWith('[Samiti]') && !n.title?.startsWith('[Samity]')).slice(0, 5);
 
   const nextNotice = () => {
     if (notices.length === 0) return;
@@ -554,7 +585,7 @@ export default function HomePage() {
                 className="inline-flex items-center gap-1.5 text-stone-600 hover:text-brand-maroon transition-colors group underline decoration-stone-300 underline-offset-4 hover:decoration-brand-maroon"
               >
                 <MetroTransitIcon className="w-3.5 h-3.5 text-stone-500 group-hover:text-brand-maroon transition-colors shrink-0" />
-                <span>{b('মেট্রো থেকে ৫ মিনিট', '5 mins from Metro')}</span>
+                <span>{b('মেট্রো থেকে ১০ মিনিট', '10 mins from Metro')}</span>
               </a>
             </div>
           </div>
@@ -583,7 +614,7 @@ export default function HomePage() {
         <div className="group relative bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_8px_24px_rgba(28,13,19,0.05)] hover:shadow-[0_16px_36px_rgba(159,18,57,0.1)] rounded-3xl pt-8 pb-5 pl-10 sm:pl-14 pr-5 sm:pr-8 transition-all duration-300">
           {/* Top Pinned Textured Washi Tape */}
           <div className="absolute -top-3.5 left-7 sm:left-10 z-30 pointer-events-none">
-            <WashiTapePin text={b('শারদ থিম পরিক্রমা ২০২৬ • ৭৫তম বর্ষ', 'Curated Theme 2026 • 75th Year')} variant="amber" />
+            <WashiTapePin text={b('শারদ থিম পরিক্রমা ২০২৬', 'Curated Theme 2026')} variant="amber" />
           </div>
 
           {/* Left Perforated Spiral Binder Margin - Authentic 3D Punched Holes */}
@@ -627,8 +658,8 @@ export default function HomePage() {
                 </div>
                 <p className="text-stone-600 text-xs sm:text-sm font-serif italic leading-relaxed">
                   {b(
-                    'ঐতিহ্য ও আধুনিক শিল্পভাবনার মেলবন্ধনে বাঁশদ্রোণী সোনালী পার্কের ৭৪তম বর্ষের বিশেষ মণ্ডপ ও প্রতিমা উপস্থাপনা।',
-                    'Celebrating our 74th year with an artistic balance of sacred tradition and contemporary craftsmanship.'
+                    'ঐতিহ্য ও আধুনিক শিল্পভাবনার মেলবন্ধনে বাঁশদ্রোণী সোনালী পার্কের বিশেষ মণ্ডপ ও প্রতিমা উপস্থাপনা।',
+                    'An artistic balance of sacred tradition and contemporary craftsmanship at Bansdroni Sonali Park.'
                   )}
                 </p>
               </div>
@@ -717,7 +748,58 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* 5 Authentic Panjika Calendar Leaves (Mobile: Swipeable Snap Carousel • Desktop: Side-by-side Grid) */}
+        {/* ═══ OFFICIAL 2026 NIRGHANTA HIGHLIGHTS (Agomon, Gomon & Vishesh Drashtavya) ═══ */}
+        <div className="mb-6 sm:mb-8 grid sm:grid-cols-12 gap-3 sm:gap-4">
+          {/* Left: Agomon & Gomon Badges */}
+          <div className="sm:col-span-5 bg-[#FFFDF9] p-3.5 sm:p-4 rounded-2xl border border-[#E5DAC8] shadow-xs flex flex-col justify-center gap-2.5">
+            <div className="flex items-center justify-between gap-2 text-stone-800 font-serif text-xs sm:text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-base sm:text-lg">🐎</span>
+                <span className="font-bold text-stone-900">{b('দেবীর ঘোটকে আগমন', 'Arrival on Horse')}</span>
+              </div>
+              <span className="px-2 py-0.5 rounded-md bg-rose-50 text-brand-maroon border border-rose-200/80 text-[11px] font-bold">
+                {b('ফল ছত্রভঙ্গ', 'Signifies Turmoil')}
+              </span>
+            </div>
+            <div className="h-px bg-[#E8DFD1]" />
+            <div className="flex items-center justify-between gap-2 text-stone-800 font-serif text-xs sm:text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-base sm:text-lg">⛵</span>
+                <span className="font-bold text-stone-900">{b('দেবীর নৌকায় গমন', 'Departure on Boat')}</span>
+              </div>
+              <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/80 text-[11px] font-bold">
+                {b('ফল শস্য ও জল বৃদ্ধি', 'Signifies Abundance')}
+              </span>
+            </div>
+          </div>
+
+          {/* Right: VISHESH DRASHTAVYA (Maha Ashtami Anjali Announcement - Royal Festive Crimson & Gold) */}
+          <div className="sm:col-span-7 relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#881337] via-[#9F1239] to-[#701a2e] p-3.5 sm:p-4 text-white shadow-[0_8px_24px_rgba(159,18,57,0.22)] border border-amber-300/35 flex items-center gap-3.5 group">
+            {/* Subtle decorative zari thread at the top */}
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-300/80 to-transparent" />
+
+            {/* Auspicious Gold Medallion */}
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-amber-200 via-amber-300 to-amber-500 text-stone-950 flex items-center justify-center shrink-0 shadow-md border border-amber-100/60 text-xl group-hover:scale-105 transition-transform">
+              🌺
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/25 text-amber-200 border border-amber-300/30 text-[10px] font-mono font-bold tracking-wider uppercase backdrop-blur-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
+                <span>{b('বিশেষ দ্রষ্টব্য • আনুষ্ঠানিক ঘোষণা', 'Important Announcement')}</span>
+              </div>
+              <h3 className="font-serif font-bold text-sm sm:text-base text-rose-50 mt-1 leading-snug">
+                {b('মহাষ্টমীর অঞ্জলী প্রদান ', 'Maha Ashtami Pushpanjali will take place on ')}
+                <span className="text-amber-200 font-black underline decoration-amber-300/60 underline-offset-2">
+                  {b('১৮ই অক্টোবর, ২০২৬ (রবিবার)', 'Sunday, 18th October 2026')}
+                </span>
+                {b(' অনুষ্ঠিত হবে', '')}
+              </h3>
+            </div>
+          </div>
+        </div>
+
+        {/* 6 Authentic Panjika Calendar Leaves (Mobile: Swipeable Snap Carousel • Desktop: Side-by-side Grid) */}
         <div
           ref={calendarScrollRef}
           onScroll={(e) => {
@@ -731,7 +813,7 @@ export default function HomePage() {
               }
             }
           }}
-          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide no-scrollbar gap-3 sm:gap-4 lg:grid lg:grid-cols-5 lg:overflow-visible pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide no-scrollbar gap-3 sm:gap-4 lg:grid lg:grid-cols-6 lg:overflow-visible pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
@@ -779,6 +861,16 @@ export default function HomePage() {
                     <h3 className="text-xs sm:text-[13px] font-serif font-bold text-stone-900 group-hover:text-brand-maroon transition-colors leading-snug line-clamp-2">
                       {b(c.ceremonyBn, c.ceremonyEn)}
                     </h3>
+
+                    {/* Special Badge if present */}
+                    {c.specialBadge && (
+                      <div className="mt-1.5">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-50 text-brand-maroon border border-rose-200 text-[10px] font-bold font-serif shadow-2xs">
+                          <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon animate-pulse" />
+                          <span>{b(c.specialBadge, c.specialBadgeEn || c.specialBadge)}</span>
+                        </span>
+                      </div>
+                    )}
 
                     {/* Compact Ritual Timings List */}
                     <div className="space-y-1 mt-2">
@@ -1195,7 +1287,7 @@ export default function HomePage() {
 
                     {/* Notice Title */}
                     <h3 className="text-base sm:text-xl md:text-2xl font-serif font-black text-stone-900 leading-[1.3] tracking-tight">
-                      {t(currentNotice.title?.replace(/^\[(Puja|Club|Samiti)\]\s*/i, ''))}
+                      {t(currentNotice.title?.replace(/^\[(Puja|Club|Samiti|Samity)\]\s*/i, ''))}
                     </h3>
 
                     {/* Festive Wave Accent */}
@@ -1212,7 +1304,7 @@ export default function HomePage() {
                     {currentNotice.pdfUrl && (
                       <div className="flex flex-wrap items-center gap-2.5 mb-5 sm:mb-6">
                         <Link
-                          href={`?viewPdf=${encodeURIComponent(currentNotice.pdfUrl)}&pdfTitle=${encodeURIComponent(currentNotice.title?.replace(/^\[(Puja|Club|Samiti)\]\s*/i, '') || 'Official Circular')}`}
+                          href={`?viewPdf=${encodeURIComponent(currentNotice.pdfUrl)}&pdfTitle=${encodeURIComponent(currentNotice.title?.replace(/^\[(Puja|Club|Samiti|Samity)\]\s*/i, '') || 'Official Circular')}`}
                           scroll={false}
                           className="btn-tactile-crimson inline-flex items-center gap-2 py-2 sm:py-2.5 px-4 sm:px-5 rounded-full text-white font-bold text-xs sm:text-sm shadow-[0_4px_16px_rgba(190,18,60,0.28)] hover:shadow-[0_8px_24px_rgba(190,18,60,0.4)] transition-all cursor-pointer group/pdf"
                         >
@@ -1225,7 +1317,7 @@ export default function HomePage() {
 
                         <button
                           type="button"
-                          onClick={() => triggerDownload(currentNotice.pdfUrl, `${currentNotice.title?.replace(/^\[(Puja|Club|Samiti)\]\s*/i, '') || 'Notice'}.pdf`)}
+                          onClick={() => triggerDownload(currentNotice.pdfUrl, `${currentNotice.title?.replace(/^\[(Puja|Club|Samiti|Samity)\]\s*/i, '') || 'Notice'}.pdf`)}
                           className="btn-tactile-parchment inline-flex items-center gap-1.5 py-2 sm:py-2.5 px-3.5 sm:px-4 rounded-full text-stone-700 hover:text-brand-maroon font-semibold text-xs sm:text-sm border border-[#E5DAC8] shadow-2xs transition-all cursor-pointer"
                           title={b('পিডিএফ ডাউনলোড করুন', 'Download Circular PDF')}
                         >
@@ -1421,7 +1513,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Wing 2: Sonali Park Unnayan Samiti */}
+          {/* Wing 2: Sonali Park Unnayan Samity */}
           <div className="group relative bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_8px_24px_rgba(28,13,19,0.05)] hover:shadow-[0_18px_38px_rgba(159,18,57,0.12)] rounded-3xl pt-8 pb-5 pl-10 sm:pl-13 pr-6 sm:pr-8 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between">
             {/* Pinned Textured Washi Tape on Top Center */}
             <div className="absolute -top-3.5 left-8 sm:left-10 z-20">
@@ -1460,7 +1552,7 @@ export default function HomePage() {
 
               <p className={`${curr.textSub} text-xs sm:text-sm leading-relaxed mb-4`}>
                 {b(
-                  'সোনালী পার্কের সার্বিক নাগরিক কল্যাণ ও আবাসিক পরিচালন পরিষদ। রাস্তাঘাট সংস্কার, পরিচ্ছন্নতা, ড্রেনেজ, আলোকসজ্জা ও নাগরিক নিরাপত্তায় সর্বক্ষণ নিবেদিত।',
+                  'সোনালী পার্কের সার্বিক নাগরিক কল্যাণ ও আবাসিক পরিচালন পরিষদ। রাস্তাঘাট সংস্কার, পরিচ্ছন্নতা, পথবাতি ও সিসিটিভি নিরাপত্তায় সর্বক্ষণ নিবেদিত।',
                   'The registered Residents Welfare Association of Sonali Park. Managing infrastructure, security, sanitation, lighting, and community welfare.'
                 )}
               </p>

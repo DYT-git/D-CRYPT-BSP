@@ -2,10 +2,9 @@
 import { useState } from 'react';
 import { useData } from "@/context/DataContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { PartyPopper, Mic2, Drum, FileText, MapPin, Download, Share2, Check, Bell, AlertTriangle, ChevronRight, Megaphone, Link2 } from 'lucide-react';
+import { PartyPopper, Mic2, Drum, FileText, MapPin, Download, X } from 'lucide-react';
 import Link from 'next/link';
 import YearSelector from "@/components/YearSelector";
-import { triggerDownload } from "@/utils/download";
 import { 
   MandapIcon, 
   SculptorIcon, 
@@ -21,44 +20,24 @@ import {
 
 export default function PujaSchedule() {
   const { data, settings, selectedYear } = useData();
-  const { lang, b, t, toDigits, formatDate } = useLanguage();
-  const [activeNoticeTab, setActiveNoticeTab] = useState('current'); // 'current' | 'all'
-  const [copiedNoticeId, setCopiedNoticeId] = useState(null);
+  const { lang, b, t, toDigits } = useLanguage();
+  const [isPosterModalOpen, setIsPosterModalOpen] = useState(false);
   const events = data.events.filter(e => e.year === selectedYear);
 
-  // Puja specific notices (Limited to top 5)
-  const allPujaNotices = (data.notices || []).filter(n => !n.title?.startsWith('[Club]') && !n.title?.startsWith('[Samiti]'));
-  const currentPujaNotices = allPujaNotices.filter(n => n.year === selectedYear);
-  const displayedPujaNotices = (activeNoticeTab === 'current' ? (currentPujaNotices.length > 0 ? currentPujaNotices : allPujaNotices) : allPujaNotices).slice(0, 5);
-
-  const copyNotice = (notice) => {
-    if (!notice) return;
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const shareUrl = `${origin}/notifications?wing=puja&id=${encodeURIComponent(notice.id || '')}`;
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(shareUrl);
-      setCopiedNoticeId(notice.id);
-      setTimeout(() => setCopiedNoticeId(null), 2500);
-    }
-  };
-
   return (
-    <main className="bg-[#FAF7F2] min-h-screen pt-24 sm:pt-28 pb-24 selection:bg-brand-maroon selection:text-white font-sans">
+    <main className="bg-[#FAF7F2] min-h-screen pt-28 sm:pt-32 pb-24 selection:bg-brand-maroon selection:text-white font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <YearSelector />
       </div>
 
-      {/* ═══ Clean Editorial Header ═══ */}
-      <header className="max-w-3xl mx-auto text-center mt-10 sm:mt-12 mb-12 sm:mb-16 px-4">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-4 tracking-tight leading-tight">
+      {/* ═══ Clean Editorial Header (Minimal & Spacious) ═══ */}
+      <header className="max-w-3xl mx-auto text-center mt-6 sm:mt-8 mb-8 sm:mb-12 px-4">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-2 tracking-tight leading-tight">
           {b('শারদীয়া', 'Sharadiya')} <span className="text-brand-maroon">{b('দুর্গোৎসব', 'Durga Puja')}</span> {toDigits(selectedYear)}
         </h1>
-        <p className="text-sm sm:text-base md:text-lg text-stone-600 font-light leading-relaxed">
-          {b(
-            'বাঁশদ্রোণী সোনালী পার্কের দুর্গাপূজার সম্পূর্ণ সূচি, থিম ভাবনা ও সান্ধ্য সাংস্কৃতিক উৎসব।',
-            'Complete schedule of sacred rituals, theme concept, and evening cultural programs at Bansdroni Sonali Park.'
-          )}
-        </p>
+        <div className="flex justify-center mt-3">
+          <FestiveWaveAccent className="w-16 h-2 text-amber-500/80" />
+        </div>
       </header>
 
       {/* ═══ 1. THEME SHOWCASE (Heritage Notepad Pavilion) ═══ */}
@@ -158,33 +137,117 @@ export default function PujaSchedule() {
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
               <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
-              <span>{b('পঞ্চমী থেকে দশমী', 'Panchami to Dashami')}</span>
+              <span>{b('ষষ্ঠী থেকে দশমী নির্ঘণ্ট', 'Shashti to Dashami Timetable')}</span>
             </div>
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
               {b('পূজার নির্ঘণ্ট ও', 'Sacred Rituals &')} <span className="text-brand-maroon">{b('অঞ্জলির সময়সূচি', 'Anjali Timings')}</span>
             </h2>
           </div>
-          <Link
-            href="?viewPdf=/docs/sample-puja-programme-2026.pdf&pdfTitle=Puja%20Detailed%20Timetable"
-            scroll={false}
-            className="btn-tactile-parchment inline-flex items-center justify-between sm:justify-center gap-3 py-2.5 sm:py-3 pl-5 pr-3 rounded-full text-stone-900 hover:text-brand-maroon font-bold text-xs sm:text-sm transition-all duration-200 group/btn shadow-md w-full sm:w-auto"
+          <button
+            type="button"
+            onClick={() => setIsPosterModalOpen(true)}
+            className="btn-tactile-parchment inline-flex items-center justify-between sm:justify-center gap-3 py-2.5 sm:py-3 pl-5 pr-3 rounded-full text-stone-900 hover:text-brand-maroon font-bold text-xs sm:text-sm transition-all duration-200 group/btn shadow-md w-full sm:w-auto cursor-pointer"
           >
             <span className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-brand-maroon" />
-              <span>{b('সম্পূর্ণ নির্ঘণ্ট PDF', 'Full Timetable PDF')}</span>
+              <span>{b('মূল নোটিশ পোস্টার দেখুন', 'View Gate Poster Notice')}</span>
             </span>
             <span className="w-6 h-6 rounded-full bg-brand-maroon/10 group-hover/btn:bg-brand-maroon text-brand-maroon group-hover/btn:text-white flex items-center justify-center text-xs font-bold transition-colors">
               →
             </span>
-          </Link>
+          </button>
+        </div>
+
+        {/* ═══ OFFICIAL 2026 TIMETABLE BANNER (Agomon, Gomon & Vishesh Drashtavya) ═══ */}
+        <div className="mb-8 p-5 sm:p-7 rounded-3xl bg-[#FFFDF9] border-2 border-[#E5DAC8] shadow-xs relative overflow-hidden">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#E8DFD1]">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-white shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
+                <span>{b('সন ১৪৩৩ • ইং ২০২৬ শ্রী শ্রী শারদীয়া দুর্গাপূজা', '1433 Bangabda • 2026 CE Durga Puja')}</span>
+              </div>
+              <h3 className="text-lg sm:text-2xl font-serif font-black text-stone-900">
+                {b('শ্রী শ্রী শারদীয়া দুর্গাপূজার সময় নির্ঘণ্ট', 'Official Sacred Rituals & Timetable')}
+              </h3>
+              <p className="text-xs sm:text-sm text-stone-500 font-serif">
+                {b('পরিচালনায়: সোনালী পার্ক অধিবাসীবৃন্দ • বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০০ ০৭০', 'Organized by: Residents of Sonali Park • B/137, Sonali Park, Bansdroni, Kolkata - 700 070')}
+              </p>
+            </div>
+          </div>
+
+          {/* Agomon, Gomon & Vishesh Drashtavya Row */}
+          <div className="grid sm:grid-cols-12 gap-3 sm:gap-4 mt-4">
+            {/* Left: Agomon & Gomon Badges */}
+            <div className="sm:col-span-5 bg-[#FAF7F2] p-3 sm:p-3.5 rounded-2xl border border-[#E8DFD1] flex flex-col justify-center gap-2.5 shadow-2xs">
+              <div className="flex items-center justify-between gap-2 text-stone-800 font-serif text-xs sm:text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="text-base sm:text-lg">🐎</span>
+                  <span className="font-bold text-stone-900">{b('দেবীর ঘোটকে আগমন', 'Arrival on Horse')}</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-md bg-rose-50 text-brand-maroon border border-rose-200/80 text-[11px] font-bold">
+                  {b('ফল ছত্রভঙ্গ', 'Signifies Turmoil')}
+                </span>
+              </div>
+              <div className="h-px bg-[#E5DAC8]" />
+              <div className="flex items-center justify-between gap-2 text-stone-800 font-serif text-xs sm:text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="text-base sm:text-lg">⛵</span>
+                  <span className="font-bold text-stone-900">{b('দেবীর নৌকায় গমন', 'Departure on Boat')}</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/80 text-[11px] font-bold">
+                  {b('ফল শস্য ও জল বৃদ্ধি', 'Signifies Abundance')}
+                </span>
+              </div>
+            </div>
+
+            {/* Right: VISHESH DRASHTAVYA (Maha Ashtami Anjali Announcement - Royal Festive Crimson & Gold) */}
+            <div className="sm:col-span-7 relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#881337] via-[#9F1239] to-[#701a2e] p-3.5 sm:p-4 text-white shadow-[0_8px_24px_rgba(159,18,57,0.22)] border border-amber-300/35 flex items-center gap-3.5 group">
+              {/* Subtle decorative zari thread at the top */}
+              <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-300/80 to-transparent" />
+
+              {/* Auspicious Gold Medallion */}
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-amber-200 via-amber-300 to-amber-500 text-stone-950 flex items-center justify-center shrink-0 shadow-md border border-amber-100/60 text-xl group-hover:scale-105 transition-transform">
+                🌺
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/25 text-amber-200 border border-amber-300/30 text-[10px] font-mono font-bold tracking-wider uppercase backdrop-blur-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
+                  <span>{b('বিশেষ দ্রষ্টব্য • আনুষ্ঠানিক ঘোষণা', 'Important Announcement')}</span>
+                </div>
+                <h3 className="font-serif font-bold text-sm sm:text-base text-rose-50 mt-1 leading-snug">
+                  {b('মহাষ্টমীর অঞ্জলী প্রদান ', 'Maha Ashtami Pushpanjali will take place on ')}
+                  <span className="text-amber-200 font-black underline decoration-amber-300/60 underline-offset-2">
+                    {b('১৮ই অক্টোবর, ২০২৬ (রবিবার)', 'Sunday, 18th October 2026')}
+                  </span>
+                  {b(' অনুষ্ঠিত হবে', '')}
+                </h3>
+              </div>
+            </div>
+          </div>
         </div>
 
         {events.length > 0 ? (
           <div className="space-y-4 sm:space-y-6 pt-2">
             {events.map((event, i) => {
               const eventDate = new Date(event.date + (event.date.includes('T') ? '' : 'T00:00:00'));
-              // Clean ceremony title: strip redundant day prefix like "মহাষষ্ঠী —"
               const cleanTitle = (event.title || '').replace(/^[^—–-]+[—–-]\s*/, '').trim() || event.title;
+
+              // Parse details from event.text
+              const textParts = (event.text || '').split(/[।]/).map(s => s.trim()).filter(Boolean);
+              let banglaDate = '';
+              let panjikaTimes = '';
+              const ritualSteps = [];
+
+              for (const part of textParts) {
+                if (part.includes('আশ্বিন') || part.includes('কার্তিক')) {
+                  banglaDate = part;
+                } else if (part.includes('সূর্যোদয়') || part.includes('সূর্যাস্ত') || part.includes('পূর্বাহ্ণ')) {
+                  panjikaTimes = part;
+                } else {
+                  ritualSteps.push(part);
+                }
+              }
 
               return (
                 <div
@@ -206,13 +269,18 @@ export default function PujaSchedule() {
                       </div>
 
                       <div>
-                        <div className="flex items-center gap-2 mb-0.5">
+                        <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                           <span className="text-[10px] font-serif font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-500/10 text-brand-maroon border border-rose-500/20">
                             {b('দিন', 'Day')} {toDigits(i + 1)}
                           </span>
                           <span className="text-xs text-stone-500 font-serif font-medium">
                             {eventDate.toLocaleDateString(lang === 'bn' ? 'bn-IN' : 'en-US', { weekday: 'long' })}
                           </span>
+                          {banglaDate && (
+                            <span className="text-[10px] font-serif font-bold text-amber-900 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                              {b(banglaDate, banglaDate)}
+                            </span>
+                          )}
                         </div>
                         <h3 className="text-base sm:text-lg md:text-xl font-serif font-bold text-stone-900 group-hover:text-brand-maroon transition-colors leading-tight">
                           {t(cleanTitle)}
@@ -221,45 +289,73 @@ export default function PujaSchedule() {
                     </div>
                   </div>
 
-                  {/* Structured Chronological Timeline Nodes (Zero Wasted Space) */}
-                  {event.text && (
-                    <div className="relative pl-4 sm:pl-5 border-l-2 border-amber-400/40 space-y-2 ml-1.5 sm:ml-2 my-2">
-                      {event.text
-                        .split(/[।.]/)
-                        .map((s) => s.trim())
-                        .filter(Boolean)
-                        .map((step, sIdx) => {
-                          const timeMatch = step.match(/^([^\s]+(?:\s+[^\s]+)?\s*টায়|[^\s]+(?:\s+[^\s]+)?\s*থেকে)/);
-                          const timeBadge = timeMatch ? timeMatch[0] : null;
-                          const ritualText = timeMatch ? step.slice(timeMatch[0].length).trim() : step;
-                          
-                          // Convert Bengali time badge to English format (e.g. "সকাল ৮:০০ টায়" -> "8:00 AM")
-                          const formattedTime = timeBadge && lang === 'en'
-                            ? (timeBadge.includes('থেকে') 
-                                ? `${toDigits(timeBadge.replace(/[^০-৯0-9:]/g, ''), 'en')} onwards`
-                                : `${toDigits(timeBadge.replace(/[^০-৯0-9:]/g, ''), 'en')} ${timeBadge.includes('রাত') || timeBadge.includes('সন্ধ্যা') || timeBadge.includes('দুপুর') || timeBadge.includes('বিকেল') ? 'PM' : 'AM'}`)
-                            : timeBadge;
-
-                          return (
-                            <div key={sIdx} className="relative group/step">
-                              {/* Glowing Timeline Node Dot */}
-                              <div className="absolute -left-[21px] sm:-left-[25px] top-2 w-2 h-2 rounded-full bg-brand-maroon ring-4 ring-[#FFFDF9]" />
-
-                              <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2.5 bg-[#FAF7F2] p-2 sm:p-2.5 rounded-xl border border-[#E8DFD1]/60 hover:border-amber-400/50 transition-colors">
-                                {formattedTime && (
-                                  <span className="inline-flex items-center gap-1 text-[11px] font-serif font-bold text-brand-maroon bg-white px-2 py-0.5 rounded-md border border-[#E8DFD1]/70 shrink-0 w-max shadow-2xs">
-                                    🕒 {formattedTime}
-                                  </span>
-                                )}
-                                <span className="text-xs sm:text-[13px] text-stone-800 font-serif leading-relaxed">
-                                  {t(ritualText)}
-                                </span>
-                              </div>
-                            </div>
-                          );
-                        })}
+                  {/* Panjika Astronomical Timings Bar */}
+                  {panjikaTimes && (
+                    <div className="mb-3 px-3 py-1.5 rounded-xl bg-[#FAF7F2] border border-[#E8DFD1] flex items-center gap-2 text-xs sm:text-[13px] text-stone-700 font-serif flex-wrap">
+                      <span className="text-amber-700 font-bold flex items-center gap-1">
+                        <span>✨</span>
+                        <span>{b('পঞ্জিকা সময়:', 'Panjika Timings:')}</span>
+                      </span>
+                      <span>{toDigits(panjikaTimes, lang)}</span>
                     </div>
                   )}
+
+                  {/* Structured Chronological Timeline Nodes */}
+                  <div className="relative pl-4 sm:pl-5 border-l-2 border-amber-400/40 space-y-2 ml-1.5 sm:ml-2 my-2">
+                    {ritualSteps.map((step, sIdx) => {
+                      const isAshtamiAnjali = step.includes('মহাষ্টমীর অঞ্জলী') || step.includes('বিশেষ দ্রষ্টব্য');
+                      const isSandhiPuja = step.includes('সন্ধিপূজা:');
+
+                      if (isAshtamiAnjali) {
+                        return (
+                          <div key={sIdx} className="relative group/step my-2">
+                            <div className="absolute -left-[21px] sm:-left-[25px] top-3 w-2.5 h-2.5 rounded-full bg-amber-500 ring-4 ring-[#FFFDF9]" />
+                            <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-r from-amber-500/15 via-amber-50 to-rose-500/15 border-2 border-amber-400 shadow-2xs flex items-center gap-3">
+                              <span className="text-xl shrink-0">🌺</span>
+                              <div>
+                                <span className="inline-block px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-900 border border-amber-500/40 text-[10px] font-bold uppercase tracking-wider font-mono">
+                                  {b('বিশেষ ঘোষণা • অঞ্জলি নির্ঘণ্ট', 'Special Timing')}
+                                </span>
+                                <p className="font-serif font-black text-xs sm:text-sm text-stone-900 mt-0.5 leading-snug">
+                                  {t(step)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      if (isSandhiPuja) {
+                        return (
+                          <div key={sIdx} className="relative group/step my-2">
+                            <div className="absolute -left-[21px] sm:-left-[25px] top-3 w-2.5 h-2.5 rounded-full bg-amber-600 ring-4 ring-[#FFFDF9]" />
+                            <div className="p-3 sm:p-4 rounded-xl bg-amber-50/80 border border-amber-300 shadow-2xs flex items-start gap-3">
+                              <span className="text-xl shrink-0 mt-0.5">🪔</span>
+                              <div className="flex-1">
+                                <span className="inline-block px-2 py-0.5 rounded-full bg-amber-200/70 text-amber-900 font-bold text-[10px] uppercase tracking-wider font-mono">
+                                  {b('মহতী সন্ধিপূজা নির্ঘণ্ট', 'Sandhi Puja Timetable')}
+                                </span>
+                                <p className="font-serif font-bold text-xs sm:text-sm text-stone-900 mt-1 leading-relaxed">
+                                  {t(step)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div key={sIdx} className="relative group/step">
+                          <div className="absolute -left-[21px] sm:-left-[25px] top-2.5 w-2 h-2 rounded-full bg-brand-maroon ring-4 ring-[#FFFDF9]" />
+                          <div className="flex items-start gap-2.5 bg-[#FAF7F2] p-2.5 rounded-xl border border-[#E8DFD1]/60 hover:border-amber-400/50 transition-colors">
+                            <span className="text-xs sm:text-[13px] text-stone-800 font-serif leading-relaxed">
+                              {t(step)}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
 
                   {/* Subtle Perforated Bottom Deckle Edge */}
                   <div className="pt-2 -mx-4 sm:-mx-6 -mb-4 opacity-50">
@@ -390,192 +486,7 @@ export default function PujaSchedule() {
         </div>
       </section>
 
-      {/* ═══ 4. PUJA BULLETINS & NOTICES (Dedicated Section) ═══ */}
-      <section id="puja-notices" className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-24 pt-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 sm:mb-10 pb-4 border-b border-stone-200">
-          <div>
-            <div className="flex items-center gap-2 mb-2 text-rose-800 font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em]">
-              <span className="w-4 h-0.5 bg-rose-700/70 rounded-full" />
-              <span>{b('মণ্ডপ ও ভক্ত নির্দেশিকা', 'Pavilion & Resident Advisory')}</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-stone-900 tracking-tight">
-              {b('পূজা বুলেটিন ও', 'Festival Circulars &')} <span className="text-brand-maroon">{b('বিজ্ঞপ্তি সার্কুলার', 'Bulletins')}</span>
-            </h2>
-            <p className="text-stone-500 text-xs sm:text-sm mt-1">
-              {b('মা দুর্গার আগমনী উৎসবের সমস্ত আনুষ্ঠানিক বিজ্ঞপ্তি, ভোগ কুপন, অঞ্জলি নির্ঘণ্ট ও নিয়মাবলী', 'Official circulars, bhog coupons, and guidelines approved by the Puja Committee')}
-            </p>
-          </div>
-
-          {/* Past / Current Archive Tabs & Full Directory Link */}
-          <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
-            <button
-              type="button"
-              onClick={() => setActiveNoticeTab('current')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activeNoticeTab === 'current'
-                  ? 'bg-rose-700 text-white shadow-xs'
-                  : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-stone-50'
-              }`}
-            >
-              {b('বর্তমান বছর', 'Current Year')} ({toDigits(selectedYear, lang)})
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveNoticeTab('all')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activeNoticeTab === 'all'
-                  ? 'bg-stone-900 text-white shadow-xs'
-                  : 'bg-white text-stone-600 border border-stone-200/80 hover:bg-stone-50'
-              }`}
-            >
-              {b('সকল আর্কাইভ', 'All Archive')} ({toDigits(allPujaNotices.length, lang)})
-            </button>
-            <Link
-              href="/notifications?wing=puja"
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold transition-all shadow-2xs"
-            >
-              <span>{b('সম্পূর্ণ তালিকা', 'Full List')}</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-        </div>
-
-        {displayedPujaNotices.length > 0 ? (
-          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 pt-2">
-            {displayedPujaNotices.map((notice, i) => {
-              const noticePdf = notice.pdfUrl || '/docs/sample-puja-notice-2026.pdf';
-              const cleanTitle = notice.title?.replace(/^\[Puja\]\s*/, '') || '';
-              const isCopied = copiedNoticeId === notice.id;
-
-              return (
-                <div
-                  key={notice.id || i}
-                  className="group relative bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_8px_24px_rgba(28,13,19,0.05)] hover:shadow-[0_16px_36px_rgba(159,18,57,0.1)] rounded-3xl pt-8 pb-5 pl-10 sm:pl-13 pr-6 sm:pr-8 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between"
-                >
-                  {/* Top Pinned Washi Tape */}
-                  <div className="absolute -top-3.5 left-8 sm:left-10 z-20 pointer-events-none">
-                    <WashiTapePin
-                      text={b(`শারদীয়া সার্কুলার • ${toDigits(notice.year, lang)}`, `Puja Circular • ${notice.year}`)}
-                      variant="rose"
-                    />
-                  </div>
-
-                  {/* Left 3D Punched Binder Margin */}
-                  <div className="absolute left-2.5 sm:left-3.5 top-8 bottom-8 flex flex-col justify-around pointer-events-none z-10">
-                    <BinderHoles count={5} />
-                  </div>
-
-                  <div>
-                    {/* Header Badges */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-800 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200">
-                          <DurgaDeviEmblemIcon className="w-3 h-3 text-rose-700" />
-                          <span>{b('শারদীয়া দুর্গোৎসব', 'Durga Puja')}</span>
-                        </span>
-                        {notice.isUrgent && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-100/80 px-2 py-0.5 rounded-full border border-rose-300">
-                            <AlertTriangle className="w-2.5 h-2.5 text-rose-700" />
-                            <span>{b('জরুরি', 'Urgent')}</span>
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[11px] font-mono text-stone-500 bg-stone-100 px-2 py-0.5 rounded-full border border-stone-200/80">
-                          📅 {formatDate(notice.date, lang)}
-                        </span>
-                        <span className="text-[10px] font-mono font-bold text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded-full">
-                          {toDigits(notice.year, lang)}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Notice Heading */}
-                    <h3 className="text-base sm:text-lg md:text-xl font-serif font-bold text-stone-900 leading-snug mb-2">
-                      {t(cleanTitle)}
-                    </h3>
-
-                    {/* Festive Wave */}
-                    <div className="mb-3">
-                      <FestiveWaveAccent className="w-12 h-1.5 text-rose-500" />
-                    </div>
-
-                    {/* Body Text */}
-                    <p className="text-xs sm:text-sm text-stone-700 leading-relaxed font-sans whitespace-pre-line mb-5">
-                      {t(notice.text)}
-                    </p>
-                  </div>
-
-                  {/* Actions Row */}
-                  <div>
-                    <div className="pt-3.5 border-t border-stone-200/80 flex flex-wrap items-center justify-between gap-2.5">
-                      {/* Direct PDF View Button (Only if notice.pdfUrl exists) */}
-                      {notice.pdfUrl ? (
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Link
-                            href={`?viewPdf=${encodeURIComponent(notice.pdfUrl)}&pdfTitle=${encodeURIComponent(cleanTitle)}`}
-                            scroll={false}
-                            className="btn-tactile-crimson inline-flex items-center gap-1.5 py-2 px-3.5 rounded-full text-white font-bold text-xs shadow-2xs hover:shadow-xs transition-all cursor-pointer group/btn"
-                          >
-                            <FileText className="w-3.5 h-3.5 text-amber-200" />
-                            <span>{b('পিডিএফ দেখুন', 'View PDF')}</span>
-                            <span className="w-4 h-4 rounded-full bg-white/20 text-white flex items-center justify-center text-[10px] font-bold group-hover/btn:bg-white group-hover/btn:text-brand-maroon transition-colors">
-                              →
-                            </span>
-                          </Link>
-
-                          <button
-                            type="button"
-                            onClick={() => triggerDownload(notice.pdfUrl, `${cleanTitle || 'puja-notice'}.pdf`)}
-                            className="btn-tactile-parchment inline-flex items-center gap-1.5 py-2 px-3 rounded-full text-stone-700 hover:text-brand-maroon text-xs font-semibold border border-[#E5DAC8] shadow-2xs transition-all cursor-pointer"
-                            title={b('পিডিএফ ডাউনলোড করুন', 'Download PDF')}
-                          >
-                            <Download className="w-3.5 h-3.5 text-stone-600 group-hover:text-brand-maroon" />
-                            <span>{b('ডাউনলোড', 'Download')}</span>
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-stone-100 text-stone-500 text-xs font-medium border border-stone-200/80">
-                          <FileText className="w-3.5 h-3.5 text-stone-400" />
-                          <span>{b('অফিসিয়াল বার্তা', 'Official Notice')}</span>
-                        </div>
-                      )}
-
-                      {/* Link Copy Button */}
-                      <button
-                        type="button"
-                        onClick={() => copyNotice(notice)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-2xs cursor-pointer ${
-                          isCopied
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200'
-                        }`}
-                        title={b('নোটিশের লিঙ্ক কপি করুন', 'Copy Notice Link')}
-                      >
-                        {isCopied ? <Check className="w-3.5 h-3.5" /> : <Link2 className="w-3.5 h-3.5" />}
-                        <span>{isCopied ? b('লিঙ্ক কপি!', 'Link Copied!') : b('লিঙ্ক কপি', 'Copy Link')}</span>
-                      </button>
-                    </div>
-
-                    {/* Torn Bottom Deckle Edge */}
-                    <div className="-mx-4 -mb-3 pt-3 opacity-80">
-                      <TornDeckleEdge className="w-full text-stone-200/90 h-2 block" />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-12 bg-[#FFFDF9] rounded-2xl border border-[#E5DAC8] p-6 max-w-md mx-auto">
-            <span className="text-3xl block mb-2">📜</span>
-            <p className="text-sm font-semibold text-stone-700">{b('এই বছরের জন্য কোনো নতুন বিজ্ঞপ্তি নেই।', 'No official circulars published for this year yet.')}</p>
-          </div>
-        )}
-      </section>
-
-      {/* ═══ 5. HOW TO REACH (Transit Card) ═══ */}
+      {/* ═══ 4. HOW TO REACH (Transit Card) ═══ */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 pt-4">
         <div className="group relative bg-[#FFFDF9] rounded-3xl p-6 sm:p-9 md:p-11 flex flex-col sm:flex-row gap-5 sm:gap-7 items-center shadow-[0_6px_20px_rgba(28,13,19,0.04)] hover:shadow-[0_16px_32px_rgba(159,18,57,0.08)] transition-all duration-300 border border-[#E5DAC8]">
           <div className="absolute -top-3.5 left-7 sm:left-10 z-20">
@@ -594,20 +505,78 @@ export default function PujaSchedule() {
             <div className="space-y-1.5 text-stone-600 text-xs sm:text-sm md:text-base leading-relaxed">
               <p>
                 <strong className="text-stone-900 font-bold">{b('মণ্ডপের ঠিকানা:', 'Pandal Address:')}</strong>{' '}
-                {b('বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০', 'B/137, Sonali Park, Bansdroni, Kolkata - 700070')}
+                {b('বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০', 'B/137, Sonali Park, Bansdroni, Kolkata - 70')}
               </p>
               <p>
                 <strong className="text-stone-900 font-bold">{b('মেট্রো:', 'Metro:')}</strong>{' '}
-                {b('মাস্টারদা সূর্য সেন (বাঁশদ্রোণী) মেট্রো স্টেশন থেকে ৫ মিনিটের হাঁটা পথ বা রিকশা।', '5 minutes by walking or rickshaw from Masterda Surya Sen (Bansdroni) Metro Station.')}
+                {b('মাস্টারদা সূর্য সেন (বাঁশদ্রোণী) মেট্রো স্টেশন থেকে 10 মিনিটের হাঁটা পথ বা রিকশা।', '10 minutes walk or rickshaw from Masterda Surya Sen (Bansdroni) Metro Station.')}
               </p>
               <p>
-                <strong className="text-stone-900 font-bold">{b('বাস / অটো:', 'Bus / Auto:')}</strong>{' '}
-                {b('বাঁশদ্রোণী বাস স্টপেজ থেকে সোনালী পার্কের দিকে সোজা রাস্তা।', 'Straight route towards Sonali Park from Bansdroni Bus Stop.')}
+                <strong className="text-stone-900 font-bold">{b('অটো:', 'Auto:')}</strong>{' '}
+                {b('বাঁশদ্রোণী বাস স্টপেজ থেকে সোনালী পার্কের দিকে সোজা রাস্তা।', 'Straight road towards Sonali Park from Bansdroni Bus Stop.')}
               </p>
             </div>
           </div>
         </div>
       </section>
+
+      {/* ═══ 5. OFFICIAL POSTER LIGHTBOX MODAL ═══ */}
+      {isPosterModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/80 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setIsPosterModalOpen(false)}
+        >
+          <div 
+            className="relative max-w-4xl w-full max-h-[92vh] bg-[#FAF7F2] rounded-3xl border-2 border-[#E5DAC8] shadow-2xl flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 sm:px-7 py-3.5 border-b border-[#E8DFD1] bg-[#FFFDF9]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-brand-maroon/10 border border-brand-maroon/20 flex items-center justify-center text-brand-maroon">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-black text-stone-900 text-sm sm:text-base leading-tight">
+                    {b('শ্রী শ্রী শারদীয়া দুর্গাপূজার সময় নির্ঘণ্ট ২০২৬', 'Durga Puja 2026 Official Notice')}
+                  </h3>
+                  <p className="text-[11px] font-mono text-stone-500">
+                    {b('মূল বিজ্ঞপ্তিপত্র ও সময়সূচি • সোনালী পার্ক', 'Official Notice Poster • Sonali Park')}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="/assets/puja-schedule-2026.jpg"
+                  download="Durga-Puja-Schedule-2026-Sonali-Park.jpg"
+                  className="px-3.5 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 border border-[#E5DAC8] text-stone-800 text-xs font-bold inline-flex items-center gap-1.5 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5 text-stone-600" />
+                  <span className="hidden sm:inline">{b('ডাউনলোড', 'Download')}</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setIsPosterModalOpen(false)}
+                  className="w-8 h-8 rounded-full bg-stone-100 hover:bg-rose-100 hover:text-brand-maroon border border-[#E5DAC8] flex items-center justify-center text-stone-600 transition-colors cursor-pointer"
+                  aria-label="Close modal"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Image Body with scroll */}
+            <div className="overflow-y-auto p-3 sm:p-5 flex justify-center bg-stone-900/5 max-h-[calc(92vh-70px)]">
+              <img
+                src="/assets/puja-schedule-2026.jpg"
+                alt="শ্রী শ্রী শারদীয়া দুর্গাপূজার সময় নির্ঘণ্ট ২০২৬"
+                className="max-w-full h-auto rounded-xl border border-[#E5DAC8] shadow-md object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

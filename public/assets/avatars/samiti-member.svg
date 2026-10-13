@@ -1,53 +1,73 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
   <defs>
-    <linearGradient id="samitiBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#064e3b"/>
-      <stop offset="40%" stop-color="#022c22"/>
-      <stop offset="100%" stop-color="#021c15"/>
+    <!-- Rich Deep Emerald Velvet Canvas -->
+    <linearGradient id="emeraldBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#021c14"/>
+      <stop offset="50%" stop-color="#063226"/>
+      <stop offset="100%" stop-color="#01140e"/>
     </linearGradient>
-    <radialGradient id="emeraldSpotlight" cx="50%" cy="32%" r="65%">
-      <stop offset="0%" stop-color="#10b981" stop-opacity="0.3"/>
-      <stop offset="50%" stop-color="#059669" stop-opacity="0.1"/>
-      <stop offset="100%" stop-color="#022c22" stop-opacity="0"/>
+
+    <!-- Warm Radial Ambient Spotlight -->
+    <radialGradient id="spotlightEmerald" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.22"/>
+      <stop offset="45%" stop-color="#059669" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="emeraldGold" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fef08a"/>
-      <stop offset="50%" stop-color="#10b981"/>
-      <stop offset="100%" stop-color="#047857"/>
+
+    <!-- Rich Champagne Gold Metallic Gradient -->
+    <linearGradient id="goldMetallic" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdfbf7"/>
+      <stop offset="25%" stop-color="#f5e1a4"/>
+      <stop offset="55%" stop-color="#d4af37"/>
+      <stop offset="85%" stop-color="#aa8222"/>
+      <stop offset="100%" stop-color="#e6ca7b"/>
     </linearGradient>
-    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fef08a"/>
-      <stop offset="60%" stop-color="#eab308"/>
-      <stop offset="100%" stop-color="#ca8a04"/>
+
+    <!-- Subtle Silhouette Fill Gradient -->
+    <linearGradient id="avatarFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#eaf3ee"/>
+      <stop offset="50%" stop-color="#c8dbd0"/>
+      <stop offset="100%" stop-color="#8ba797"/>
     </linearGradient>
+
+    <!-- Subtle Inner Shadow / Glow -->
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
   </defs>
 
-  <!-- Background -->
-  <rect width="400" height="500" fill="url(#samitiBgGrad)"/>
-  <rect width="400" height="500" fill="url(#emeraldSpotlight)"/>
+  <!-- Background Base -->
+  <rect width="400" height="500" fill="url(#emeraldBg)"/>
+  <rect width="400" height="500" fill="url(#spotlightEmerald)"/>
 
-  <!-- Geometric Decorative Aura -->
-  <g opacity="0.15" stroke="#34d399" stroke-width="1.5" fill="none">
-    <circle cx="200" cy="180" r="130"/>
-    <circle cx="200" cy="180" r="105" stroke-dasharray="6,4"/>
-    <circle cx="200" cy="180" r="80" stroke-opacity="0.5"/>
+  <!-- Minimalist Geometric Halo & Delicate Hairline Rings -->
+  <g opacity="0.4" stroke="url(#goldMetallic)" stroke-width="1" fill="none">
+    <circle cx="200" cy="210" r="148" stroke-dasharray="2,6"/>
+    <circle cx="200" cy="210" r="140" stroke-width="0.75"/>
+    <circle cx="200" cy="210" r="115" stroke-opacity="0.3"/>
   </g>
 
-  <!-- Silhouette -->
-  <!-- Head -->
-  <circle cx="200" cy="155" r="54" fill="#f1f5f9"/>
-  <!-- Torso & Collared Kurta/Suit -->
-  <path d="M 115 325 C 115 230, 285 230, 285 325 Z" fill="#e2e8f0"/>
-  <path d="M 135 325 C 135 248, 265 248, 265 325 Z" fill="#064e3b"/>
+  <!-- Central Dignified Medallion Disk -->
+  <circle cx="200" cy="210" r="108" fill="#032118" stroke="url(#goldMetallic)" stroke-width="1.75" filter="url(#softGlow)"/>
 
-  <!-- Civic / Laurel Badge -->
-  <circle cx="200" cy="285" r="32" fill="url(#goldGradient)" stroke="#ffffff" stroke-width="2.5"/>
-  <!-- Leaf / Community Civic Icon -->
-  <path d="M 200 268 C 192 278, 190 292, 200 302 C 210 292, 208 278, 200 268 Z" fill="#064e3b"/>
-  <path d="M 194 286 C 187 290, 185 297, 192 300" stroke="#064e3b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  <path d="M 206 286 C 213 290, 215 297, 208 300" stroke="#064e3b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Clean Minimalist Executive Silhouette -->
+  <g filter="url(#softGlow)">
+    <!-- Head -->
+    <circle cx="200" cy="172" r="42" fill="url(#avatarFill)"/>
+    
+    <!-- Torso / Shoulders with Smooth Ergonomic Arc -->
+    <path d="M 124 296 C 124 232, 156 226, 185 224 L 200 236 L 215 224 C 244 226, 276 232, 276 296 Z" fill="url(#avatarFill)"/>
 
-  <!-- Dignified Badge Label -->
-  <rect x="50" y="410" width="300" height="44" rx="22" fill="#022c22" stroke="#10b981" stroke-width="1.5"/>
-  <text x="200" y="438" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" letter-spacing="1.5" fill="#a7f3d0">SAMITI EXECUTIVE MEMBER</text>
+    <!-- Minimalist Collar Accent -->
+    <path d="M 186 224 L 200 242 L 214 224" stroke="#032118" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Delicate Gold Civic Insignia (Bottom Center) -->
+  <g transform="translate(200, 348)">
+    <!-- Minimal Laurel / Civic Leaf Pair -->
+    <path d="M -18,-4 C -12,4 -6,8 0,10 C 6,8 12,4 18,-4" fill="none" stroke="url(#goldMetallic)" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="3" fill="url(#goldMetallic)"/>
+    <circle cx="-14" cy="-2" r="1.5" fill="url(#goldMetallic)"/>
+    <circle cx="14" cy="-2" r="1.5" fill="url(#goldMetallic)"/>
+  </g>
 </svg>

@@ -15,6 +15,7 @@ export default function AdminNotificationsPage() {
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [filterWing, setFilterWing] = useState('all');
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -85,13 +86,10 @@ export default function AdminNotificationsPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm(b('আপনি কি নিশ্চিত যে এই বিজ্ঞপ্তিটি মুছে ফেলতে চান?', 'Are you sure you want to delete this broadcast?'))) {
-      return;
-    }
-
+  const confirmDelete = async () => {
+    if (!deleteConfirmId) return;
     try {
-      const res = await fetch(`/api/notifications?id=${id}`, {
+      const res = await fetch(`/api/notifications?id=${deleteConfirmId}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -102,6 +100,8 @@ export default function AdminNotificationsPage() {
       }
     } catch (err) {
       showToast('error', b('নেটওয়ার্ক ত্রুটি।', 'Network error.'));
+    } finally {
+      setDeleteConfirmId(null);
     }
   };
 
@@ -499,8 +499,8 @@ export default function AdminNotificationsPage() {
 
                   {n.isCustom && (
                     <button
-                      onClick={() => handleDelete(n.id)}
-                      className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 sm:p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                      onClick={() => setDeleteConfirmId(n.id)}
+                      className="w-9 h-9 flex items-center justify-center rounded-xl text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                       title={b('বিজ্ঞপ্তি মুছুন', 'Delete Broadcast')}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -513,6 +513,39 @@ export default function AdminNotificationsPage() {
         )}
 
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-5 max-w-sm w-full shadow-xl border border-stone-200 text-center space-y-3">
+            <div className="w-10 h-10 rounded-full bg-rose-50 text-brand-maroon flex items-center justify-center mx-auto">
+              <Trash2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-stone-900">{b('বিজ্ঞপ্তিটি মুছে ফেলতে চান?', 'Delete this broadcast?')}</h3>
+              <p className="text-xs text-stone-500 mt-1">
+                {b('এই সম্প্রচারিত বিজ্ঞপ্তিটি ফিড থেকে অপসারিত হবে।', 'This broadcast will be removed from the public notifications feed.')}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmId(null)}
+                className="flex-1 py-2 rounded-xl border border-stone-200 text-xs font-semibold text-stone-700 hover:bg-stone-50 transition-colors cursor-pointer"
+              >
+                {b('বাতিল', 'Cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                className="flex-1 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+              >
+                {b('মুছে ফেলুন', 'Delete')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

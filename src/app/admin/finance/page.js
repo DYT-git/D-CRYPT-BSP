@@ -34,7 +34,7 @@ const TITLE_PRESETS_BY_WING = {
   ],
   Samiti: [
     { bn: 'সোনালী পার্ক উন্নয়ন সমিতি বার্ষিক অডিট ও আর্থিক হিসাব ২০২৫-২৬', en: 'Sonali Park Unnayan Samiti Annual Audit Statement 2025-26' },
-    { bn: 'পাড়ার রাস্তা, এলইডি আলো ও জলনিকাশি উন্নয়ন হিসাব বিবরণী', en: 'Roads, LED Lighting & Drainage Capital Accounts' },
+    { bn: 'অভ্যন্তরীণ লেন, এলইডি পথবাতি ও সিসিটিভি হিসাব বিবরণী', en: 'Internal Lanes, LED Streetlights & CCTV Surveillance Accounts' },
     { bn: 'মাসিক নিরাপত্তা প্রহরী ও বর্জ্য নিষ্কাশন পরিচালনা হিসাব', en: 'Monthly Security Patrol & Sanitation Operations Audit' },
     { bn: 'নাগরিক কল্যাণ তহবিল ও জরুরি সহায়তা ব্যয় বিবরণী', en: 'Civic Welfare & Emergency Support Statement' }
   ]
@@ -43,7 +43,7 @@ const TITLE_PRESETS_BY_WING = {
 export function parseFinanceDoc(doc) {
   if (!doc?.title) return { wing: 'Puja', cleanTitle: doc?.title || '' };
   if (doc.title.startsWith('[Club]')) return { wing: 'Club', cleanTitle: doc.title.replace('[Club]', '').trim() };
-  if (doc.title.startsWith('[Samiti]')) return { wing: 'Samiti', cleanTitle: doc.title.replace('[Samiti]', '').trim() };
+  if (doc.title.startsWith('[Samiti]') || doc.title.startsWith('[Samity]')) return { wing: 'Samiti', cleanTitle: doc.title.replace(/^\[(Samiti|Samity)\]/i, '').trim() };
   if (doc.title.startsWith('[Puja]')) return { wing: 'Puja', cleanTitle: doc.title.replace('[Puja]', '').trim() };
   return { wing: 'Puja', cleanTitle: doc.title };
 }
@@ -81,9 +81,11 @@ export default function FinanceManagerPage() {
         }
       }
       const dataRes = await fetch('/api/data');
-      const data = await dataRes.json();
-      if (data.finances) {
-        setFinances(data.finances.sort((a, b) => (b.year - a.year) || ((b.id || 0) - (a.id || 0))));
+      if (dataRes.ok) {
+        const data = await dataRes.json();
+        if (data.finances) {
+          setFinances(data.finances.sort((a, b) => (b.year - a.year) || ((b.id || 0) - (a.id || 0))));
+        }
       }
     } catch (err) {
       console.error('Failed to fetch finance records:', err);
@@ -166,8 +168,15 @@ export default function FinanceManagerPage() {
         body: uploadData,
       });
 
-      if (!uploadRes.ok) throw new Error('File upload failed');
-      const uploadResult = await uploadRes.json();
+      const uploadResult = await uploadRes.json().catch(() => ({}));
+      if (!uploadRes.ok || !uploadResult.success) {
+        throw new Error(uploadResult.error || `Upload failed with status ${uploadRes.status}`);
+      }
+
+      const uploadedUrl = uploadResult.url || (uploadResult.urls && uploadResult.urls[0]);
+      if (!uploadedUrl) {
+        throw new Error('Server returned no document URL');
+      }
 
       // 2. Save metadata
       const encodedTitle = `[${formData.wing}] ${formData.title.trim()}`;
@@ -176,12 +185,15 @@ export default function FinanceManagerPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: encodedTitle,
-          year: parseInt(formData.year),
-          url: uploadResult.url
+          year: parseInt(formData.year, 10) || new Date().getFullYear(),
+          url: uploadedUrl
         })
       });
 
-      if (!dbRes.ok) throw new Error('Database save failed');
+      const dbResult = await dbRes.json().catch(() => ({}));
+      if (!dbRes.ok || !dbResult.success) {
+        throw new Error(dbResult.error || 'Database save failed');
+      }
 
       showToast('success', b('আর্থিক রিপোর্ট সফলভাবে প্রকাশ করা হয়েছে!', 'Audit report published successfully!'));
       setFile(null);
@@ -438,9 +450,9 @@ export default function FinanceManagerPage() {
                   </p>
                 </div>
               ) : (
-                <div className="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200 flex items-center justify-between gap-3">
+                <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 font-bold text-[10px] font-mono">
+                    <div className="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 font-bold text-[10px] font-mono shadow-2xs">
                       PDF
                     </div>
                     <div className="min-w-0">
@@ -448,21 +460,43 @@ export default function FinanceManagerPage() {
                         {file.name}
                       </p>
                       <p className="text-[10px] text-stone-500">
-                        {formatFileSize(file.size)} • {b('ফাইল প্রস্তুত', 'Ready')}
+                        {formatFileSize(file.size)} • <span className="text-emerald-700 font-semibold">{b('আপলোডের জন্য প্রস্তুত', 'Ready to upload')}</span>
                       </p>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFile(null);
-                      if (fileInputRef.current) fileInputRef.current.value = '';
-                    }}
-                    className="p-1 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-white transition-colors shrink-0 cursor-pointer"
-                    title={b('বাতিল', 'Remove')}
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="flex items-center gap-1.5 self-end sm:self-center shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const localUrl = URL.createObjectURL(file);
+                        setPreviewPdfUrl(localUrl);
+                      }}
+                      className="px-2.5 py-1.5 rounded-lg bg-white border border-stone-200 hover:border-brand-maroon text-stone-700 hover:text-brand-maroon text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer shadow-2xs"
+                      title={b('পিডিএফ দেখে নিন', 'Preview this PDF')}
+                    >
+                      <Eye className="w-3 h-3 text-brand-maroon" />
+                      <span>{b('প্রিভিউ', 'Preview')}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-2.5 py-1.5 rounded-lg bg-white border border-stone-200 hover:bg-stone-50 text-stone-700 text-[11px] font-semibold transition-colors cursor-pointer shadow-2xs"
+                      title={b('অন্য ফাইল নির্বাচন করুন', 'Choose another file')}
+                    >
+                      {b('পরিবর্তন', 'Change')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFile(null);
+                        if (fileInputRef.current) fileInputRef.current.value = '';
+                      }}
+                      className="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                      title={b('বাতিল', 'Remove')}
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -629,7 +663,7 @@ export default function FinanceManagerPage() {
                   <div className="flex items-center gap-1 self-end sm:self-center shrink-0">
                     <button
                       onClick={() => setPreviewPdfUrl(doc.url)}
-                      className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 sm:p-1.5 rounded-lg text-stone-600 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
+                      className="w-10 h-10 flex items-center justify-center rounded-xl text-stone-600 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
                       title={b('প্রিভিউ', 'Preview')}
                     >
                       <Eye className="w-4 h-4" />
@@ -639,7 +673,7 @@ export default function FinanceManagerPage() {
                       href={doc.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 sm:p-1.5 rounded-lg text-stone-600 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
+                      className="w-10 h-10 flex items-center justify-center rounded-xl text-stone-600 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
                       title={b('নতুন ট্যাবে খুলুন', 'Open in new tab')}
                     >
                       <ExternalLink className="w-4 h-4" />
@@ -647,7 +681,7 @@ export default function FinanceManagerPage() {
 
                     <button
                       onClick={() => copyUrl(doc.url, doc.id)}
-                      className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 sm:p-1.5 rounded-lg text-stone-600 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
+                      className="w-10 h-10 flex items-center justify-center rounded-xl text-stone-600 hover:text-brand-maroon hover:bg-stone-100 transition-colors cursor-pointer"
                       title={b('লিংক কপি', 'Copy URL')}
                     >
                       {copiedId === doc.id ? (
@@ -659,7 +693,7 @@ export default function FinanceManagerPage() {
 
                     <button
                       onClick={() => setDeleteConfirmId(doc.id)}
-                      className="min-w-[36px] min-h-[36px] flex items-center justify-center p-2 sm:p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                      className="w-10 h-10 flex items-center justify-center rounded-xl text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                       title={b('মুছুন', 'Delete')}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -708,11 +742,17 @@ export default function FinanceManagerPage() {
               </div>
             </div>
             <div className="flex-1 bg-stone-100 p-2">
-              <iframe
-                src={previewPdfUrl?.startsWith('http') ? `https://docs.google.com/viewer?url=${encodeURIComponent(previewPdfUrl)}&embedded=true` : previewPdfUrl}
+              <object
+                data={previewPdfUrl}
+                type="application/pdf"
                 className="w-full h-full rounded-xl border border-stone-300 bg-white"
-                title="PDF Preview"
-              />
+              >
+                <iframe
+                  src={previewPdfUrl}
+                  className="w-full h-full rounded-xl border border-stone-300 bg-white"
+                  title="PDF Preview"
+                />
+              </object>
             </div>
           </div>
         </div>

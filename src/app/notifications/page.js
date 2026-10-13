@@ -33,14 +33,27 @@ import {
 } from '@/components/HeritageIcons';
 
 function detectWing(title = '') {
-  if (title.startsWith('[Club]')) return 'Club';
-  if (title.startsWith('[Samiti]')) return 'Samiti';
-  if (title.startsWith('[Puja]')) return 'Puja';
+  if (!title) return 'Puja';
+  if (typeof title === 'string') {
+    if (title.startsWith('[Club]')) return 'Club';
+    if (title.startsWith('[Samiti]') || title.startsWith('[Samity]')) return 'Samiti';
+    if (title.startsWith('[Puja]')) return 'Puja';
+    if (title.trim().startsWith('{')) {
+      try {
+        const p = JSON.parse(title.trim());
+        const candidate = p.bn || p.en || '';
+        if (candidate.startsWith('[Club]')) return 'Club';
+        if (candidate.startsWith('[Samiti]') || candidate.startsWith('[Samity]')) return 'Samiti';
+        if (candidate.startsWith('[Puja]')) return 'Puja';
+      } catch {}
+    }
+  }
   return 'Puja';
 }
 
 function cleanNoticeTitle(title = '') {
-  return title.replace(/^\[(Club|Samiti|Puja)\]\s*/i, '').trim();
+  if (!title) return '';
+  return String(title).replace(/^\[(Club|Samiti|Samity|Puja)\]\s*/i, '').trim();
 }
 
 function NotificationsContent() {
@@ -49,12 +62,12 @@ function NotificationsContent() {
   const { data, selectedYear } = useData();
   const { lang, b, t, toDigits, formatDate } = useLanguage();
 
-  // Read initial wing from URL (?wing=puja, ?wing=club, ?wing=samiti)
+  // Read initial wing from URL (?wing=puja, ?wing=club, ?wing=samiti, ?wing=samity)
   const initialWingParam = searchParams.get('wing')?.toUpperCase();
   const initialWing =
     initialWingParam === 'CLUB'
       ? 'Club'
-      : initialWingParam === 'SAMITI'
+      : (initialWingParam === 'SAMITI' || initialWingParam === 'SAMITY')
       ? 'Samiti'
       : 'Puja';
 
@@ -72,7 +85,7 @@ function NotificationsContent() {
   useEffect(() => {
     if (initialWingParam === 'PUJA') setActiveWing('Puja');
     else if (initialWingParam === 'CLUB') setActiveWing('Club');
-    else if (initialWingParam === 'SAMITI') setActiveWing('Samiti');
+    else if (initialWingParam === 'SAMITI' || initialWingParam === 'SAMITY') setActiveWing('Samiti');
   }, [initialWingParam]);
 
   // Deep-link auto-scroll and highlight target notice card

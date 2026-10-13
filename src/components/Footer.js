@@ -45,7 +45,7 @@ export default function Footer() {
             </Link>
             <Link href="/samiti" className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-emerald-700 text-[11px] text-white transition-colors">
               <SamitiEmblemIcon className="w-3.5 h-3.5 text-emerald-300" />
-              <span>{b('উন্নয়ন সমিতি', 'Samiti')}</span>
+              <span>{b('উন্নয়ন সমিতি', 'Unnayan Samiti')}</span>
             </Link>
           </div>
 
@@ -68,8 +68,8 @@ export default function Footer() {
               <MapPin className="text-amber-400 w-4 h-4 shrink-0 mt-0.5" />
               <span>
                 {b(
-                  'বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০০০৭০',
-                  'B/137, Sonali Park, Bansdroni, Kolkata - 700070'
+                  'বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০',
+                  'B/137, Sonali Park, Bansdroni, Kolkata - 70'
                 )}
               </span>
             </li>
@@ -81,8 +81,8 @@ export default function Footer() {
             </li>
             <li className="flex items-center gap-3">
               <Mail className="text-amber-400 w-4 h-4 shrink-0" />
-              <a href="mailto:bansdronisonalipark@gmail.com" className="text-stone-300 hover:text-amber-400 transition-colors">
-                bansdronisonalipark@gmail.com
+              <a href="mailto:sonaliparkbansdroni@gmail.com" className="text-stone-300 hover:text-amber-400 transition-colors">
+                sonaliparkbansdroni@gmail.com
               </a>
             </li>
           </ul>
@@ -102,7 +102,7 @@ export default function Footer() {
           
           <div className="flex items-center gap-3">
             {/* Facebook */}
-            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#1877F2] flex items-center justify-center transition-all group" aria-label="Facebook">
+            <a href="https://www.facebook.com/profile.php?id=61595240225724&sk=photos_albums" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#1877F2] flex items-center justify-center transition-all group" aria-label="Facebook">
               <svg className="w-4 h-4 fill-current text-white transition-colors" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             </a>
             

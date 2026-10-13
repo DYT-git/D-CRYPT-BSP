@@ -3,23 +3,32 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import PdfViewerModal from './PdfViewerModal';
 
+function safeDecode(val) {
+  if (!val) return '';
+  try {
+    return decodeURIComponent(val);
+  } catch {
+    return val;
+  }
+}
+
 function PdfViewerLogic() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   
-  const pdfUrl = searchParams.get('viewPdf');
-  const pdfTitle = searchParams.get('pdfTitle') || 'Document';
+  const rawPdfUrl = searchParams.get('viewPdf');
+  const rawPdfTitle = searchParams.get('pdfTitle');
 
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (pdfUrl) {
+    if (rawPdfUrl) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
     }
-  }, [pdfUrl]);
+  }, [rawPdfUrl]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -31,12 +40,15 @@ function PdfViewerLogic() {
     router.replace(newUrl, { scroll: false });
   };
 
+  const pdfUrl = safeDecode(rawPdfUrl);
+  const title = safeDecode(rawPdfTitle) || 'Document';
+
   return (
     <PdfViewerModal 
       isOpen={isOpen} 
       onClose={handleClose} 
-      pdfUrl={pdfUrl ? decodeURIComponent(pdfUrl) : ''} 
-      title={pdfTitle ? decodeURIComponent(pdfTitle) : ''} 
+      pdfUrl={pdfUrl} 
+      title={title} 
     />
   );
 }

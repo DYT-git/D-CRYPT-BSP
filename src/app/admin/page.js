@@ -62,19 +62,19 @@ export default function AdminDashboard() {
         const settings = json.settings || {};
 
         const clubNotices = notices.filter(n => n.title?.startsWith('[Club]')).length;
-        const samitiNotices = notices.filter(n => n.title?.startsWith('[Samiti]')).length;
+        const samitiNotices = notices.filter(n => n.title?.startsWith('[Samiti]') || n.title?.startsWith('[Samity]')).length;
         const pujaNotices = notices.length - clubNotices - samitiNotices;
 
         const clubMembers = members.filter(m => m.role?.startsWith('[Club]')).length;
-        const samitiMembers = members.filter(m => m.role?.startsWith('[Samiti]')).length;
+        const samitiMembers = members.filter(m => m.role?.startsWith('[Samiti]') || m.role?.startsWith('[Samity]')).length;
         const pujaMembers = members.length - clubMembers - samitiMembers;
 
         const clubPhotos = gallery.filter(g => g.program === 'Club & Sports' || g.program === 'Annual Sports' || g.category === 'Sports' || g.category === 'Club').length;
-        const samitiPhotos = gallery.filter(g => g.program === 'Unnayan Samiti' || g.category === 'Samiti' || g.category === 'Roads' || g.category === 'Greenery').length;
+        const samitiPhotos = gallery.filter(g => g.program === 'Unnayan Samity' || g.program === 'Unnayan Samiti' || g.category === 'Samity' || g.category === 'Samiti' || g.category === 'Roads' || g.category === 'Greenery').length;
         const pujaPhotos = gallery.length - clubPhotos - samitiPhotos;
 
         const clubFinances = finances.filter(f => f.title?.startsWith('[Club]')).length;
-        const samitiFinances = finances.filter(f => f.title?.startsWith('[Samiti]')).length;
+        const samitiFinances = finances.filter(f => f.title?.startsWith('[Samiti]') || f.title?.startsWith('[Samity]')).length;
         const pujaFinances = finances.length - clubFinances - samitiFinances;
 
         setData({
@@ -699,7 +699,7 @@ export default function AdminDashboard() {
                   <h3 className="text-xs sm:text-sm font-bold text-stone-900">
                     {b('শারদীয়া দুর্গোৎসব', 'Durga Puja Wing')}
                   </h3>
-                  <span className="text-[10px] text-rose-700 font-semibold">২০২৬ • ৭৪তম বর্ষ</span>
+                  <span className="text-[10px] text-rose-700 font-semibold">{b('২০২৬ • শারদোৎসব', '2026 • Festival')}</span>
                 </div>
               </div>
               <Link
@@ -737,7 +737,7 @@ export default function AdminDashboard() {
                   <h3 className="text-xs sm:text-sm font-bold text-stone-900">
                     {b('সোনালী সঙ্ঘ ক্লাব', 'Sonali Sangha Club')}
                   </h3>
-                  <span className="text-[10px] text-amber-700 font-semibold">ESTD 1952 • ক্রীড়া ও সংস্কৃতি</span>
+                  <span className="text-[10px] text-amber-700 font-semibold">{b('ক্রীড়া ও সংস্কৃতি শাখা', 'Sports & Cultural Wing')}</span>
                 </div>
               </div>
               <Link

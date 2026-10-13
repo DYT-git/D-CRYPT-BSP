@@ -80,8 +80,12 @@ const dictBn = {
   "Sonali Sangha Club": "সোনালী সঙ্ঘ ক্লাব",
   "Sonali Park": "সোনালী পার্ক",
   "Sonali Park Club": "সোনালী পার্ক ক্লাব",
+  "Unnayan Samity": "উন্নয়ন সমিতি",
   "Unnayan Samiti": "উন্নয়ন সমিতি",
+  "Sonali Park Unnayan Samity": "সোনালী পার্ক উন্নয়ন সমিতি",
   "Sonali Park Unnayan Samiti": "সোনালী পার্ক উন্নয়ন সমিতি",
+  "Samity": "উন্নয়ন সমিতি",
+  "Civic Samity": "নাগরিক সমিতি",
   "Club & Puja Committee": "ক্লাব ও পূজা পরিচালনা কমিটি",
   "Authorized Secure Session": "সুরক্ষিত অ্যাডমিন সেশন",
   "Three Pillars": "তিন স্তম্ভ",
@@ -129,7 +133,7 @@ const dictBn = {
 
   // Finance
   "Sample Durga Puja Budget 2026": "নমুনা দুর্গাপূজা বাজেট ২০২৬",
-  "Road Repairs & Drainage Dredging": "রাস্তা সংস্কার ও জলনিকাশি",
+  "Internal Lanes, Streetlights & CCTV": "অভ্যন্তরীণ লেন, পথবাতি ও সিসিটিভি",
   "Sports Tournaments & Celebrations": "ক্রীড়া টুর্নামেন্ট ও উৎসব",
 
   // Gallery programs & categories
@@ -232,6 +236,11 @@ const dictEn = {
   "পরিকাঠামো আহ্বায়ক": "Infrastructure Convener",
   "পরিচ্ছন্নতা ও স্বাস্থ্য": "Sanitation & Health Convener",
   "প্রবীণ নাগরিক সমন্বয়ক": "Senior Citizens Coordinator",
+  "অফিস ও সম্পত্তি ব্যবস্থাপনা": "Office & Asset Management",
+  "সমস্যা ও সমাধান বিভাগ": "Problems & Solutions Dept.",
+  "সাংস্কৃতিক ও অনুষ্ঠান ব্যবস্থাপনা": "Cultural & Event Management",
+  "উন্নয়ন পরিষদ": "Development Council",
+  "উন্নয়ন পরিষদ সদস্য": "Development Council Member",
 
   // Community
   "বাঁশদ্রোণী সোনালী পার্ক": "Bansdroni Sonali Park",
@@ -243,6 +252,7 @@ const dictEn = {
   "সোনালী পার্ক ক্লাব": "Sonali Park Club",
   "উন্নয়ন সমিতি": "Unnayan Samiti",
   "সোনালী পার্ক উন্নয়ন সমিতি": "Sonali Park Unnayan Samiti",
+  "সমিতি": "Samiti",
   "ক্লাব ও পূজা পরিচালনা কমিটি": "Club & Puja Committee",
   "সুরক্ষিত অ্যাডমিন সেশন": "Authorized Secure Session",
   "তিন স্তম্ভ": "Three Pillars",
@@ -359,8 +369,8 @@ const dictEn = {
   "সোনালী সঙ্ঘ ক্লাবের উদ্যোগে আগামী রবিবার সকাল ৯টা থেকে ক্লাব ভবনে বাৎসরিক রক্তদান ও চক্ষু পরীক্ষা শিবির অনুষ্ঠিত হবে। পাড়ার সকল নাগরিককে অংশগ্রহণ করে এই মহৎ উদ্যোগকে সফল করার আবেদন জানানো হচ্ছে।": "An annual voluntary blood donation and eye examination camp will be held at the club premises next Sunday starting 9:00 AM. All residents are invited.",
   "সাংস্কৃতিক সন্ধ্যা ও রবীন্দ্র-নজরুল জয়ন্তী মহড়া সময়সূচি": "Cultural Evening Rehearsal & Audition Schedule",
   "আসন্ন সাংস্কৃতিক অনুষ্ঠানের জন্য সংগীত, নৃত্য ও নাটক বিভাগের নিয়মিত মহড়া প্রতি মঙ্গলবার ও শুক্রবার সন্ধ্যা ৬টা থেকে ক্লাব মঞ্চে অনুষ্ঠিত হবে।": "Regular rehearsals for upcoming cultural concerts in music, dance, and drama will be held every Tuesday and Friday at 6:00 PM on the club stage.",
-  "বর্ষাপূর্ব ড্রেন পরিষ্কার ও ডেঙ্গি প্রতিরোধ স্প্রে অভিযান": "Pre-Monsoon Drainage Cleaning & Anti-Dengue Spray Drive",
-  "আসন্ন বর্ষা মৌসুমের পূর্বে সোনালী পার্কের প্রতিটি লেনের প্রধান ড্রেন পলি পরিষ্কার এবং মশা নিধনে ব্লিচিং ও লার্ভিসাইড স্প্রে করা হবে। বাসিন্দাদের নিকাশি নালায় কোনো ধরনের প্লাস্টিক বর্জ্য না ফেলার জন্য বিশেষ অনুরোধ জানানো হচ্ছে।": "Intensive drain desilting and anti-larval chemical spraying will be conducted across all neighborhood lanes before monsoon. Residents are requested not to dump plastic in drains.",
+  "বর্ষাপূর্ব পাড়ার পরিচ্ছন্নতা ও ডেঙ্গি প্রতিরোধ স্প্রে অভিযান": "Pre-Monsoon Cleanliness & Anti-Dengue Spray Drive",
+  "আসন্ন বর্ষা মৌসুমের পূর্বে সোনালী পার্কের প্রতিটি অভ্যন্তরীণ লেনে ব্লিচিং ও ডেঙ্গি প্রতিরোধে লার্ভিসাইড স্প্রে করা হবে। বাসিন্দাদের যত্রতত্র প্লাস্টিক বর্জ্য বা জল জমিয়ে না রাখার জন্য বিশেষ অনুরোধ জানানো হচ্ছে।": "Intensive sanitation and anti-larval chemical spraying will be conducted across all neighborhood lanes before monsoon. Residents are requested to prevent water stagnation and waste disposal.",
   "পাড়ার আবাসিকদের বার্ষিক সাধারণ সভা ও নাগরিক সনদ পর্যালোচনা": "Annual General Meeting of Residents & Civic Charter Review",
   "উন্নয়ন সমিতির বাৎসরিক সাধারণ সভা (AGM) আগামী মাসে অনুষ্ঠিত হবে। বিগত বছরের অডিট রিপোর্ট পেশ, পাড়ার নতুন সিসিটিভি ক্যামেরা স্থাপন ও রাতের নিরাপত্তা ব্যবস্থা নিয়ে আলোচনা হবে। সকল আবাসিক পরিবারের উপস্থিতি কাম্য।": "The Annual General Meeting (AGM) of Unnayan Samiti will take place next month to review audit reports, new CCTV surveillance nodes, and night security.",
   "নতুন এলইডি পথবাতি রক্ষণাবেক্ষণ ও হেল্পলাইন বিজ্ঞপ্তি": "LED Streetlight Infrastructure & Maintenance Helpline",
@@ -368,7 +378,7 @@ const dictEn = {
 
   // Finance titles
   "Sample Durga Puja Budget 2026": "Sample Durga Puja Budget 2026",
-  "রাস্তা সংস্কার ও জলনিকাশি": "Road Repairs & Drainage Dredging",
+  "অভ্যন্তরীণ লেন, পথবাতি ও সিসিটিভি": "Internal Lanes, Streetlights & CCTV",
   "ক্রীড়া টুর্নামেন্ট ও উৎসব": "Sports Tournaments & Celebrations",
 
   // Gallery programs & categories
@@ -398,8 +408,8 @@ const dictEn = {
   "কার্যকাল: ২০২৬–২০২৮": "Term: 2026–2028",
 
   // Site Hero taglines
-  "🍁 শরতের নীল আকাশ আর শিউলির গন্ধে মেতেছে বাঁশদ্রোণী... সোনালী পার্কে মা আসছেন বছর ঘুরে! ৭৪তম বর্ষের মহা উৎসবে আপনাদের সাদর আমন্ত্রণ 🙏": "🍁 Autumn skies and the sweet fragrance of Shiuli fill the air in Bansdroni... Maa Durga arrives once more at Sonali Park! Heartfelt welcome to our 74th Grand Celebrations 🙏",
-  "বাঁশদ্রোণী সোনালী পার্কের সংস্কৃতি, ক্রীড়া ও যুবকল্যাণের প্রাণকেন্দ্র। খেলাধুলা, সাংস্কৃতিক অনুষ্ঠান এবং রক্তদান শিবিরের মাধ্যমে সমাজের সেবায় আমরা নিয়োজিত।": "The athletic, cultural, and youth epicenter of Bansdroni Sonali Park. Fostering sporting excellence, cultural unity, and humanitarian welfare since 1952.",
+  "🍁 শরতের নীল আকাশ আর শিউলির গন্ধে মেতেছে বাঁশদ্রোণী... সোনালী পার্কে মা আসছেন বছর ঘুরে! এই মহা উৎসবে আপনাদের সাদর আমন্ত্রণ 🙏": "🍁 Autumn skies and the sweet fragrance of Shiuli fill the air in Bansdroni... Maa Durga arrives once more at Sonali Park! Heartfelt welcome to our Grand Celebrations 🙏",
+  "বাঁশদ্রোণী সোনালী পার্কের সংস্কৃতি, ক্রীড়া ও যুবকল্যাণের প্রাণকেন্দ্র। খেলাধুলা, সাংস্কৃতিক অনুষ্ঠান এবং রক্তদান শিবিরের মাধ্যমে সমাজের সেবায় আমরা নিয়োজিত।": "The athletic, cultural, and youth epicenter of Bansdroni Sonali Park. Fostering sporting excellence, cultural unity, and humanitarian welfare.",
   "আমাদের পাড়ার নিরাপত্তা, পরিচ্ছন্নতা, রাস্তাঘাট ও নাগরিকদের দৈনন্দিন স্বাচ্ছন্দ্য রক্ষায় সার্বক্ষণিক নিয়োজিত রেজিস্টার্ড উন্নয়ন পরিষদ।": "The registered Residents Welfare Association stewarding civic infrastructure, neighborhood security, green cleanliness, and resident welfare in Bansdroni Sonali Park.",
 
   // Seed notice bodies
@@ -450,22 +460,20 @@ const MEMBER_NAME_MAP = {
   "সঞ্জয় মণ্ডল (বাবাই)": "Sanjoy Mondal (Babai)",
 
   // Samiti Leaders
-  "শ্রী পার্থসারথি সেনগুপ্ত": "Sri Partha Sarathi Sengupta",
-  "পার্থসারথি সেনগুপ্ত": "Partha Sarathi Sengupta",
-  "শ্রী অসীম চ্যাটার্জি": "Sri Ashim Chatterjee",
-  "অসীম চ্যাটার্জি": "Ashim Chatterjee",
-  "শ্রী সুশান্ত রায়": "Sri Sushanta Roy",
-  "সুশান্ত রায়": "Sushanta Roy",
-  "শ্রী ভাস্কর মজুমদার": "Sri Bhaskar Majumdar",
-  "ভাস্কর মজুমদার": "Bhaskar Majumdar",
-  "শ্রী নারায়ণ ঘোষ": "Sri Narayan Ghosh",
-  "নারায়ণ ঘোষ": "Narayan Ghosh",
-  "শ্রী তপন ভট্টাচার্য": "Sri Tapan Bhattacharya",
-  "তপন ভট্টাচার্য": "Tapan Bhattacharya",
-  "শ্রীমতী সোমা মুখার্জি": "Srimati Soma Mukherjee",
-  "সোমা মুখার্জি": "Soma Mukherjee",
-  "শ্রী অলোক চক্রবর্তী": "Sri Aloke Chakraborty",
-  "অলোক চক্রবর্তী": "Aloke Chakraborty"
+  "শতদল রায়": "Satadal Roy",
+  "সঞ্জয় ঘোষ": "Sanjoy Ghosh",
+  "সৈকত সাহা": "Saikat Saha",
+  "অনির্বাণ সাহা": "Anirban Saha",
+  "বিকাশ গুপ্ত": "Vikash Gupta",
+  "রবি শাহ": "Ravi Shah",
+  "পরেশ দেবনাথ": "Paresh Debnath",
+  "পঙ্কজ সাহা": "Pankaj Saha",
+  "সুকুমার মণ্ডল": "Sukumar Mondal",
+  "অরূপ শিকদার": "Arup Sikder",
+  "সাহেব হালদার": "Saheb Halder",
+  "কাকলী দে": "Kakoli Dey",
+  "রবি গোস্বামী": "Rabi Goswami",
+  "সুরজিৎ সরকার": "Surojit Sarkar"
 };
 
 // Reverse name mapping (English -> Bengali)
@@ -531,6 +539,19 @@ export function LanguageProvider({ children }) {
   const t = (text, targetLang = lang) => {
     if (!text) return '';
     const trimmed = String(text).trim();
+
+    // 1. Resolve bilingual JSON string if present (handles with or without wing tag)
+    const cleanWing = trimmed.replace(/^\[(Club|Samiti|Samity|Puja)\]\s*/i, '').trim();
+    if (cleanWing.startsWith('{') && cleanWing.endsWith('}')) {
+      try {
+        const parsed = JSON.parse(cleanWing);
+        if (parsed && typeof parsed === 'object' && ('bn' in parsed || 'en' in parsed)) {
+          const val = parsed[targetLang] || (targetLang === 'bn' ? parsed.en : parsed.bn) || '';
+          if (val) return val;
+        }
+      } catch {}
+    }
+
     if (targetLang === 'bn') {
       if (dictBn[trimmed]) return dictBn[trimmed];
       // Try without quotes
@@ -542,8 +563,8 @@ export function LanguageProvider({ children }) {
       // Try without quotes
       const cleanQuotes = trimmed.replace(/^["'“]/, '').replace(/["'”]$/, '').trim();
       if (dictEn[cleanQuotes]) return dictEn[cleanQuotes];
-      // Try stripping wing prefixes like [Club], [Samiti], [Puja]
-      const cleanPrefix = trimmed.replace(/^\[(Club|Samiti|Puja)\]\s*/i, '').trim();
+      // Try stripping wing prefixes like [Club], [Samiti], [Samity], [Puja]
+      const cleanPrefix = trimmed.replace(/^\[(Club|Samiti|Samity|Puja)\]\s*/i, '').trim();
       if (dictEn[cleanPrefix]) return dictEn[cleanPrefix];
       return text;
     }
@@ -554,7 +575,7 @@ export function LanguageProvider({ children }) {
     if (!roleStr) return '';
     let clean = String(roleStr).trim();
     // Strip wing tag and phone
-    clean = clean.replace(/^\[(Club|Samiti|Puja)\]\s*/i, '').trim();
+    clean = clean.replace(/^\[(Club|Samiti|Samity|Puja)\]\s*/i, '').trim();
     if (clean.includes('|')) {
       clean = clean.split('|')[0].trim();
     }
@@ -645,6 +666,7 @@ export function LanguageProvider({ children }) {
     b,
     toDigits,
     formatDate,
+    parseBilingual,
     mounted
   }), [lang, mounted]);
 
@@ -658,3 +680,33 @@ export function LanguageProvider({ children }) {
 export function useLanguage() {
   return useContext(LanguageContext);
 }
+
+// Global helper to parse bilingual string or JSON
+export function parseBilingual(raw) {
+  if (!raw) return { bn: '', en: '' };
+  if (typeof raw === 'object' && raw !== null) {
+    return {
+      bn: raw.bn || raw.en || '',
+      en: raw.en || raw.bn || ''
+    };
+  }
+  const str = String(raw).trim();
+  const cleanWing = str.replace(/^\[(Club|Samiti|Samity|Puja)\]\s*/i, '').trim();
+  if (cleanWing.startsWith('{') && cleanWing.endsWith('}')) {
+    try {
+      const parsed = JSON.parse(cleanWing);
+      if (parsed && typeof parsed === 'object' && ('bn' in parsed || 'en' in parsed)) {
+        return {
+          bn: parsed.bn || parsed.en || '',
+          en: parsed.en || parsed.bn || ''
+        };
+      }
+    } catch {}
+  }
+  const hasBn = /[\u0980-\u09FF]/.test(cleanWing);
+  return {
+    bn: hasBn ? cleanWing : '',
+    en: hasBn ? '' : cleanWing
+  };
+}
+

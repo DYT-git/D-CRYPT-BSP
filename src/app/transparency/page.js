@@ -20,41 +20,36 @@ import {
 function parseFinanceDoc(doc) {
   if (!doc?.title) return { wing: 'Puja', cleanTitle: doc?.title || '' };
   if (doc.title.startsWith('[Club]')) return { wing: 'Club', cleanTitle: doc.title.replace('[Club]', '').trim() };
-  if (doc.title.startsWith('[Samiti]')) return { wing: 'Samiti', cleanTitle: doc.title.replace('[Samiti]', '').trim() };
+  if (doc.title.startsWith('[Samiti]') || doc.title.startsWith('[Samity]')) return { wing: 'Samiti', cleanTitle: doc.title.replace(/^\[(Samiti|Samity)\]/i, '').trim() };
   if (doc.title.startsWith('[Puja]')) return { wing: 'Puja', cleanTitle: doc.title.replace('[Puja]', '').trim() };
   return { wing: 'Puja', cleanTitle: doc.title };
 }
 
-const FALLBACK_CLUB_FINANCES = [
-  { title: '[Club] সোনালী সঙ্ঘ বার্ষিক অডিট ও আর্থিক স্টেটমেন্ট ২০২৫-২৬', year: 2026, url: '/sample-audit.pdf' },
-  { title: '[Club] বার্ষিক ক্রীড়া প্রতিযোগিতা ও টুর্নামেন্ট আয়-ব্যয় হিসাব', year: 2026, url: '/sample-audit.pdf' },
-  { title: '[Club] স্বেচ্ছায় রক্তদান শিবির ও সমাজকল্যাণ তহবিল বিবরণী', year: 2025, url: '/sample-audit.pdf' }
-];
-
-const FALLBACK_SAMITI_FINANCES = [
-  { title: '[Samiti] সোনালী পার্ক উন্নয়ন সমিতি বাৎসরিক অডিট রিপোর্ট ২০২৫-২৬', year: 2026, url: '/sample-audit.pdf' },
-  { title: '[Samiti] পাড়ার ড্রেন ও রাস্তা সংস্কার কাজের ব্যয় বিবরণী', year: 2026, url: '/sample-audit.pdf' },
-  { title: '[Samiti] সিসিটিভি ক্যামেরা ও নিরাপত্তা রক্ষণাবেক্ষণ তহবিল হিসাব', year: 2025, url: '/sample-audit.pdf' }
-];
-
-const FALLBACK_PUJA_FINANCES = [
-  { title: '[Puja] শারদীয়া দুর্গোৎসব ২০২৬ সম্পূর্ণ নিরীক্ষিত অডিট রিপোর্ট', year: 2026, url: '/sample-audit.pdf' },
-  { title: '[Puja] মহাষ্টমী ভোগ বিতরণ ও পূজানুষ্ঠান আর্থিক বিবরণী', year: 2026, url: '/sample-audit.pdf' },
-  { title: '[Puja] বিজ্ঞাপন ও শুভানুধ্যায়ী দান বিবরণী ২০২৬', year: 2025, url: '/sample-audit.pdf' }
-];
+function hasRealValue(val) {
+  if (!val || typeof val !== 'string') return false;
+  const t = val.trim();
+  if (!t) return false;
+  if (
+    t === '₹ 14,50,000' || t === '₹ 13,85,000' || t === '₹ 6,00,000' ||
+    t === '₹ ৮,৫০,০০০' || t === '₹ ৭,৯৫,০০০' || t === '₹ ৩,৫০,০০০' ||
+    t === '₹ ১২,২০,০০০' || t === '₹ ১১,৫০,০০০' || t === '₹ ৫,১০,০০০' ||
+    t === '₹ ৬,২০,০০০' || t === '₹ ৫,৮৫,০০০' || t === '₹ ২,৪০,০০০'
+  ) return false;
+  return true;
+}
 
 function TransparencyContent() {
   const { data, settings, selectedYear } = useData();
   const { lang, b, t, toDigits } = useLanguage();
   const searchParams = useSearchParams();
 
-  // Read wing from URL param (?wing=Club | ?wing=Samiti | ?wing=Puja)
+  // Read wing from URL param (?wing=Club | ?wing=Samiti | ?wing=Samity | ?wing=Puja)
   const initialWing = useMemo(() => {
     const w = searchParams?.get('wing');
     if (!w) return 'Puja';
     const lower = w.toLowerCase();
     if (lower === 'club') return 'Club';
-    if (lower === 'samiti') return 'Samiti';
+    if (lower === 'samiti' || lower === 'samity') return 'Samiti';
     return 'Puja';
   }, [searchParams]);
 
@@ -69,82 +64,85 @@ function TransparencyContent() {
   // Dynamic metrics per active wing
   const metrics = useMemo(() => {
     if (activeWing === 'Club') {
+      const col = hasRealValue(settings.clubTotalCollection) ? settings.clubTotalCollection : null;
+      const exp = hasRealValue(settings.clubTotalExpense) ? settings.clubTotalExpense : null;
+      const majAmt = hasRealValue(settings.clubMajorExpenseAmount) ? settings.clubMajorExpenseAmount : null;
+      const majTitle = settings.clubMajorExpenseTitle ? (lang === 'en' ? t(settings.clubMajorExpenseTitle) : settings.clubMajorExpenseTitle) : b('ক্রীড়া টুর্নামেন্ট ও যুবকল্যাণ', 'Sports Tournaments & Youth Welfare');
       return {
-        badgeTitle: b('পাবলিক লেজার ও আয়-ব্যয় খতিয়ান', 'Public Ledger & Summary'),
+        badgeTitle: b('ক্লাব বাজেট ও ব্যয় খতিয়ান', 'Club Budget & Summary'),
         headingTitle: b('ক্লাব বাৎসরিক আর্থিক বিবরণী', 'Club Annual Accounts Statement'),
-        collection: settings.clubTotalCollection || (lang === 'bn' ? '₹ ৮,৫০,০০০' : '₹ 8,50,000'),
+        collection: col,
         collectionSub: b('সদস্য চাঁদা, টুর্নামেন্ট স্পনসর ও অনুদান', 'Member subscriptions, tournament sponsors & aid'),
-        expense: settings.clubTotalExpense || (lang === 'bn' ? '₹ ৭,৯৫,০০০' : '₹ 7,95,000'),
-        expenseSub: b('টুর্নামেন্ট, ট্রফি, জার্সি ও ক্রীড়া সরঞ্জাম', 'Tournaments, trophies, jerseys & equipment'),
-        majorTitle: lang === 'en' ? (t(settings.clubMajorExpenseTitle) || 'Sports Tournaments & Celebrations') : (settings.clubMajorExpenseTitle || 'ক্রীড়া টুর্নামেন্ট ও উৎসব'),
-        majorAmount: settings.clubMajorExpenseAmount || (lang === 'bn' ? '₹ ৩,৫০,০০০' : '₹ 3,50,000')
+        expense: exp,
+        expenseSub: b('টুর্নামেন্ট, জার্সি, ক্রীড়া সামগ্রী ও উৎসব', 'Tournaments, jerseys, equipment & events'),
+        majorTitle: majTitle,
+        majorAmount: majAmt
       };
     }
 
     if (activeWing === 'Samiti') {
+      const col = hasRealValue(settings.samitiTotalCollection) ? settings.samitiTotalCollection : null;
+      const exp = hasRealValue(settings.samitiTotalExpense) ? settings.samitiTotalExpense : null;
+      const majAmt = hasRealValue(settings.samitiMajorExpenseAmount) ? settings.samitiMajorExpenseAmount : null;
+      const rawTitle = settings.samitiMajorExpenseTitle || '';
+      const majTitle = (rawTitle && !rawTitle.includes('জলনিকাশি') && !rawTitle.includes('ড্রেন'))
+        ? (lang === 'en' ? t(rawTitle) : rawTitle)
+        : b('অভ্যন্তরীণ লেন, পথবাতি ও সিসিটিভি', 'Internal Lanes, Streetlights & CCTV');
       return {
         badgeTitle: b('নাগরিক কল্যাণ তহবিল ও নিরীক্ষা', 'Civic Fund Allocation & Audit'),
         headingTitle: b('সমিতি বাৎসরিক আর্থিক বিবরণী', 'Samiti Annual Accounts Statement'),
-        collection: settings.samitiTotalCollection || (lang === 'bn' ? '₹ ৬,২০,০০০' : '₹ 6,20,000'),
+        collection: col,
         collectionSub: b('মাসিক আবাসিক চাঁদা ও নাগরিক উন্নয়ন অনুদান', 'Monthly residents subscriptions & civic donations'),
-        expense: settings.samitiTotalExpense || (lang === 'bn' ? '₹ ৫,৮৫,০০০' : '₹ 5,85,000'),
-        expenseSub: b('রাস্তাঘাট, ড্রেন পরিষ্কার, সিসিটিভি ও নিরাপত্তা', 'Lanes, drain cleaning, CCTV & night security'),
-        majorTitle: lang === 'en' ? (t(settings.samitiMajorExpenseTitle) || 'Lanes, Drain Maintenance & CCTV') : (settings.samitiMajorExpenseTitle || 'রাস্তা সংস্কার, সিসিটিভি ও নিরাপত্তা'),
-        majorAmount: settings.samitiMajorExpenseAmount || (lang === 'bn' ? '₹ ২,৪০,০০০' : '₹ 2,40,000')
+        expense: exp,
+        expenseSub: b('অভ্যন্তরীণ পথবাতি, পরিচ্ছন্নতা, সিসিটিভি ও নিরাপত্তা', 'Internal streetlights, cleanliness, CCTV & night security'),
+        majorTitle: majTitle,
+        majorAmount: majAmt
       };
     }
 
     // Default: Puja
+    const col = hasRealValue(settings.totalCollection) ? settings.totalCollection : null;
+    const exp = hasRealValue(settings.totalExpense) ? settings.totalExpense : null;
+    const majAmt = hasRealValue(settings.majorExpenseAmount) ? settings.majorExpenseAmount : null;
+    const majTitle = settings.majorExpenseTitle ? (lang === 'en' ? t(settings.majorExpenseTitle) : settings.majorExpenseTitle) : b('মণ্ডপ নির্মাণ ও আবহ সজ্জা', 'Pandal Construction & Decor');
     return {
       badgeTitle: b('উৎসব বাজেট ও ব্যয় রূপরেখা', 'Festival Budget & Outlay'),
       headingTitle: b('শারদীয়া দুর্গোৎসব আর্থিক বিবরণী', 'Durga Puja Financial Statement'),
-      collection: settings.totalCollection || (lang === 'bn' ? '₹ ১৪,৫০,০০০' : '₹ 14,50,000'),
+      collection: col,
       collectionSub: b('চাঁদা, বিজ্ঞাপন ও শুভানুধ্যায়ীদের অনুদান', 'Subscriptions, advertisements, and donations'),
-      expense: settings.totalExpense || (lang === 'bn' ? '₹ ১৩,৮৫,০০০' : '₹ 13,85,000'),
+      expense: exp,
       expenseSub: b('মণ্ডপ, প্রতিমা, আলো ও আপ্যায়ন', 'Pandal, idol, illumination, and hospitality'),
-      majorTitle: lang === 'en' ? (t(settings.majorExpenseTitle) || 'Pandal Construction & Decor') : (settings.majorExpenseTitle || 'মণ্ডপ নির্মাণ ও সজ্জা'),
-      majorAmount: settings.majorExpenseAmount || (lang === 'bn' ? '₹ ৬,০০,০০০' : '₹ 6,00,000')
+      majorTitle: majTitle,
+      majorAmount: majAmt
     };
   }, [activeWing, settings, lang, b, t]);
 
-  // Filtered finances strictly for the selected wing
+  // Filtered finances strictly for the selected wing (only actual uploaded files, no dummy sample-audit.pdf)
   const filteredFinances = useMemo(() => {
-    const rawAll = (data.finances || []).filter(f => Number(f.year) === Number(selectedYear));
-    const list = rawAll.filter(f => {
+    const rawAll = (data.finances || [])
+      .filter(f => Number(f.year) === Number(selectedYear))
+      .filter(f => f.url && f.url !== '/sample-audit.pdf');
+
+    return rawAll.filter(f => {
       const parsed = parseFinanceDoc(f);
       return parsed.wing === activeWing;
     });
-
-    if (list.length > 0) return list;
-
-    // Use authentic fallback for that wing
-    const fallbackList = activeWing === 'Club' 
-      ? FALLBACK_CLUB_FINANCES 
-      : (activeWing === 'Samiti' ? FALLBACK_SAMITI_FINANCES : FALLBACK_PUJA_FINANCES);
-    const yearMatches = fallbackList.filter(f => Number(f.year) === Number(selectedYear));
-    return yearMatches.length > 0 ? yearMatches : fallbackList;
   }, [data.finances, selectedYear, activeWing]);
 
   return (
-    <main className="bg-[#FAF7F2] min-h-screen pt-24 sm:pt-28 pb-24 selection:bg-brand-maroon selection:text-white font-sans">
+    <main className="bg-[#FAF7F2] min-h-screen pt-28 sm:pt-32 pb-24 selection:bg-brand-maroon selection:text-white font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <YearSelector />
       </div>
 
-      {/* ═══ Clean Editorial Header ═══ */}
-      <header className="max-w-3xl mx-auto text-center mt-10 sm:mt-12 mb-8 sm:mb-10 px-4">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-3 tracking-tight leading-tight">
+      {/* ═══ Clean Minimal Editorial Header (No Wordy Paragraph) ═══ */}
+      <header className="max-w-3xl mx-auto text-center mt-6 sm:mt-8 mb-8 sm:mb-10 px-4">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-2 tracking-tight leading-tight">
           {b('আর্থিক স্বচ্ছতা ও', 'Financial Transparency &')} <span className="text-brand-maroon">{b('হিসাব-নিকাশ', 'Statements')}</span>
         </h1>
-        <div className="flex justify-center mb-3">
+        <div className="flex justify-center mt-3">
           <FestiveWaveAccent className="w-16 h-2 text-amber-500/80" />
         </div>
-        <p className="text-sm sm:text-base md:text-lg text-stone-600 font-light leading-relaxed">
-          {b(
-            'বাঁশদ্রোণী সোনালী পার্কের পূজা, ক্লাব ও সমিতির বাজেট, আয়-ব্যয় এবং নিরীক্ষিত আর্থিক হিসাব সবার জন্য উন্মুক্ত।',
-            'Open public records of Durga Puja, Sonali Sangha Club, and Unnayan Samiti budgets, audited statements, and fund allocations.'
-          )}
-        </p>
       </header>
 
       {/* ═══ 3-Pillar Wing Selector Tabs (NO ALL SECTION) ═══ */}
@@ -209,12 +207,28 @@ function TransparencyContent() {
             <span className="text-[11px] sm:text-xs font-bold text-emerald-700 uppercase tracking-widest block mb-1 sm:mb-2">
               {b('মোট সংগৃহীত তহবিল', 'Total Collection')}
             </span>
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-stone-900 tracking-tight leading-none mb-1.5 sm:mb-2 font-mono">
-              {toDigits(metrics.collection, lang)}
-            </h3>
-            <p className="text-xs text-stone-500 font-medium">
-              {metrics.collectionSub}
-            </p>
+            {metrics.collection ? (
+              <>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-stone-900 tracking-tight leading-none mb-1.5 sm:mb-2 font-mono">
+                  {toDigits(metrics.collection, lang)}
+                </h3>
+                <p className="text-xs text-stone-500 font-medium">
+                  {metrics.collectionSub}
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="my-2.5">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                    {b('শীঘ্রই আপডেট হবে', 'To be Updated')}
+                  </span>
+                </div>
+                <p className="text-xs text-stone-500 font-medium">
+                  {b('বাৎসরিক সাধারণ সভা ও নিরীক্ষা শেষে প্রকাশিত হবে', 'To be published post-AGM and audit verification')}
+                </p>
+              </>
+            )}
           </div>
 
           {/* Metric 2: Total Expense */}
@@ -225,12 +239,28 @@ function TransparencyContent() {
             <span className="text-[11px] sm:text-xs font-bold text-rose-700 uppercase tracking-widest block mb-1 sm:mb-2">
               {b('মোট সামগ্রিক খরচ', 'Total Expenditure')}
             </span>
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-rose-600 tracking-tight leading-none mb-1.5 sm:mb-2 font-mono">
-              {toDigits(metrics.expense, lang)}
-            </h3>
-            <p className="text-xs text-stone-500 font-medium">
-              {metrics.expenseSub}
-            </p>
+            {metrics.expense ? (
+              <>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-rose-600 tracking-tight leading-none mb-1.5 sm:mb-2 font-mono">
+                  {toDigits(metrics.expense, lang)}
+                </h3>
+                <p className="text-xs text-stone-500 font-medium">
+                  {metrics.expenseSub}
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="my-2.5">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-stone-100 text-stone-700 border border-stone-200 shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400" />
+                    {b('হিসাব নিরীক্ষণাধীন', 'Audit in Progress')}
+                  </span>
+                </div>
+                <p className="text-xs text-stone-500 font-medium">
+                  {b('ব্যয় বিবরণী ও ভাউচার নিরীক্ষা প্রক্রিয়াধীন', 'Vouchers and accounts under verification')}
+                </p>
+              </>
+            )}
           </div>
 
           {/* Metric 3: Major Expense */}
@@ -241,12 +271,25 @@ function TransparencyContent() {
             <span className="text-[11px] sm:text-xs font-bold text-brand-maroon uppercase tracking-widest block mb-1 sm:mb-2">
               {b('প্রধান ব্যয়ের খাত', 'Major Expense Area')}
             </span>
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-stone-900 leading-tight mb-1">
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-stone-900 leading-tight mb-1.5">
               {metrics.majorTitle}
             </h3>
-            <p className="text-xs sm:text-sm font-semibold text-brand-maroon font-mono">
-              {toDigits(metrics.majorAmount, lang)}
-            </p>
+            {metrics.majorAmount ? (
+              <p className="text-xs sm:text-sm font-semibold text-brand-maroon font-mono">
+                {toDigits(metrics.majorAmount, lang)}
+              </p>
+            ) : (
+              <>
+                <div className="my-1">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-brand-maroon/5 text-brand-maroon border border-brand-maroon/20">
+                    {b('বাজেট বরাদ্দ প্রক্রিয়াধীন', 'Allocation in Progress')}
+                  </span>
+                </div>
+                <p className="text-xs text-stone-500 font-medium mt-1">
+                  {b('চূড়ান্ত ব্যয় বিবরণী অডিট সাপেক্ষে', 'Final outlay subject to audit review')}
+                </p>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -331,9 +374,23 @@ function TransparencyContent() {
             })}
           </div>
         ) : (
-          <div className="text-center py-20 bg-[#FFFDF9] rounded-3xl border border-dashed border-[#E5DAC8] text-stone-500 shadow-xs">
-            <h3 className="text-xl font-serif font-bold text-stone-800">{b('এই বিভাগের কোনো আর্থিক রিপোর্ট এখনও আপলোড করা হয়নি।', 'No financial reports uploaded for this category yet.')}</h3>
-            <p className="text-stone-400 text-sm mt-1">{b('অডিট সম্পন্ন হওয়ার পর নথিপত্র প্রকাশ করা হবে।', 'Documents will be published after the audit is finalized.')}</p>
+          <div className="text-center py-12 sm:py-16 px-4 bg-[#FFFDF9] rounded-3xl border border-stone-200/80 shadow-xs max-w-2xl mx-auto">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-700 flex items-center justify-center mx-auto mb-4">
+              <FileText className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg sm:text-xl font-serif font-bold text-stone-800 mb-1.5">
+              {toDigits(selectedYear, lang)} {b('সালের নিরীক্ষিত অডিট রিপোর্ট প্রক্রিয়াধীন', 'Audited Accounts in Progress')}
+            </h3>
+            <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
+              {b(
+                'বাৎসরিক সাধারণ সভা (AGM) ও চার্টার্ড অ্যাকাউন্ট্যান্ট দ্বারা নিরীক্ষা সম্পন্ন হওয়ার পর স্বাক্ষরিত অডিট রিপোর্ট এখানে আপলোড করা হবে।',
+                'Signed audit reports will be published here following the Annual General Meeting (AGM) and formal verification.'
+              )}
+            </p>
+            <div className="mt-4 inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200 shadow-2xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              <span>{b('শীঘ্রই আপডেট হবে', 'To be Updated Soon')}</span>
+            </div>
           </div>
         )}
       </section>

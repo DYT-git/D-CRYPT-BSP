@@ -22,11 +22,11 @@ export const DEFAULT_DATA = {
   ],
   settings: {
     siteName: "Bansdroni Sonali Park",
-    location: "Kolkata-700070",
+    location: "বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০",
     phone: "+91 90000 00000",
-    email: "contact@example.com",
+    email: "sonaliparkbansdroni@gmail.com",
     welcome: "মা দুর্গার আশীর্বাদে সকলের জীবন আনন্দময় হোক।",
-    facebook: "https://facebook.com/",
+    facebook: "https://www.facebook.com/profile.php?id=61595240225724&sk=photos_albums",
     instagram: "https://instagram.com/",
     youtube: "https://youtube.com/",
     whatsapp: "https://wa.me/"

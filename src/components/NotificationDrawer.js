@@ -106,7 +106,7 @@ export default function NotificationDrawer({ isOpen, onClose, onUnreadCountChang
       case 'club':
         return b('সোনালী সঙ্ঘ', 'Sonali Club');
       case 'samiti':
-        return b('উন্নয়ন সমিতি', 'Samiti');
+        return b('উন্নয়ন সমিতি', 'Unnayan Samiti');
       case 'puja':
         return b('দুর্গাপূজা', 'Durga Puja');
       default:

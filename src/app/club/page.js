@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { triggerDownload } from '@/utils/download';
+import { getImageWing } from '@/utils/gallery';
 import { 
   ClubCrestIcon, 
   SportsBadgeIcon, 
@@ -29,7 +30,7 @@ function parseMemberRole(role) {
   let wing = 'Club';
   let rest = role;
   if (rest.startsWith('[Club]')) { wing = 'Club'; rest = rest.replace('[Club]', '').trim(); }
-  else if (rest.startsWith('[Samiti]')) { wing = 'Samiti'; rest = rest.replace('[Samiti]', '').trim(); }
+  else if (rest.startsWith('[Samiti]') || rest.startsWith('[Samity]')) { wing = 'Samiti'; rest = rest.replace(/^\[(Samiti|Samity)\]/i, '').trim(); }
   else if (rest.startsWith('[Puja]')) { wing = 'Puja'; rest = rest.replace('[Puja]', '').trim(); }
 
   let cleanRole = rest;
@@ -59,12 +60,23 @@ function parseMemberNameDetails(rawName) {
 }
 
 const FALLBACK_CLUB_MEMBERS = [
-  { id: 13, name: "রবি জানা (RABI JANA)", role: "[Club] সভাপতি | 7980464187", image: "/assets/avatars/rabi-jana.jpg", year: 2026 },
-  { id: 14, name: "ছোটকা দাস (বাপি) (CHOTKA DAS)", role: "[Club] সহঃ সভাপতি | 8910936506", image: "/assets/avatars/vice-president.svg", year: 2026 },
-  { id: 15, name: "তরুণ দেবনাথ (TARUN DEBNATH)", role: "[Club] সহঃ সভাপতি | 7890867584", image: "/assets/avatars/vice-president.svg", year: 2026 },
-  { id: 16, name: "নৃপেন সাহা (NRIPEN SAHA)", role: "[Club] সম্পাদক | 8777484189", image: "/assets/avatars/nripen-saha.jpg", year: 2026 },
-  { id: 19, name: "শুভজিৎ মালো (সনু) (SUBHAJIT MALO)", role: "[Club] কোষাধ্যক্ষ | 9123727257", image: "/assets/avatars/subhajit-malo.jpg", year: 2026 },
-  { id: 22, name: "অমল দাস (বাবাই) (AMAL DAS)", role: "[Club] ক্রীড়া সম্পাদক | 8777368136", image: "/assets/avatars/amal-das.jpg", year: 2026 }
+  { id: 7, name: "রবি জানা (RABI JANA)", role: "[Club] সভাপতি | 7980464187", image: "/assets/avatars/rabi-jana.jpg", year: 2026 },
+  { id: 8, name: "ছোটকা দাস (বাপি) (CHOTKA DAS)", role: "[Club] সহঃ সভাপতি | 8910936506", image: "/assets/avatars/vice-president.svg", year: 2026 },
+  { id: 9, name: "তরুণ দেবনাথ (TARUN DEBNATH)", role: "[Club] সহঃ সভাপতি | 7890867584", image: "/assets/avatars/vice-president.svg", year: 2026 },
+  { id: 10, name: "নৃপেন সাহা (NRIPEN SAHA)", role: "[Club] সম্পাদক | 8777484189", image: "/assets/avatars/nripen-saha.jpg", year: 2026 },
+  { id: 11, name: "সুরজিৎ সরকার (SURAJIT SARKAR)", role: "[Club] সহঃ সম্পাদক | 8777581827", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
+  { id: 12, name: "অরূপ মল্লিক (ARUP MULLICK)", role: "[Club] সহঃ সম্পাদক | 8777285009", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
+  { id: 13, name: "শুভজিৎ মালো (সনু) (SUBHAJIT MALO)", role: "[Club] কোষাধ্যক্ষ | 9123727257", image: "/assets/avatars/subhajit-malo.jpg", year: 2026 },
+  { id: 14, name: "অভিষেক চৌধুরী (শিবা) (AVISEK CHOUDHURY)", role: "[Club] সহঃ কোষাধ্যক্ষ | 8013337014", image: "/assets/avatars/asst-treasurer.svg", year: 2026 },
+  { id: 15, name: "রবি গোস্বামী (RAVI GOSWAMI)", role: "[Club] সহঃ কোষাধ্যক্ষ | 8240672206", image: "/assets/avatars/asst-treasurer.svg", year: 2026 },
+  { id: 16, name: "অমল দাস (বাবাই) (AMAL DAS)", role: "[Club] ক্রীড়া সম্পাদক | 8777368136", image: "/assets/avatars/amal-das.jpg", year: 2026 },
+  { id: 17, name: "আকাশ জানা (AKASH JANA)", role: "[Club] সহঃ ক্রীড়া সম্পাদক | 6289640300", image: "/assets/avatars/sports-secretary.svg", year: 2026 },
+  { id: 18, name: "অতনু দত্ত (টুটু) (ATANU DUTTA)", role: "[Club] সহঃ ক্রীড়া সম্পাদক | 9339748034", image: "/assets/avatars/sports-secretary.svg", year: 2026 },
+  { id: 19, name: "পিংকি কুণ্ডু (PINKI KUNDU)", role: "[Club] সাংস্কৃতিক সম্পাদক | 9874674901", image: "/assets/avatars/cultural-female.svg", year: 2026 },
+  { id: 20, name: "স্নেহা ঘোষ (SNEHA GHOSH)", role: "[Club] সাংস্কৃতিক সম্পাদক | 6289860007", image: "/assets/avatars/cultural-female.svg", year: 2026 },
+  { id: 21, name: "তরুণ দেবনাথ (TARUN DEBNATH)", role: "[Club] সাংস্কৃতিক সম্পাদক | 7890867584", image: "/assets/avatars/cultural-secretary.svg", year: 2026 },
+  { id: 22, name: "দেবাশীষ দেওয়ান (DEBASISH DEWAN)", role: "[Club] সহযোগী সদস্য", image: "/assets/avatars/club-member.svg", year: 2026 },
+  { id: 23, name: "সঞ্জয় মণ্ডল (বাবাই) (SANJOY MONDAL)", role: "[Club] সহযোগী সদস্য", image: "/assets/avatars/club-member.svg", year: 2026 }
 ];
 
 export default function ClubPage() {
@@ -159,7 +171,7 @@ export default function ClubPage() {
   // Club gallery photos (All club photos)
   const clubGalleryItems = useMemo(() => {
     const raw = (data.gallery && data.gallery.length > 0)
-      ? data.gallery.filter(g => g.program === 'Club & Sports' || g.program === 'Annual Sports' || g.program === 'Social Work' || g.program === 'Cultural Event' || g.category === 'Club' || g.category === 'Sports' || g.category === 'Blood Donation')
+      ? data.gallery.filter(g => getImageWing(g) === 'Club')
       : [];
 
     if (raw.length > 0) return raw;
@@ -248,38 +260,17 @@ export default function ClubPage() {
     setTouchStartMember(null);
   };
 
-  // Club Financial Documents
+  // Club Financial Documents (Only verified uploaded files, no dummy sample-audit.pdf)
   const clubFinances = useMemo(() => {
-    const dynamicFinances = (data.finances || [])
+    return (data.finances || [])
       .filter(f => f.title && f.title.startsWith('[Club]'))
+      .filter(f => f.url && f.url !== '/sample-audit.pdf')
       .map(f => ({
         title: f.title.replace('[Club]', '').trim(),
         year: f.year,
         url: f.url
       }));
-
-    if (dynamicFinances.length > 0) {
-      return dynamicFinances;
-    }
-
-    return [
-      {
-        title: b('সোনালী সঙ্ঘ বার্ষিক অডিট ও আর্থিক স্টেটমেন্ট ২০২৫-২৬', 'Sonali Sangha Annual Audit & Accounts 2025-26'),
-        year: 2026,
-        url: '/sample-audit.pdf'
-      },
-      {
-        title: b('বার্ষিক ক্রীড়া প্রতিযোগিতা ও টুর্নামেন্ট আয়-ব্যয় হিসাব', 'Annual Sports & Tournaments Expenditure Statement'),
-        year: 2026,
-        url: '/sample-audit.pdf'
-      },
-      {
-        title: b('যুবকল্যাণ ও রক্তদান শিবির ব্যয় বিবরণী', 'Youth Welfare & Blood Camp Expenditure Statement'),
-        year: 2026,
-        url: '/sample-audit.pdf'
-      }
-    ];
-  }, [data.finances, b]);
+  }, [data.finances]);
 
   return (
     <main className="bg-[#FAF7F2] min-h-screen pt-20 sm:pt-24 pb-20 selection:bg-brand-maroon selection:text-white font-sans">
@@ -303,7 +294,7 @@ export default function ClubPage() {
             {/* Club Registration / Identity Kicker */}
             <div className="inline-flex items-center justify-center gap-2.5 mb-3 text-amber-300 font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em]">
               <span className="w-5 h-0.5 bg-amber-400/50 rounded-full" />
-              <span>{b('ক্রীড়া, সংস্কৃতি ও যুবকল্যাণ পরিষদ • স্থাপিত ১৯৫২', 'Sports, Cultural & Youth Wing • Estd. 1952')}</span>
+              <span>{b('ক্রীড়া, সংস্কৃতি ও যুবকল্যাণ পরিষদ', 'Sports, Cultural & Youth Wing')}</span>
               <span className="w-5 h-0.5 bg-amber-400/50 rounded-full" />
             </div>
 
@@ -318,7 +309,7 @@ export default function ClubPage() {
             {/* Club Subtitle & Tagline */}
             <p className="text-base sm:text-lg md:text-xl text-stone-200 font-normal max-w-2xl leading-relaxed drop-shadow-sm mb-2">
               {lang === 'en'
-                ? (t(settings.clubHeroTagline) || 'The athletic, cultural, and youth epicenter of Bansdroni Sonali Park. Fostering sporting excellence, cultural unity, and humanitarian welfare since 1952.')
+                ? (t(settings.clubHeroTagline) || 'The athletic, cultural, and youth epicenter of Bansdroni Sonali Park. Fostering sporting excellence, cultural unity, and humanitarian welfare.')
                 : (settings.clubHeroTagline || 'বাঁশদ্রোণী সোনালী পার্কের সংস্কৃতি, ক্রীড়া ও যুবকল্যাণের প্রাণকেন্দ্র। খেলাধুলা, সাংস্কৃতিক অনুষ্ঠান এবং রক্তদান শিবিরের মাধ্যমে সমাজের সেবায় আমরা নিয়োজিত।')}
             </p>
           </div>
@@ -998,54 +989,80 @@ export default function ClubPage() {
             </div>
           </div>
 
-          {/* Audit Documents Download List */}
-          <div className="space-y-3">
-            {(showAllPdfs ? clubFinances : clubFinances.slice(0, 2)).map((doc, idx) => (
-              <Link
-                key={idx}
-                href={`/transparency?wing=Club&viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(t(doc.title))}`}
-                className="group flex items-center justify-between p-3.5 sm:p-4.5 rounded-2xl bg-white border border-[#E8DFD1] hover:border-brand-maroon/40 transition-all shadow-2xs hover:shadow-xs cursor-pointer"
-              >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/90 text-amber-700 flex items-center justify-center shrink-0">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="font-serif font-bold text-sm sm:text-base text-stone-900 group-hover:text-brand-maroon transition-colors truncate">
-                      {t(doc.title)}
-                    </h4>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF7F2] text-stone-600 border border-[#E8DFD1]">
-                        {b('অডিট নথি', 'Audit Document')}
-                      </span>
-                      <span className="text-xs text-stone-400">
-                        {b('সাল:', 'Year:')} {toDigits(doc.year, lang)}
-                      </span>
+          {/* Audit Documents Download List or Authentic In-Progress State */}
+          {clubFinances.length > 0 ? (
+            <div className="space-y-3">
+              {(showAllPdfs ? clubFinances : clubFinances.slice(0, 2)).map((doc, idx) => (
+                <Link
+                  key={idx}
+                  href={`/transparency?wing=Club&viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(t(doc.title))}`}
+                  className="group flex items-center justify-between p-3.5 sm:p-4.5 rounded-2xl bg-white border border-[#E8DFD1] hover:border-brand-maroon/40 transition-all shadow-2xs hover:shadow-xs cursor-pointer"
+                >
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/90 text-amber-700 flex items-center justify-center shrink-0">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="font-serif font-bold text-sm sm:text-base text-stone-900 group-hover:text-brand-maroon transition-colors truncate">
+                        {t(doc.title)}
+                      </h4>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF7F2] text-stone-600 border border-[#E8DFD1]">
+                          {b('অডিট নথি', 'Audit Document')}
+                        </span>
+                        <span className="text-xs text-stone-400">
+                          {b('সাল:', 'Year:')} {toDigits(doc.year, lang)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-2 shrink-0">
-                  <div className="btn-tactile-parchment inline-flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full text-stone-800 group-hover:text-brand-maroon font-bold text-xs">
-                    <span>{b('দেখুন', 'View')}</span>
-                    <span className="text-xs">→</span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="btn-tactile-parchment inline-flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full text-stone-800 group-hover:text-brand-maroon font-bold text-xs">
+                      <span>{b('দেখুন', 'View')}</span>
+                      <span className="text-xs">→</span>
+                    </div>
+                    <button
+                      type="button"
+                      title={b('পিডিএফ ডাউনলোড করুন', 'Download PDF')}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        triggerDownload(doc.url, `${doc.title || 'club-audit'}.pdf`);
+                      }}
+                      className="p-1.5 rounded-full bg-stone-100 hover:bg-brand-maroon hover:text-white text-stone-600 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-4 h-4" />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    title={b('পিডিএফ ডাউনলোড করুন', 'Download PDF')}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      triggerDownload(doc.url, `${doc.title || 'club-audit'}.pdf`);
-                    }}
-                    className="p-1.5 rounded-full bg-stone-100 hover:bg-brand-maroon hover:text-white text-stone-600 transition-colors cursor-pointer"
-                  >
-                    <Download className="w-4 h-4" />
-                  </button>
-                </div>
-              </Link>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 sm:py-12 px-4 rounded-2xl bg-white border border-stone-200/80">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-700 flex items-center justify-center mx-auto mb-3">
+                <FileText className="w-6 h-6" />
+              </div>
+              <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900 mb-1">
+                {b('সোনালী সঙ্ঘের নিরীক্ষিত অডিট রিপোর্ট প্রক্রিয়াধীন', 'Club Audited Accounts in Progress')}
+              </h3>
+              <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
+                {b(
+                  'বাৎসরিক অডিট ও সাধারণ সভার অনুমোদনের পর ক্লাবের আর্থিক রিপোর্ট এখানে ও স্বচ্ছতা পেজে আপলোড করা হবে।',
+                  'Audited accounts will be uploaded here and on the transparency portal following verification and AGM approval.'
+                )}
+              </p>
+              <div className="mt-4">
+                <Link
+                  href="/transparency?wing=Club"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition-colors"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  <span>{b('স্বচ্ছতা ও বাজেট বিভাগ দেখুন →', 'View Transparency & Budget →')}</span>
+                </Link>
+              </div>
+            </div>
+          )}
 
           {/* See More / Show Less Toggle Button */}
           {clubFinances.length > 2 && (

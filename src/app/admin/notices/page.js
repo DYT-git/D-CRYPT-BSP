@@ -3,9 +3,11 @@ import { useState, useEffect } from 'react';
 import {
   Megaphone, AlertTriangle, Check, Trash2, Edit2, X,
   Search, RefreshCw, FileText, UploadCloud,
-  ExternalLink, Eye
+  ExternalLink, Eye, Download
 } from 'lucide-react';
-import { useLanguage } from '@/context/LanguageContext';
+import { useLanguage, parseBilingual } from '@/context/LanguageContext';
+import BilingualInput from '@/components/admin/BilingualInput';
+import { triggerDownload } from '@/utils/download';
 
 function FestiveWaveAccent({ className = 'text-amber-500' }) {
   return (
@@ -21,7 +23,7 @@ function FestiveWaveAccent({ className = 'text-amber-500' }) {
 }
 
 export default function NoticesManagerPage() {
-  const { lang, b } = useLanguage();
+  const { lang, b, t } = useLanguage();
   const [notices, setNotices] = useState([]);
   const [selectedWing, setSelectedWing] = useState('puja'); // 'puja' | 'club' | 'samiti'
   const [filterWing, setFilterWing] = useState('all'); // 'all' | 'puja' | 'club' | 'samiti'
@@ -30,8 +32,8 @@ export default function NoticesManagerPage() {
     title: '',
     text: '',
     isUrgent: false,
-    year: new Date().getFullYear().toString(),
-    date: new Date().toISOString().split('T')[0],
+    year: '2026',
+    date: '',
     pdfUrl: ''
   });
 
@@ -43,16 +45,25 @@ export default function NoticesManagerPage() {
   const [filterUrgent, setFilterUrgent] = useState(false);
   const [filterWithPdf, setFilterWithPdf] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const [previewPdfUrl, setPreviewPdfUrl] = useState(null);
 
   useEffect(() => {
     fetchNotices();
+    const now = new Date();
+    setFormData(prev => ({
+      ...prev,
+      year: now.getFullYear().toString(),
+      date: now.toISOString().split('T')[0]
+    }));
   }, []);
 
   const fetchNotices = async () => {
     try {
       const res = await fetch('/api/admin/notices');
-      const data = await res.json();
-      setNotices(Array.isArray(data) ? data : []);
+      if (res.ok) {
+        const data = await res.json();
+        setNotices(Array.isArray(data) ? data : []);
+      }
     } catch (err) {
       console.error('Failed to fetch notices', err);
     }
@@ -60,31 +71,77 @@ export default function NoticesManagerPage() {
 
   const handleNoticeSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.title.trim()) {
+    let titleObj = parseBilingual(formData.title);
+    let textObj = parseBilingual(formData.text);
+
+    if (!titleObj.bn.trim() && !titleObj.en.trim()) {
       setMessage(b('অনুগ্রহ করে নোটিশের মূল শিরোনাম লিখুন।', 'Please enter notice main heading.'));
       return;
     }
-    if (!formData.text.trim()) {
+    if (!textObj.bn.trim() && !textObj.en.trim()) {
       setMessage(b('অনুগ্রহ করে নোটিশের বিস্তারিত বিবরণ লিখুন।', 'Please enter notice body text.'));
       return;
     }
 
     setLoading(true);
 
+    // Auto-translate opposite language if missing before posting
+    try {
+      if (titleObj.bn.trim() && !titleObj.en.trim()) {
+        const trRes = await fetch('/api/admin/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: titleObj.bn.trim(), from: 'bn', to: 'en' })
+        });
+        const trData = await trRes.json().catch(() => ({}));
+        if (trData.success && trData.translatedText) titleObj.en = trData.translatedText;
+      } else if (titleObj.en.trim() && !titleObj.bn.trim()) {
+        const trRes = await fetch('/api/admin/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: titleObj.en.trim(), from: 'en', to: 'bn' })
+        });
+        const trData = await trRes.json().catch(() => ({}));
+        if (trData.success && trData.translatedText) titleObj.bn = trData.translatedText;
+      }
+
+      if (textObj.bn.trim() && !textObj.en.trim()) {
+        const trRes = await fetch('/api/admin/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: textObj.bn.trim(), from: 'bn', to: 'en' })
+        });
+        const trData = await trRes.json().catch(() => ({}));
+        if (trData.success && trData.translatedText) textObj.en = trData.translatedText;
+      } else if (textObj.en.trim() && !textObj.bn.trim()) {
+        const trRes = await fetch('/api/admin/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: textObj.en.trim(), from: 'en', to: 'bn' })
+        });
+        const trData = await trRes.json().catch(() => ({}));
+        if (trData.success && trData.translatedText) textObj.bn = trData.translatedText;
+      }
+    } catch (trErr) {
+      console.warn('Auto translation pre-submit fallback:', trErr);
+    }
+
+    const serializedTitle = JSON.stringify(titleObj);
+    const serializedText = JSON.stringify(textObj);
+
     // Apply wing tag to title under the hood
-    let cleanTitle = (formData.title || '').replace(/^\[Club\]\s*/i, '').replace(/^\[Samiti\]\s*/i, '').replace(/^\[Puja\]\s*/i, '').trim();
-    let finalTitle = cleanTitle;
+    let finalTitle = serializedTitle;
     if (selectedWing === 'club') {
-      finalTitle = `[Club] ${cleanTitle}`;
+      finalTitle = `[Club] ${serializedTitle}`;
     } else if (selectedWing === 'samiti') {
-      finalTitle = `[Samiti] ${cleanTitle}`;
+      finalTitle = `[Samiti] ${serializedTitle}`;
     }
 
     const payload = {
       ...formData,
       title: finalTitle,
       subtitle: '',
-      text: (formData.text || '').trim(),
+      text: serializedText,
       date: formData.date || new Date().toISOString().split('T')[0],
       pdfUrl: formData.pdfUrl ? formData.pdfUrl.trim() : null
     };
@@ -96,43 +153,43 @@ export default function NoticesManagerPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...payload, id: editingId })
         });
-        if (res.ok) {
-          setMessage(b('নোটিশ সফলভাবে আপডেট করা হয়েছে!', 'Notice updated successfully!'));
-          setEditingId(null);
-          setSelectedWing('puja');
-          setFormData({
-            title: '',
-            text: '',
-            isUrgent: false,
-            year: new Date().getFullYear().toString(),
-            date: new Date().toISOString().split('T')[0],
-            pdfUrl: ''
-          });
-          fetchNotices();
-        } else {
-          setMessage(b('নোটিশ আপডেট করা যায়নি।', 'Failed to update notice.'));
+        const resData = await res.json().catch(() => ({}));
+        if (!res.ok || !resData.success) {
+          throw new Error(resData.error || b('নোটিশ আপডেট করা যায়নি।', 'Failed to update notice.'));
         }
+        setMessage(b('নোটিশ সফলভাবে আপডেট করা হয়েছে!', 'Notice updated successfully!'));
+        setEditingId(null);
+        setSelectedWing('puja');
+        setFormData({
+          title: '',
+          text: '',
+          isUrgent: false,
+          year: new Date().getFullYear().toString(),
+          date: new Date().toISOString().split('T')[0],
+          pdfUrl: ''
+        });
+        fetchNotices();
       } else {
         const res = await fetch('/api/admin/notices', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (res.ok) {
-          setMessage(b('নতুন নোটিশ সফলভাবে প্রকাশিত হয়েছে!', 'Notice published successfully!'));
-          setSelectedWing('puja');
-          setFormData({
-            title: '',
-            text: '',
-            isUrgent: false,
-            year: new Date().getFullYear().toString(),
-            date: new Date().toISOString().split('T')[0],
-            pdfUrl: ''
-          });
-          fetchNotices();
-        } else {
-          setMessage(b('নোটিশ প্রকাশ করা যায়নি।', 'Failed to publish notice.'));
+        const resData = await res.json().catch(() => ({}));
+        if (!res.ok || !resData.success) {
+          throw new Error(resData.error || b('নোটিশ প্রকাশ করা যায়নি।', 'Failed to publish notice.'));
         }
+        setMessage(b('নতুন নোটিশ সফলভাবে প্রকাশিত হয়েছে!', 'Notice published successfully!'));
+        setSelectedWing('puja');
+        setFormData({
+          title: '',
+          text: '',
+          isUrgent: false,
+          year: new Date().getFullYear().toString(),
+          date: new Date().toISOString().split('T')[0],
+          pdfUrl: ''
+        });
+        fetchNotices();
       }
     } catch (err) {
       setMessage(b('ত্রুটি: ' + err.message, 'Error: ' + err.message));
@@ -163,9 +220,15 @@ export default function NoticesManagerPage() {
         body: uploadData,
       });
 
-      if (!res.ok) throw new Error('PDF upload failed');
-      const data = await res.json();
-      setFormData(prev => ({ ...prev, pdfUrl: data.url }));
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || `PDF upload failed with status ${res.status}`);
+      }
+      const uploadedUrl = data.url || (data.urls && data.urls[0]);
+      if (!uploadedUrl) {
+        throw new Error('Server returned no file URL');
+      }
+      setFormData(prev => ({ ...prev, pdfUrl: uploadedUrl }));
       setMessage(b('PDF সফলভাবে আপলোড হয়েছে!', 'PDF uploaded successfully!'));
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
@@ -179,19 +242,20 @@ export default function NoticesManagerPage() {
     setEditingId(notice.id);
 
     let wing = 'puja';
-    let cleanTitle = notice.title || '';
-    if (cleanTitle.startsWith('[Club]')) {
+    let rawTitle = notice.title || '';
+    if (rawTitle.startsWith('[Club]')) {
       wing = 'club';
-      cleanTitle = cleanTitle.replace(/^\[Club\]\s*/, '');
-    } else if (cleanTitle.startsWith('[Samiti]')) {
+    } else if (rawTitle.startsWith('[Samiti]') || rawTitle.startsWith('[Samity]')) {
       wing = 'samiti';
-      cleanTitle = cleanTitle.replace(/^\[Samiti\]\s*/, '');
     }
     setSelectedWing(wing);
 
+    const parsedTitle = parseBilingual(rawTitle);
+    const parsedText = parseBilingual(notice.text || '');
+
     setFormData({
-      title: cleanTitle,
-      text: notice.text || '',
+      title: JSON.stringify(parsedTitle),
+      text: JSON.stringify(parsedText),
       isUrgent: Boolean(notice.isUrgent),
       year: String(notice.year || new Date().getFullYear()),
       date: notice.date || new Date().toISOString().split('T')[0],
@@ -233,7 +297,7 @@ export default function NoticesManagerPage() {
 
   const filteredNotices = notices.filter(n => {
     const isClubNotice = n.title?.startsWith('[Club]');
-    const isSamitiNotice = n.title?.startsWith('[Samiti]');
+    const isSamitiNotice = n.title?.startsWith('[Samiti]') || n.title?.startsWith('[Samity]');
     const isPujaNotice = !isClubNotice && !isSamitiNotice;
 
     if (filterWing === 'puja' && !isPujaNotice) return false;
@@ -405,35 +469,28 @@ export default function NoticesManagerPage() {
                 </div>
               </div>
 
-              {/* 2. Notice Main Heading */}
-              <div>
-                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('নোটিশের মূল শিরোনাম', 'Notice Main Heading')} <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder={b('যেমন: চাঁদা সংগ্রহ ও কুপন সংক্রান্ত বিজ্ঞপ্তি', 'e.g. Donation & Coupon Notice')}
-                  className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon outline-none"
-                />
-              </div>
+              {/* 2. Notice Main Heading (Bilingual with Auto-Translate) */}
+              <BilingualInput
+                label={b('নোটিশের মূল শিরোনাম', 'Notice Main Heading')}
+                required
+                value={formData.title}
+                onChange={(val) => setFormData(prev => ({ ...prev, title: val }))}
+                placeholderBn="যেমন: চাঁদা সংগ্রহ ও কুপন সংক্রান্ত বিজ্ঞপ্তি"
+                placeholderEn="e.g. Donation & Coupon Collection Notice"
+                helpText={b('বাংলা বা ইংরেজি যেকোনো একটি ভাষায় লিখলে অটো-অনুবাদ ব্যবহার করে অন্য ভাষা স্বয়ংক্রিয়ভাবে তৈরি হবে।', 'Type in Bengali or English; click Auto-Translate to sync the other version.')}
+              />
 
-              {/* 3. Notice Body Text */}
-              <div>
-                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  {b('বিজ্ঞপ্তির মূল বক্তব্য / বিস্তারিত বিবরণ', 'Notice Body Text')} <span className="text-rose-500">*</span>
-                </label>
-                <textarea
-                  rows="5"
-                  required
-                  value={formData.text}
-                  onChange={(e) => setFormData({ ...formData, text: e.target.value })}
-                  placeholder={b('বিজ্ঞপ্তির পূর্ণাঙ্গ বক্তব্য এখানে লিখুন...\n(যেমন: আগামী রবিবার সকাল ১০টায় ক্লাব প্রাঙ্গণে সাধারণ সভা অনুষ্ঠিত হবে। সকল সদস্যের উপস্থিতি একান্ত কাম্য।)', 'Write full notice body text here...')}
-                  className="w-full bg-white border border-stone-300 rounded-xl p-3 text-xs leading-relaxed focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon outline-none"
-                />
-              </div>
+              {/* 3. Notice Body Text (Bilingual with Auto-Translate) */}
+              <BilingualInput
+                label={b('বিজ্ঞপ্তির মূল বক্তব্য / বিস্তারিত বিবরণ', 'Notice Body Text')}
+                required
+                isTextArea
+                rows={5}
+                value={formData.text}
+                onChange={(val) => setFormData(prev => ({ ...prev, text: val }))}
+                placeholderBn="বিজ্ঞপ্তির পূর্ণাঙ্গ বক্তব্য এখানে লিখুন... (যেমন: আগামী রবিবার সকাল ১০টায় ক্লাব প্রাঙ্গণে সাধারণ সভা অনুষ্ঠিত হবে।)"
+                placeholderEn="Write full notice body text here... (e.g. Annual general meeting will be held next Sunday at 10 AM.)"
+              />
 
               {/* 5. Date & Urgent Toggle */}
               <div className="grid grid-cols-2 gap-3 items-center">
@@ -500,15 +557,15 @@ export default function NoticesManagerPage() {
                       <div className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 text-emerald-800 text-xs font-medium max-w-full">
                         <FileText className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                         <span className="truncate max-w-[150px]">{formData.pdfUrl.split('/').pop()}</span>
-                        <a
-                          href={formData.pdfUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-emerald-700 hover:text-emerald-900 ml-1"
-                          title="Open PDF"
+                        <button
+                          type="button"
+                          onClick={() => setPreviewPdfUrl(formData.pdfUrl)}
+                          className="text-emerald-700 hover:text-emerald-950 font-semibold flex items-center gap-0.5 ml-1 cursor-pointer"
+                          title={b('প্রিভিউ দেখুন', 'Preview PDF')}
                         >
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
+                          <Eye className="w-3 h-3" />
+                          <span className="text-[10px]">{b('প্রিভিউ', 'Preview')}</span>
+                        </button>
                       </div>
                     )}
                   </div>
@@ -590,11 +647,15 @@ export default function NoticesManagerPage() {
               {/* Attached PDF Button */}
               {formData.pdfUrl && (
                 <div className="pt-1 pb-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-maroon text-white font-bold text-xs shadow-xs">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewPdfUrl(formData.pdfUrl)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-maroon hover:bg-brand-dark text-white font-bold text-xs shadow-xs cursor-pointer transition-colors"
+                  >
                     <FileText className="w-3.5 h-3.5 text-amber-200" />
                     <span>{b('অফিসিয়াল বিজ্ঞপ্তি PDF দেখুন', 'View Official PDF Circular')}</span>
                     <span className="ml-1">→</span>
-                  </span>
+                  </button>
                 </div>
               )}
 
@@ -663,9 +724,9 @@ export default function NoticesManagerPage() {
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-stone-100">
             {[
               { key: 'all', labelBn: 'সকল শাখা', labelEn: 'All Wings', count: notices.length },
-              { key: 'puja', labelBn: '🌺 শারদীয়া পূজা', labelEn: '🌺 Durga Puja', count: notices.filter(n => !n.title?.startsWith('[Club]') && !n.title?.startsWith('[Samiti]')).length },
+              { key: 'puja', labelBn: '🌺 শারদীয়া পূজা', labelEn: '🌺 Durga Puja', count: notices.filter(n => !n.title?.startsWith('[Club]') && !n.title?.startsWith('[Samiti]') && !n.title?.startsWith('[Samity]')).length },
               { key: 'club', labelBn: '🏆 সোনালী সঙ্ঘ', labelEn: '🏆 Sonali Club', count: notices.filter(n => n.title?.startsWith('[Club]')).length },
-              { key: 'samiti', labelBn: '🏛️ উন্নয়ন সমিতি', labelEn: '🏛️ Samiti (RWA)', count: notices.filter(n => n.title?.startsWith('[Samiti]')).length },
+              { key: 'samiti', labelBn: '🏛️ উন্নয়ন সমিতি', labelEn: '🏛️ Samiti (RWA)', count: notices.filter(n => n.title?.startsWith('[Samiti]') || n.title?.startsWith('[Samity]')).length },
             ].map(tab => (
               <button
                 key={tab.key}
@@ -693,8 +754,8 @@ export default function NoticesManagerPage() {
             ) : (
               filteredNotices.map((notice) => {
                 const isClub = notice.title?.startsWith('[Club]');
-                const isSamiti = notice.title?.startsWith('[Samiti]');
-                const cleanHeading = notice.title?.replace(/^\[Club\]\s*/i, '').replace(/^\[Samiti\]\s*/i, '').replace(/^\[Puja\]\s*/i, '');
+                const isSamiti = notice.title?.startsWith('[Samiti]') || notice.title?.startsWith('[Samity]');
+                const cleanHeading = notice.title?.replace(/^\[Club\]\s*/i, '').replace(/^\[(Samiti|Samity)\]\s*/i, '').replace(/^\[Puja\]\s*/i, '');
 
                 return (
                   <div
@@ -737,26 +798,35 @@ export default function NoticesManagerPage() {
 
                         {/* Notice Heading */}
                         <h3 className="font-bold text-stone-900 text-sm sm:text-base leading-snug">
-                          {cleanHeading}
+                          {t(cleanHeading)}
                         </h3>
 
                         {/* Notice Body Text */}
                         <p className="text-xs text-stone-600 whitespace-pre-line pt-0.5 leading-relaxed line-clamp-3">
-                          {notice.text}
+                          {t(notice.text)}
                         </p>
 
                         {/* PDF Attachment Indicator */}
                         {notice.pdfUrl && (
-                          <div className="pt-1 flex items-center gap-2">
+                          <div className="pt-1 flex items-center gap-1.5 flex-wrap">
+                            <button
+                              type="button"
+                              onClick={() => setPreviewPdfUrl(notice.pdfUrl)}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-[11px] font-bold transition-colors cursor-pointer"
+                              title={b('পিডিএফ প্রিভিউ দেখুন', 'Preview PDF circular')}
+                            >
+                              <FileText className="w-3.5 h-3.5 text-amber-700" />
+                              <span>{b('সংযুক্ত PDF সার্কুলার দেখুন', 'View PDF Circular')}</span>
+                              <Eye className="w-3 h-3 text-amber-700" />
+                            </button>
                             <a
                               href={notice.pdfUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-[11px] font-bold transition-colors cursor-pointer"
+                              className="p-1 rounded-md text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+                              title={b('নতুন ট্যাবে খুলুন', 'Open in new tab')}
                             >
-                              <FileText className="w-3.5 h-3.5 text-amber-600" />
-                              <span>{b('সংযুক্ত PDF সার্কুলার দেখুন', 'View PDF Circular')}</span>
-                              <ExternalLink className="w-3 h-3 text-amber-600" />
+                              <ExternalLink className="w-3.5 h-3.5" />
                             </a>
                           </div>
                         )}
@@ -814,6 +884,57 @@ export default function NoticesManagerPage() {
               >
                 {b('মুছে ফেলুন', 'Delete')}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* In-App PDF Preview Lightbox */}
+      {previewPdfUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-4xl w-full h-[85vh] flex flex-col shadow-2xl border border-stone-200 overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-stone-200 bg-stone-50">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-brand-maroon" />
+                <span className="font-bold text-stone-900 text-xs sm:text-sm">{b('সার্কুলার PDF প্রিভিউ', 'Circular PDF Preview')}</span>
+              </div>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <button
+                  type="button"
+                  onClick={() => triggerDownload(previewPdfUrl, 'notice-circular.pdf')}
+                  className="text-xs font-semibold text-brand-maroon hover:bg-rose-50 px-2.5 py-1 rounded-lg border border-brand-maroon/20 flex items-center gap-1 cursor-pointer"
+                  title="Download PDF"
+                >
+                  <Download className="w-3.5 h-3.5" /> <span className="hidden sm:inline">{b('ডাউনলোড', 'Download')}</span>
+                </button>
+                <a
+                  href={previewPdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-semibold text-stone-600 hover:text-brand-maroon hover:underline flex items-center gap-1 px-1.5 py-1"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> <span className="hidden sm:inline">{b('সম্পূর্ণ স্ক্রিন', 'Full Screen')}</span>
+                </a>
+                <button
+                  onClick={() => setPreviewPdfUrl(null)}
+                  className="p-1.5 rounded-lg text-stone-500 hover:text-stone-800 hover:bg-stone-200 transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 bg-stone-100 p-2">
+              <object
+                data={previewPdfUrl}
+                type="application/pdf"
+                className="w-full h-full rounded-xl border border-stone-300 bg-white"
+              >
+                <iframe
+                  src={previewPdfUrl}
+                  className="w-full h-full rounded-xl border border-stone-300 bg-white"
+                  title="Notice PDF Preview"
+                />
+              </object>
             </div>
           </div>
         </div>

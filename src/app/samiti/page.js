@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { triggerDownload } from '@/utils/download';
+import { getImageWing } from '@/utils/gallery';
 import { 
   SamitiEmblemIcon, 
   CivicShieldBadgeIcon, 
@@ -29,7 +30,7 @@ function parseMemberRole(role) {
   let wing = 'Samiti';
   let rest = role;
   if (rest.startsWith('[Club]')) { wing = 'Club'; rest = rest.replace('[Club]', '').trim(); }
-  else if (rest.startsWith('[Samiti]')) { wing = 'Samiti'; rest = rest.replace('[Samiti]', '').trim(); }
+  else if (rest.startsWith('[Samiti]') || rest.startsWith('[Samity]')) { wing = 'Samiti'; rest = rest.replace(/^\[(Samiti|Samity)\]/, '').trim(); }
   else if (rest.startsWith('[Puja]')) { wing = 'Puja'; rest = rest.replace('[Puja]', '').trim(); }
 
   let cleanRole = rest;
@@ -59,12 +60,20 @@ function parseMemberNameDetails(rawName) {
 }
 
 const FALLBACK_SAMITI_MEMBERS = [
-  { id: 30, name: "শ্রী পার্থসারথি সেনগুপ্ত (PARTHA SARATHI SENGUPTA)", role: "[Samiti] সভাপতি | 9830012345", image: "/assets/avatars/president.svg", year: 2026 },
-  { id: 31, name: "শ্রী অসীম চ্যাটার্জি (ASHIM CHATTERJEE)", role: "[Samiti] সহ-সভাপতি | 9830112345", image: "/assets/avatars/vice-president.svg", year: 2026 },
-  { id: 32, name: "শ্রী সুশান্ত রায় (SUSHANTA ROY)", role: "[Samiti] সাধারণ সম্পাদক | 9830212345", image: "/assets/avatars/secretary.svg", year: 2026 },
-  { id: 33, name: "শ্রী ভাস্কর মজুমদার (BHASKAR MAJUMDAR)", role: "[Samiti] সহ-সম্পাদক | 9830312345", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
-  { id: 34, name: "শ্রী নারায়ণ ঘোষ (NARAYAN GHOSH)", role: "[Samiti] কোষাধ্যক্ষ | 9830612345", image: "/assets/avatars/treasurer.svg", year: 2026 },
-  { id: 35, name: "শ্রী তপন ভট্টাচার্য (TAPAN BHATTACHARYA)", role: "[Samiti] পরিকাঠামো আহ্বায়ক | 9830412345", image: "/assets/avatars/samiti-member.svg", year: 2026 }
+  { id: 30, name: "শতদল রায় (SATADAL ROY)", role: "[Samiti] সভাপতি | 9830379574", image: "/assets/avatars/president.svg", year: 2026 },
+  { id: 31, name: "সঞ্জয় ঘোষ (SANJOY GHOSH)", role: "[Samiti] সহ-সভাপতি | 9088533055", image: "/assets/avatars/vice-president.svg", year: 2026 },
+  { id: 32, name: "সৈকত সাহা (SAIKAT SAHA)", role: "[Samiti] সাধারণ সম্পাদক | 9831065856", image: "/assets/avatars/secretary.svg", year: 2026 },
+  { id: 33, name: "অনির্বাণ সাহা (ANIRBAN SAHA)", role: "[Samiti] সহ-সম্পাদক | 9163197141", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
+  { id: 34, name: "বিকাশ গুপ্ত (VIKASH GUPTA)", role: "[Samiti] কোষাধ্যক্ষ | 9874222446", image: "/assets/avatars/treasurer.svg", year: 2026 },
+  { id: 35, name: "রবি শাহ (RAVI SHAH)", role: "[Samiti] সহ-কোষাধ্যক্ষ | 8910458272", image: "/assets/avatars/asst-treasurer.svg", year: 2026 },
+  { id: 36, name: "পরেশ দেবনাথ (PARESH DEBNATH)", role: "[Samiti] অফিস ও সম্পত্তি ব্যবস্থাপনা | 6290269691", image: "/assets/avatars/samiti-member.svg", year: 2026 },
+  { id: 37, name: "পঙ্কজ সাহা (PANKAJ SAHA)", role: "[Samiti] অফিস ও সম্পত্তি ব্যবস্থাপনা | 9830371671", image: "/assets/avatars/samiti-member.svg", year: 2026 },
+  { id: 38, name: "সুকুমার মণ্ডল (SUKUMAR MONDAL)", role: "[Samiti] অফিস ও সম্পত্তি ব্যবস্থাপনা | 7439866492", image: "/assets/avatars/samiti-member.svg", year: 2026 },
+  { id: 39, name: "অরূপ শিকদার (ARUP SIKDER)", role: "[Samiti] অফিস ও সম্পত্তি ব্যবস্থাপনা | 8100563504", image: "/assets/avatars/samiti-member.svg", year: 2026 },
+  { id: 40, name: "সাহেব হালদার (SAHEB HALDER)", role: "[Samiti] অফিস ও সম্পত্তি ব্যবস্থাপনা | 9748872221", image: "/assets/avatars/samiti-member.svg", year: 2026 },
+  { id: 41, name: "কাকলী দে (KAKOLI DEY)", role: "[Samiti] সমস্যা ও সমাধান বিভাগ | 8697852566", image: "/assets/avatars/cultural-female.svg", year: 2026 },
+  { id: 42, name: "রবি গোস্বামী (RABI GOSWAMI)", role: "[Samiti] সমস্যা ও সমাধান বিভাগ | 8240672206", image: "/assets/avatars/samiti-member.svg", year: 2026 },
+  { id: 43, name: "সুরজিৎ সরকার (SUROJIT SARKAR)", role: "[Samiti] উন্নয়ন পরিষদ সদস্য | 8777581827", image: "/assets/avatars/samiti-member.svg", year: 2026 }
 ];
 
 export default function SamitiPage() {
@@ -94,10 +103,10 @@ export default function SamitiPage() {
   const samitiNotices = useMemo(() => {
     const raw = (data.notices && data.notices.length > 0)
       ? data.notices
-          .filter(n => n.title && n.title.startsWith('[Samiti]'))
+          .filter(n => n.title && (n.title.startsWith('[Samiti]') || n.title.startsWith('[Samity]')))
           .map(n => ({
             ...n,
-            title: n.title.replace(/^\[Samiti\]\s*/, ''),
+            title: n.title.replace(/^\[(Samiti|Samity)\]\s*/i, ''),
             pdfUrl: n.pdfUrl || '/sample-notice.pdf'
           }))
       : [];
@@ -107,10 +116,10 @@ export default function SamitiPage() {
     return [
       {
         id: 'samiti-notice-1',
-        title: b('বর্ষাপূর্ব ড্রেন পরিষ্কার ও ডেঙ্গি প্রতিরোধ স্প্রে অভিযান', 'Pre-Monsoon Drainage Cleaning & Vector Spray Drive'),
+        title: b('বর্ষাপূর্ব পাড়ার পরিচ্ছন্নতা ও ডেঙ্গি প্রতিরোধ স্প্রে অভিযান', 'Pre-Monsoon Cleanliness & Vector Control Spray Drive'),
         text: b(
-          'সকল লেন ও নিকাশি নালা • সকাল ৮:০০ টা হইতে অপরাহ্ন ১:০০ টা\n\nআসন্ন বর্ষা মৌসুমের পূর্বে সোনালী পার্কের প্রতিটি লেনের প্রধান ড্রেন পলি পরিষ্কার এবং মশা নিধনে ব্লিচিং ও লার্ভিসাইড স্প্রে করা হবে। বাসিন্দাদের নিকাশি নালায় কোনো ধরনের প্লাস্টিক বর্জ্য না ফেলার জন্য বিশেষ অনুরোধ জানানো হচ্ছে।',
-          'All Neighborhood Lanes • 8:00 AM to 1:00 PM\n\nIntensive drain desilting and anti-larval chemical spraying will be conducted across all neighborhood lanes before monsoon. Residents are requested not to dispose of solid or plastic waste into drainage lines.'
+          'সকল অভ্যন্তরীণ লেন ও প্রাঙ্গণ • সকাল ৮:০০ টা হইতে অপরাহ্ন ১:০০ টা\n\nআসন্ন বর্ষা মৌসুমের পূর্বে সোনালী পার্কের প্রতিটি অভ্যন্তরীণ লেনে ব্লিচিং ও ডেঙ্গি প্রতিরোধে লার্ভিসাইড স্প্রে করা হবে। বাসিন্দাদের যত্রতত্র প্লাস্টিক বর্জ্য বা জল জমিয়ে না রাখার জন্য বিশেষ অনুরোধ জানানো হচ্ছে।',
+          'All Neighborhood Lanes • 8:00 AM to 1:00 PM\n\nIntensive sanitation and anti-larval chemical spraying will be conducted across all neighborhood lanes before monsoon. Residents are requested to ensure no water accumulation or plastic waste disposal.'
         ),
         pdfUrl: '/sample-notice.pdf',
         isUrgent: true,
@@ -159,7 +168,7 @@ export default function SamitiPage() {
   // Civic gallery photos (All samiti photos)
   const samitiGalleryItems = useMemo(() => {
     const raw = (data.gallery && data.gallery.length > 0)
-      ? data.gallery.filter(g => g.program === 'Unnayan Samiti' || g.category === 'Samiti' || g.category === 'Roads' || g.category === 'Greenery' || g.category === 'Sanitation' || g.category === 'Civic')
+      ? data.gallery.filter(g => getImageWing(g) === 'Samiti')
       : [];
 
     if (raw.length > 0) return raw;
@@ -167,7 +176,7 @@ export default function SamitiPage() {
     return [
       {
         src: '/assets/durga-hero.png',
-        title: b('পাড়ার প্রধান রাস্তা ও ড্রেন সংস্কার কাজ', 'Main Lane & Drainage Renovation'),
+        title: b('পাড়ার অভ্যন্তরীণ রাস্তা ও পথবাতি সংস্কার কাজ', 'Neighborhood Lane & Streetlight Maintenance'),
         category: 'Roads',
         year: 2026
       },
@@ -207,7 +216,7 @@ export default function SamitiPage() {
 
   // All Samiti Members
   const allSamitiMembers = useMemo(() => {
-    let rawSamitiMembers = (data.members || []).filter(m => m.role && m.role.startsWith('[Samiti]'));
+    let rawSamitiMembers = (data.members || []).filter(m => m.role && (m.role.startsWith('[Samiti]') || m.role.startsWith('[Samity]')));
     if (rawSamitiMembers.length === 0) {
       rawSamitiMembers = FALLBACK_SAMITI_MEMBERS;
     }
@@ -248,38 +257,17 @@ export default function SamitiPage() {
     setTouchStartMember(null);
   };
 
-  // Samiti Financial Documents
+  // Samiti Financial Documents (Only verified uploaded files, no dummy sample-audit.pdf)
   const samitiFinances = useMemo(() => {
-    const dynamicFinances = (data.finances || [])
-      .filter(f => f.title && f.title.startsWith('[Samiti]'))
+    return (data.finances || [])
+      .filter(f => f.title && (f.title.startsWith('[Samiti]') || f.title.startsWith('[Samity]')))
+      .filter(f => f.url && f.url !== '/sample-audit.pdf')
       .map(f => ({
-        title: f.title.replace('[Samiti]', '').trim(),
+        title: f.title.replace(/^\[(Samiti|Samity)\]/, '').trim(),
         year: f.year,
         url: f.url
       }));
-
-    if (dynamicFinances.length > 0) {
-      return dynamicFinances;
-    }
-
-    return [
-      {
-        title: b('সোনালী পার্ক উন্নয়ন সমিতি বাৎসরিক অডিট রিপোর্ট ২০২৫-২৬', 'Sonali Park Unnayan Samiti Annual Audit Report 2025-26'),
-        year: 2026,
-        url: '/sample-audit.pdf'
-      },
-      {
-        title: b('পাড়ার ড্রেন ও রাস্তা সংস্কার কাজের ব্যয় বিবরণী', 'Drain & Lane Infrastructure Expenditure Statement'),
-        year: 2026,
-        url: '/sample-audit.pdf'
-      },
-      {
-        title: b('নৈশ নিরাপত্তা ও সিসিটিভি ক্যামেরা তহবিল হিসাব', 'Night Security & CCTV Surveillance Fund Statement'),
-        year: 2026,
-        url: '/sample-audit.pdf'
-      }
-    ];
-  }, [data.finances, b]);
+  }, [data.finances]);
 
   return (
     <main className="bg-[#FAF7F2] min-h-screen pt-20 sm:pt-24 pb-20 selection:bg-brand-maroon selection:text-white font-sans">
@@ -303,7 +291,7 @@ export default function SamitiPage() {
             {/* Samiti Registration / Identity Kicker */}
             <div className="inline-flex items-center justify-center gap-2.5 mb-3 text-emerald-300 font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em]">
               <span className="w-5 h-0.5 bg-emerald-400/50 rounded-full" />
-              <span>{b('নাগরিক কল্যাণ ও আবাসিক আরডব্লিউএ শাখা • ১৯৭৮', 'Civic Development & Residents Welfare Association • Estd. 1978')}</span>
+              <span>{b('নাগরিক কল্যাণ ও আবাসিক আরডব্লিউএ শাখা', 'Civic Development & Residents Welfare Association')}</span>
               <span className="w-5 h-0.5 bg-emerald-400/50 rounded-full" />
             </div>
 
@@ -360,7 +348,7 @@ export default function SamitiPage() {
               {b('কোনো নতুন নোটিশ নেই', 'No Active Notices')}
             </h3>
             <p className="font-serif text-xs sm:text-sm text-stone-600 max-w-md">
-              {b('সমিতির সমস্ত নিয়মিত আপডেট এখানে সময়মতো প্রকাশ করা হবে।', 'All regular civic updates and samiti circulars will be published here in timely order.')}
+              {b('সমিতির সমস্ত নিয়মিত আপডেট এখানে সময়মতো প্রকাশ করা হবে।', 'All regular civic updates and samity circulars will be published here in timely order.')}
             </p>
           </div>
         ) : (
@@ -568,12 +556,8 @@ export default function SamitiPage() {
       <section id="samiti-committee" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-              <span>{b('পরিচালনা পরিষদ', 'Executive Board')}</span>
-            </div>
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug">
-              {b('উন্নয়ন সমিতির কার্যনির্বাহী পরিষদ', 'Unnayan Samiti Executive Council')}
+              {b('উন্নয়ন সমিতি পরিচালনা পরিষদ', 'Unnayan Samiti Council')}
             </h2>
           </div>
 
@@ -582,7 +566,7 @@ export default function SamitiPage() {
               href="/committee?wing=Samiti"
               className="inline-flex items-center gap-2 pl-4 sm:pl-5 pr-2 py-1.5 rounded-full text-xs sm:text-sm font-bold btn-tactile-parchment text-stone-800 hover:text-brand-maroon whitespace-nowrap group shadow-xs"
             >
-              <span>{b('সম্পূর্ণ কমিটি ও সকল সদস্য দেখুন (২০+)', 'View Full Committee (20+ Members)')}</span>
+              <span>{b('সম্পূর্ণ পরিষদ ও বিভাগসমূহ দেখুন', 'View Full Council & Departments')}</span>
               <span className="w-6 h-6 rounded-full bg-brand-maroon/10 group-hover:bg-brand-maroon text-brand-maroon group-hover:text-white flex items-center justify-center text-xs font-bold transition-colors">
                 →
               </span>
@@ -619,19 +603,31 @@ export default function SamitiPage() {
                   </div>
 
                   {/* Name */}
-                  <h4 className="font-serif font-bold text-stone-900 text-xs sm:text-sm leading-snug line-clamp-1 group-hover:text-emerald-900 transition-colors" title={lang === 'en' ? tName(m.rawName || m.name) : m.name}>
+                  <h4 className="font-serif font-bold text-stone-900 text-xs sm:text-sm leading-snug line-clamp-1 group-hover:text-emerald-950 transition-colors" title={lang === 'en' ? tName(m.rawName || m.name) : m.name}>
                     {lang === 'en' ? tName(m.rawName || m.name) : m.name}
                   </h4>
 
-                  {/* Nickname */}
-                  {m.nickname && (
-                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-900 border border-emerald-200 mt-1">
-                      “{lang === 'en' ? tNickname(m.nickname) : m.nickname}”
-                    </span>
-                  )}
+                  {/* Nickname & Sub-language Transliteration */}
+                  <div className="flex items-center justify-center gap-1 mt-1 flex-wrap">
+                    {m.nickname && (
+                      <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-900 border border-emerald-200">
+                        “{lang === 'en' ? tNickname(m.nickname) : m.nickname}”
+                      </span>
+                    )}
+                    {lang === 'bn' && m.englishName && (
+                      <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block">
+                        {m.englishName}
+                      </span>
+                    )}
+                    {lang === 'en' && (
+                      <span className="text-[10px] font-serif text-stone-400 tracking-wide block">
+                        {m.name}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                {/* Role & Interactive Phone Call Pill */}
+                {/* Role & Direct Phone Call Pill */}
                 <div className="w-full flex flex-col items-center gap-1.5 mt-3 pt-2.5 border-t border-stone-200/60">
                   <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 group-hover:bg-emerald-100 text-emerald-950 text-[10px] font-bold border border-emerald-200 group-hover:border-emerald-300 leading-tight truncate max-w-full transition-colors">
                     {tRole(m.role)}
@@ -696,6 +692,125 @@ export default function SamitiPage() {
               </span>
             </div>
           )}
+
+          {/* ═══ Official Departmental Portfolios Directory (2026 Charter) ═══ */}
+          <div className="mt-10 sm:mt-12 pt-8 border-t border-stone-200/60 max-w-5xl mx-auto">
+            <div className="text-center mb-6">
+              <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-emerald-850 bg-emerald-50 px-3.5 py-1 rounded-full border border-emerald-200/80 shadow-2xs">
+                {b('বিভাগীয় দায়িত্ব ও পরিচালনা পরিষদ ২০২৬', 'Departmental Portfolios & Councils 2026')}
+              </span>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {/* 1. Office & Asset Management */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:border-emerald-400/50 transition-colors">
+                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-stone-100">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                  <h4 className="font-serif font-bold text-sm text-stone-900">
+                    {b('অফিস ও সম্পত্তি ব্যবস্থাপনা', 'Office & Asset Management')}
+                  </h4>
+                </div>
+                <div className="space-y-1.5 text-xs">
+                  {[
+                    { name: b('পরেশ দেবনাথ', 'Paresh Debnath'), phone: '6290269691' },
+                    { name: b('পঙ্কজ সাহা', 'Pankaj Saha'), phone: '9830371671' },
+                    { name: b('সুকুমার মণ্ডল', 'Sukumar Mondal'), phone: '7439866492' },
+                    { name: b('বিকাশ গুপ্ত', 'Vikash Gupta'), phone: '9874222446' },
+                    { name: b('অরূপ শিকদার', 'Arup Sikder'), phone: '8100563504' },
+                    { name: b('সাহেব হালদার', 'Saheb Halder'), phone: '9748872221' },
+                  ].map((p, idx) => (
+                    <div key={idx} className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-stone-50 transition-colors">
+                      <span className="font-medium text-stone-800">{p.name}</span>
+                      <a href={`tel:+91${p.phone}`} className="text-[11px] font-mono text-emerald-700 hover:text-emerald-900 flex items-center gap-1 font-semibold">
+                        <Phone className="w-2.5 h-2.5 text-emerald-600" />
+                        <span>{p.phone}</span>
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 2. Department of Problems and Solutions */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:border-emerald-400/50 transition-colors">
+                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-stone-100">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                  <h4 className="font-serif font-bold text-sm text-stone-900">
+                    {b('সমস্যা ও সমাধান বিভাগ', 'Department of Problems & Solutions')}
+                  </h4>
+                </div>
+                <div className="space-y-1.5 text-xs">
+                  {[
+                    { name: b('অনির্বাণ সাহা', 'Anirban Saha'), phone: '9163197141' },
+                    { name: b('কাকলী দে', 'Kakoli Dey'), phone: '8697852566' },
+                    { name: b('রবি গোস্বামী', 'Rabi Goswami'), phone: '8240672206' },
+                    { name: b('অরূপ শিকদার', 'Arup Sikder'), phone: '8100563504' },
+                    { name: b('রবি শাহ', 'Ravi Shah'), phone: '8910458272' },
+                  ].map((p, idx) => (
+                    <div key={idx} className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-stone-50 transition-colors">
+                      <span className="font-medium text-stone-800">{p.name}</span>
+                      <a href={`tel:+91${p.phone}`} className="text-[11px] font-mono text-emerald-700 hover:text-emerald-900 flex items-center gap-1 font-semibold">
+                        <Phone className="w-2.5 h-2.5 text-emerald-600" />
+                        <span>{p.phone}</span>
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 3. Cultural and Event Management */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:border-emerald-400/50 transition-colors">
+                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-stone-100">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                  <h4 className="font-serif font-bold text-sm text-stone-900">
+                    {b('সাংস্কৃতিক ও অনুষ্ঠান ব্যবস্থাপনা', 'Cultural & Event Management')}
+                  </h4>
+                </div>
+                <div className="space-y-1.5 text-xs">
+                  {[
+                    { name: b('পরেশ দেবনাথ', 'Paresh Debnath'), phone: '6290269691' },
+                    { name: b('অনির্বাণ সাহা', 'Anirban Saha'), phone: '9163197141' },
+                  ].map((p, idx) => (
+                    <div key={idx} className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-stone-50 transition-colors">
+                      <span className="font-medium text-stone-800">{p.name}</span>
+                      <a href={`tel:+91${p.phone}`} className="text-[11px] font-mono text-emerald-700 hover:text-emerald-900 flex items-center gap-1 font-semibold">
+                        <Phone className="w-2.5 h-2.5 text-emerald-600" />
+                        <span>{p.phone}</span>
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 4. Development Council */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/90 shadow-2xs hover:border-emerald-400/50 transition-colors">
+                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-stone-100">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                  <h4 className="font-serif font-bold text-sm text-stone-900">
+                    {b('উন্নয়ন পরিষদ', 'Development Council')}
+                  </h4>
+                </div>
+                <div className="space-y-1.5 text-xs">
+                  {[
+                    { name: b('সৈকত সাহা', 'Saikat Saha'), phone: '9831065856' },
+                    { name: b('শতদল রায়', 'Satadal Roy'), phone: '9830379574' },
+                    { name: b('সুরজিৎ সরকার', 'Surojit Sarkar'), phone: '8777581827' },
+                    { name: b('রবি গোস্বামী', 'Rabi Goswami'), phone: '8240672206' },
+                    { name: b('সঞ্জয় ঘোষ', 'Sanjoy Ghosh'), phone: '9088533055' },
+                    { name: b('পঙ্কজ সাহা', 'Pankaj Saha'), phone: '9830371671' },
+                    { name: b('রবি শাহ', 'Ravi Shah'), phone: '8910458272' },
+                  ].map((p, idx) => (
+                    <div key={idx} className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-stone-50 transition-colors">
+                      <span className="font-medium text-stone-800">{p.name}</span>
+                      <a href={`tel:+91${p.phone}`} className="text-[11px] font-mono text-emerald-700 hover:text-emerald-900 flex items-center gap-1 font-semibold">
+                        <Phone className="w-2.5 h-2.5 text-emerald-600" />
+                        <span>{p.phone}</span>
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -923,54 +1038,80 @@ export default function SamitiPage() {
             </div>
           </div>
 
-          {/* Audit Documents Download List */}
-          <div className="space-y-3">
-            {(showAllPdfs ? samitiFinances : samitiFinances.slice(0, 2)).map((doc, idx) => (
-              <Link
-                key={idx}
-                href={`/transparency?wing=Samiti&viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(t(doc.title))}`}
-                className="group flex items-center justify-between p-3.5 sm:p-4.5 rounded-2xl bg-white border border-[#E8DFD1] hover:border-brand-maroon/40 transition-all shadow-2xs hover:shadow-xs cursor-pointer"
-              >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200/90 text-emerald-700 flex items-center justify-center shrink-0">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="font-serif font-bold text-sm sm:text-base text-stone-900 group-hover:text-brand-maroon transition-colors truncate">
-                      {t(doc.title)}
-                    </h4>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF7F2] text-stone-600 border border-[#E8DFD1]">
-                        {b('অডিট নথি', 'Audit Document')}
-                      </span>
-                      <span className="text-xs text-stone-400">
-                        {b('সাল:', 'Year:')} {toDigits(doc.year, lang)}
-                      </span>
+          {/* Audit Documents Download List or Authentic In-Progress State */}
+          {samitiFinances.length > 0 ? (
+            <div className="space-y-3">
+              {(showAllPdfs ? samitiFinances : samitiFinances.slice(0, 2)).map((doc, idx) => (
+                <Link
+                  key={idx}
+                  href={`/transparency?wing=Samiti&viewPdf=${encodeURIComponent(doc.url)}&pdfTitle=${encodeURIComponent(t(doc.title))}`}
+                  className="group flex items-center justify-between p-3.5 sm:p-4.5 rounded-2xl bg-white border border-[#E8DFD1] hover:border-brand-maroon/40 transition-all shadow-2xs hover:shadow-xs cursor-pointer"
+                >
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200/90 text-emerald-700 flex items-center justify-center shrink-0">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="font-serif font-bold text-sm sm:text-base text-stone-900 group-hover:text-brand-maroon transition-colors truncate">
+                        {t(doc.title)}
+                      </h4>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF7F2] text-stone-600 border border-[#E8DFD1]">
+                          {b('অডিট নথি', 'Audit Document')}
+                        </span>
+                        <span className="text-xs text-stone-400">
+                          {b('সাল:', 'Year:')} {toDigits(doc.year, lang)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-2 shrink-0">
-                  <div className="btn-tactile-parchment inline-flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full text-stone-800 group-hover:text-brand-maroon font-bold text-xs">
-                    <span>{b('দেখুন', 'View')}</span>
-                    <span className="text-xs">→</span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="btn-tactile-parchment inline-flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full text-stone-800 group-hover:text-brand-maroon font-bold text-xs">
+                      <span>{b('দেখুন', 'View')}</span>
+                      <span className="text-xs">→</span>
+                    </div>
+                    <button
+                      type="button"
+                      title={b('পিডিএফ ডাউনলোড করুন', 'Download PDF')}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        triggerDownload(doc.url, `${doc.title || 'samiti-audit'}.pdf`);
+                      }}
+                      className="p-1.5 rounded-full bg-stone-100 hover:bg-brand-maroon hover:text-white text-stone-600 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-4 h-4" />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    title={b('পিডিএফ ডাউনলোড করুন', 'Download PDF')}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      triggerDownload(doc.url, `${doc.title || 'samiti-audit'}.pdf`);
-                    }}
-                    className="p-1.5 rounded-full bg-stone-100 hover:bg-brand-maroon hover:text-white text-stone-600 transition-colors cursor-pointer"
-                  >
-                    <Download className="w-4 h-4" />
-                  </button>
-                </div>
-              </Link>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 sm:py-12 px-4 rounded-2xl bg-white border border-stone-200/80">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 flex items-center justify-center mx-auto mb-3">
+                <FileText className="w-6 h-6" />
+              </div>
+              <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900 mb-1">
+                {b('উন্নয়ন সমিতির নিরীক্ষিত অডিট রিপোর্ট প্রক্রিয়াধীন', 'Samiti Audited Accounts in Progress')}
+              </h3>
+              <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
+                {b(
+                  'বাৎসরিক অডিট ও সাধারণ সভার অনুমোদনের পর উন্নয়ন সমিতির আর্থিক রিপোর্ট এখানে ও স্বচ্ছতা পেজে আপলোড করা হবে।',
+                  'Audited accounts will be uploaded here and on the transparency portal following verification and AGM approval.'
+                )}
+              </p>
+              <div className="mt-4">
+                <Link
+                  href="/transparency?wing=Samiti"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                  <span>{b('স্বচ্ছতা ও বাজেট বিভাগ দেখুন →', 'View Transparency & Budget →')}</span>
+                </Link>
+              </div>
+            </div>
+          )}
 
           {/* See More / Show Less Toggle Button */}
           {samitiFinances.length > 2 && (
@@ -1008,7 +1149,7 @@ export default function SamitiPage() {
               </div>
               <button
                 type="button"
-                onClick={() => triggerDownload(selectedImage.src, `${selectedImage.title || 'samiti-photo'}.jpg`)}
+                onClick={() => triggerDownload(selectedImage.src, `${selectedImage.title || 'samity-photo'}.jpg`)}
                 className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-full font-bold transition-all text-sm shadow-md cursor-pointer"
               >
                 <Download className="w-4 h-4" /> {b('ডাউনলোড', 'Download')}

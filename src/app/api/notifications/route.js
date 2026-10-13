@@ -31,12 +31,12 @@ function writeSeedData(data) {
 // Parse wing from title or program
 function detectWing(title = '', program = '') {
   if (title.startsWith('[Club]') || program === 'Club & Sports') return 'club';
-  if (title.startsWith('[Samiti]') || program === 'Unnayan Samiti') return 'samiti';
+  if (title.startsWith('[Samiti]') || title.startsWith('[Samity]') || program === 'Unnayan Samiti' || program === 'Unnayan Samity') return 'samiti';
   return 'puja';
 }
 
 function cleanTitle(title = '') {
-  return title.replace(/^\[(Club|Samiti|Puja)\]\s*/i, '').trim();
+  return title.replace(/^\[(Club|Samiti|Samity|Puja)\]\s*/i, '').trim();
 }
 
 export async function GET() {

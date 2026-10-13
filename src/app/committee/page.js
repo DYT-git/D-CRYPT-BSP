@@ -20,7 +20,7 @@ function parseMemberRole(role) {
   let wing = 'Puja';
   let rest = role;
   if (rest.startsWith('[Club]')) { wing = 'Club'; rest = rest.replace('[Club]', '').trim(); }
-  else if (rest.startsWith('[Samiti]')) { wing = 'Samiti'; rest = rest.replace('[Samiti]', '').trim(); }
+  else if (rest.startsWith('[Samiti]') || rest.startsWith('[Samity]')) { wing = 'Samiti'; rest = rest.replace(/^\[(Samiti|Samity)\]/, '').trim(); }
   else if (rest.startsWith('[Puja]')) { wing = 'Puja'; rest = rest.replace('[Puja]', '').trim(); }
 
   let cleanRole = rest;
@@ -59,34 +59,40 @@ const FALLBACK_PUJA_MEMBERS = [
 ];
 
 const FALLBACK_CLUB_MEMBERS = [
-  { id: 13, name: "রবি জানা (RABI JANA)", role: "[Club] সভাপতি | 7980464187", image: "/assets/avatars/rabi-jana.jpg", year: 2026 },
-  { id: 14, name: "ছোটকা দাস (বাপি) (CHOTKA DAS)", role: "[Club] সহঃ সভাপতি | 8910936506", image: "/assets/avatars/vice-president.svg", year: 2026 },
-  { id: 15, name: "তরুণ দেবনাথ (TARUN DEBNATH)", role: "[Club] সহঃ সভাপতি | 7890867584", image: "/assets/avatars/vice-president.svg", year: 2026 },
-  { id: 16, name: "নৃপেন সাহা (NRIPEN SAHA)", role: "[Club] সম্পাদক | 8777484189", image: "/assets/avatars/nripen-saha.jpg", year: 2026 },
-  { id: 17, name: "সুরজিৎ সরকার (SURAJIT SARKAR)", role: "[Club] সহঃ সম্পাদক | 8777581827", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
-  { id: 18, name: "অরূপ মল্লিক (ARUP MULLICK)", role: "[Club] সহঃ সম্পাদক | 8777285009", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
-  { id: 19, name: "শুভজিৎ মালো (সনু) (SUBHAJIT MALO)", role: "[Club] কোষাধ্যক্ষ | 9123727257", image: "/assets/avatars/subhajit-malo.jpg", year: 2026 },
-  { id: 20, name: "অভিষেক চৌধুরী (শিবা) (AVISEK CHOUDHURY)", role: "[Club] সহঃ কোষাধ্যক্ষ | 8013337014", image: "/assets/avatars/asst-treasurer.svg", year: 2026 },
-  { id: 21, name: "রবি গোস্বামী (RAVI GOSWAMI)", role: "[Club] সহঃ কোষাধ্যক্ষ | 8240672206", image: "/assets/avatars/asst-treasurer.svg", year: 2026 },
-  { id: 22, name: "অমল দাস (বাবাই) (AMAL DAS)", role: "[Club] ক্রীড়া সম্পাদক | 8777368136", image: "/assets/avatars/amal-das.jpg", year: 2026 },
-  { id: 23, name: "আকাশ জানা (AKASH JANA)", role: "[Club] সহঃ ক্রীড়া সম্পাদক | 6289640300", image: "/assets/avatars/sports-secretary.svg", year: 2026 },
-  { id: 24, name: "অতনু দত্ত (টুটু) (ATANU DUTTA)", role: "[Club] সহঃ ক্রীড়া সম্পাদক | 9339748034", image: "/assets/avatars/sports-secretary.svg", year: 2026 },
-  { id: 25, name: "পিংকি কুণ্ডু (PINKI KUNDU)", role: "[Club] সাংস্কৃতিক সম্পাদক | 9874674901", image: "/assets/avatars/cultural-female.svg", year: 2026 },
-  { id: 26, name: "স্নেহা ঘোষ (SNEHA GHOSH)", role: "[Club] সাংস্কৃতিক সম্পাদক | 6289860007", image: "/assets/avatars/cultural-female.svg", year: 2026 },
-  { id: 27, name: "তরুণ দেবনাথ (TARUN DEBNATH)", role: "[Club] সাংস্কৃতিক সম্পাদক | 7890867584", image: "/assets/avatars/cultural-secretary.svg", year: 2026 },
-  { id: 28, name: "দেবাশীষ দেওয়ান (DEBASISH DEWAN)", role: "[Club] সহযোগী সদস্য", image: "/assets/avatars/club-member.svg", year: 2026 },
-  { id: 29, name: "সঞ্জয় মণ্ডল (বাবাই) (SANJOY MONDAL)", role: "[Club] সহযোগী সদস্য", image: "/assets/avatars/club-member.svg", year: 2026 }
+  { id: 7, name: "রবি জানা (RABI JANA)", role: "[Club] সভাপতি | 7980464187", image: "/assets/avatars/rabi-jana.jpg", year: 2026 },
+  { id: 8, name: "ছোটকা দাস (বাপি) (CHOTKA DAS)", role: "[Club] সহঃ সভাপতি | 8910936506", image: "/assets/avatars/vice-president.svg", year: 2026 },
+  { id: 9, name: "তরুণ দেবনাথ (TARUN DEBNATH)", role: "[Club] সহঃ সভাপতি | 7890867584", image: "/assets/avatars/vice-president.svg", year: 2026 },
+  { id: 10, name: "নৃপেন সাহা (NRIPEN SAHA)", role: "[Club] সম্পাদক | 8777484189", image: "/assets/avatars/nripen-saha.jpg", year: 2026 },
+  { id: 11, name: "সুরজিৎ সরকার (SURAJIT SARKAR)", role: "[Club] সহঃ সম্পাদক | 8777581827", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
+  { id: 12, name: "অরূপ মল্লিক (ARUP MULLICK)", role: "[Club] সহঃ সম্পাদক | 8777285009", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
+  { id: 13, name: "শুভজিৎ মালো (সনু) (SUBHAJIT MALO)", role: "[Club] কোষাধ্যক্ষ | 9123727257", image: "/assets/avatars/subhajit-malo.jpg", year: 2026 },
+  { id: 14, name: "অভিষেক চৌধুরী (শিবা) (AVISEK CHOUDHURY)", role: "[Club] সহঃ কোষাধ্যক্ষ | 8013337014", image: "/assets/avatars/asst-treasurer.svg", year: 2026 },
+  { id: 15, name: "রবি গোস্বামী (RAVI GOSWAMI)", role: "[Club] সহঃ কোষাধ্যক্ষ | 8240672206", image: "/assets/avatars/asst-treasurer.svg", year: 2026 },
+  { id: 16, name: "অমল দাস (বাবাই) (AMAL DAS)", role: "[Club] ক্রীড়া সম্পাদক | 8777368136", image: "/assets/avatars/amal-das.jpg", year: 2026 },
+  { id: 17, name: "আকাশ জানা (AKASH JANA)", role: "[Club] সহঃ ক্রীড়া সম্পাদক | 6289640300", image: "/assets/avatars/sports-secretary.svg", year: 2026 },
+  { id: 18, name: "অতনু দত্ত (টুটু) (ATANU DUTTA)", role: "[Club] সহঃ ক্রীড়া সম্পাদক | 9339748034", image: "/assets/avatars/sports-secretary.svg", year: 2026 },
+  { id: 19, name: "পিংকি কুণ্ডু (PINKI KUNDU)", role: "[Club] সাংস্কৃতিক সম্পাদক | 9874674901", image: "/assets/avatars/cultural-female.svg", year: 2026 },
+  { id: 20, name: "স্নেহা ঘোষ (SNEHA GHOSH)", role: "[Club] সাংস্কৃতিক সম্পাদক | 6289860007", image: "/assets/avatars/cultural-female.svg", year: 2026 },
+  { id: 21, name: "তরুণ দেবনাথ (TARUN DEBNATH)", role: "[Club] সাংস্কৃতিক সম্পাদক | 7890867584", image: "/assets/avatars/cultural-secretary.svg", year: 2026 },
+  { id: 22, name: "দেবাশীষ দেওয়ান (DEBASISH DEWAN)", role: "[Club] সহযোগী সদস্য", image: "/assets/avatars/club-member.svg", year: 2026 },
+  { id: 23, name: "সঞ্জয় মণ্ডল (বাবাই) (SANJOY MONDAL)", role: "[Club] সহযোগী সদস্য", image: "/assets/avatars/club-member.svg", year: 2026 }
 ];
 
 const FALLBACK_SAMITI_MEMBERS = [
-  { id: 30, name: "শ্রী পার্থসারথি সেনগুপ্ত (PARTHA SARATHI SENGUPTA)", role: "[Samiti] সভাপতি | 9830012345", image: "/assets/avatars/president.svg", year: 2026 },
-  { id: 31, name: "শ্রী অসীম চ্যাটার্জি (ASHIM CHATTERJEE)", role: "[Samiti] সহ-সভাপতি | 9830112345", image: "/assets/avatars/vice-president.svg", year: 2026 },
-  { id: 32, name: "শ্রী সুশান্ত রায় (SUSHANTA ROY)", role: "[Samiti] সাধারণ সম্পাদক | 9830212345", image: "/assets/avatars/secretary.svg", year: 2026 },
-  { id: 33, name: "শ্রী ভাস্কর মজুমদার (BHASKAR MAJUMDAR)", role: "[Samiti] সহ-সম্পাদক | 9830312345", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
-  { id: 34, name: "শ্রী নারায়ণ ঘোষ (NARAYAN GHOSH)", role: "[Samiti] কোষাধ্যক্ষ | 9830612345", image: "/assets/avatars/treasurer.svg", year: 2026 },
-  { id: 35, name: "শ্রী তপন ভট্টাচার্য (TAPAN BHATTACHARYA)", role: "[Samiti] পরিকাঠামো আহ্বায়ক | 9830412345", image: "/assets/avatars/club-member.svg", year: 2026 },
-  { id: 36, name: "শ্রীমতী সোমা মুখার্জি (SOMA MUKHERJEE)", role: "[Samiti] পরিচ্ছন্নতা ও স্বাস্থ্য | 9830512345", image: "/assets/avatars/cultural-female.svg", year: 2026 },
-  { id: 37, name: "শ্রী অলোক চক্রবর্তী (ALOKE CHAKRABORTY)", role: "[Samiti] প্রবীণ নাগরিক সমন্বয়ক | 9830712345", image: "/assets/avatars/club-member.svg", year: 2026 }
+  { id: 30, name: "শতদল রায় (SATADAL ROY)", role: "[Samiti] সভাপতি | 9830379574", image: "/assets/avatars/president.svg", year: 2026 },
+  { id: 31, name: "সঞ্জয় ঘোষ (SANJOY GHOSH)", role: "[Samiti] সহ-সভাপতি | 9088533055", image: "/assets/avatars/vice-president.svg", year: 2026 },
+  { id: 32, name: "সৈকত সাহা (SAIKAT SAHA)", role: "[Samiti] সাধারণ সম্পাদক | 9831065856", image: "/assets/avatars/secretary.svg", year: 2026 },
+  { id: 33, name: "অনির্বাণ সাহা (ANIRBAN SAHA)", role: "[Samiti] সহ-সম্পাদক | 9163197141", image: "/assets/avatars/asst-secretary.svg", year: 2026 },
+  { id: 34, name: "বিকাশ গুপ্ত (VIKASH GUPTA)", role: "[Samiti] কোষাধ্যক্ষ | 9874222446", image: "/assets/avatars/treasurer.svg", year: 2026 },
+  { id: 35, name: "রবি শাহ (RAVI SHAH)", role: "[Samiti] সহ-কোষাধ্যক্ষ | 8910458272", image: "/assets/avatars/asst-treasurer.svg", year: 2026 },
+  { id: 36, name: "পরেশ দেবনাথ (PARESH DEBNATH)", role: "[Samiti] অফিস ও সম্পত্তি ব্যবস্থাপনা | 6290269691", image: "/assets/avatars/samiti-member.svg", year: 2026 },
+  { id: 37, name: "পঙ্কজ সাহা (PANKAJ SAHA)", role: "[Samiti] অফিস ও সম্পত্তি ব্যবস্থাপনা | 9830371671", image: "/assets/avatars/samiti-member.svg", year: 2026 },
+  { id: 38, name: "সুকুমার মণ্ডল (SUKUMAR MONDAL)", role: "[Samiti] অফিস ও সম্পত্তি ব্যবস্থাপনা | 7439866492", image: "/assets/avatars/samiti-member.svg", year: 2026 },
+  { id: 39, name: "অরূপ শিকদার (ARUP SIKDER)", role: "[Samiti] অফিস ও সম্পত্তি ব্যবস্থাপনা | 8100563504", image: "/assets/avatars/samiti-member.svg", year: 2026 },
+  { id: 40, name: "সাহেব হালদার (SAHEB HALDER)", role: "[Samiti] অফিস ও সম্পত্তি ব্যবস্থাপনা | 9748872221", image: "/assets/avatars/samiti-member.svg", year: 2026 },
+  { id: 41, name: "কাকলী দে (KAKOLI DEY)", role: "[Samiti] সমস্যা ও সমাধান বিভাগ | 8697852566", image: "/assets/avatars/cultural-female.svg", year: 2026 },
+  { id: 42, name: "রবি গোস্বামী (RABI GOSWAMI)", role: "[Samiti] সমস্যা ও সমাধান বিভাগ | 8240672206", image: "/assets/avatars/samiti-member.svg", year: 2026 },
+  { id: 43, name: "সুরজিৎ সরকার (SUROJIT SARKAR)", role: "[Samiti] উন্নয়ন পরিষদ সদস্য | 8777581827", image: "/assets/avatars/samiti-member.svg", year: 2026 }
 ];
 
 function CommitteeContent() {
@@ -99,7 +105,7 @@ function CommitteeContent() {
     if (!w) return 'Puja';
     const lower = w.toLowerCase();
     if (lower === 'club') return 'Club';
-    if (lower === 'samiti') return 'Samiti';
+    if (lower === 'samiti' || lower === 'samity') return 'Samiti';
     return 'Puja';
   }, [searchParams]);
 
@@ -152,22 +158,19 @@ function CommitteeContent() {
   const generalMembers = filteredMembers.filter(m => !isLeader(parseMemberRole(m.role).cleanRole));
 
   return (
-    <main className="bg-[#FAF7F2] min-h-screen pt-24 sm:pt-28 pb-24 selection:bg-brand-maroon selection:text-white font-sans">
+    <main className="bg-[#FAF7F2] min-h-screen pt-28 sm:pt-32 pb-24 selection:bg-brand-maroon selection:text-white font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <YearSelector />
       </div>
 
-      {/* ═══ Clean Editorial Header ═══ */}
-      <header className="max-w-3xl mx-auto text-center mt-10 sm:mt-12 mb-10 px-4">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-4 tracking-tight leading-tight">
+      {/* ═══ Clean Editorial Header (Minimal & Spacious) ═══ */}
+      <header className="max-w-3xl mx-auto text-center mt-6 sm:mt-8 mb-8 sm:mb-10 px-4">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-2 tracking-tight leading-tight">
           {b('পরিচালনা পরিষদ ও', 'Executive Council &')} <span className="text-brand-maroon">{b('কমিটি সদস্যবৃন্দ', 'Committee Members')}</span>
         </h1>
-        <p className="text-sm sm:text-base md:text-lg text-stone-600 font-light leading-relaxed">
-          {b(
-            'বাঁশদ্রোণী সোনালী পার্কের সার্বিক উন্নয়ন ও ঐতিহ্যবাহী দুর্গাপূজা পরিচালনার নিবেদিতপ্রাণ সদস্যবৃন্দ।',
-            'Dedicated members steering the community welfare, civic development, and historic Durga Puja at Bansdroni Sonali Park.'
-          )}
-        </p>
+        <div className="flex justify-center mt-3">
+          <FestiveWaveAccent className="w-16 h-2 text-amber-500/80" />
+        </div>
       </header>
 
       {/* ═══ 3-Pillar Wing Tabs (Three Options Only) ═══ */}

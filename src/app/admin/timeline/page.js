@@ -91,9 +91,11 @@ export default function TimelineManagerPage() {
     setFetching(true);
     try {
       const res = await fetch('/api/data');
-      const data = await res.json();
-      if (data.events) {
-        setAllEvents(data.events);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.events) {
+          setAllEvents(data.events);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch events:', err);
@@ -134,12 +136,14 @@ export default function TimelineManagerPage() {
   };
 
   const applyPreset = (preset) => {
+    const yr = selectedYear || '2026';
+    const dynamicDate = preset.date ? preset.date.replace(/^\d{4}/, yr) : `${yr}-10-17`;
     setFormData({
       ...formData,
       title: lang === 'bn' ? preset.titleBn : preset.titleEn,
-      date: preset.date,
+      date: dynamicDate,
       text: lang === 'bn' ? preset.descBn : preset.descEn,
-      year: selectedYear
+      year: yr
     });
   };
 
@@ -158,27 +162,27 @@ export default function TimelineManagerPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...formData, id: editingId, year: selectedYear })
         });
-        if (res.ok) {
-          showToast('success', b('পূজা নির্ঘণ্ট সফলভাবে আপডেট করা হয়েছে!', 'Puja schedule successfully updated!'));
-          setEditingId(null);
-          setFormData({ title: '', date: '2026-10-17', text: '', year: selectedYear });
-          fetchEvents();
-        } else {
-          showToast('error', b('আপডেট করতে ব্যর্থ হয়েছে।', 'Failed to update schedule.'));
+        const resData = await res.json().catch(() => ({}));
+        if (!res.ok || !resData.success) {
+          throw new Error(resData.error || b('আপডেট করতে ব্যর্থ হয়েছে।', 'Failed to update schedule.'));
         }
+        showToast('success', b('পূজা নির্ঘণ্ট সফলভাবে আপডেট করা হয়েছে!', 'Puja schedule successfully updated!'));
+        setEditingId(null);
+        setFormData({ title: '', date: '2026-10-17', text: '', year: selectedYear });
+        fetchEvents();
       } else {
         const res = await fetch('/api/admin/timeline', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...formData, year: selectedYear })
         });
-        if (res.ok) {
-          showToast('success', b('নতুন নির্ঘণ্ট সফলভাবে যোগ করা হয়েছে!', 'New schedule event added successfully!'));
-          setFormData({ title: '', date: '2026-10-17', text: '', year: selectedYear });
-          fetchEvents();
-        } else {
-          showToast('error', b('যোগ করতে ব্যর্থ হয়েছে।', 'Failed to add event.'));
+        const resData = await res.json().catch(() => ({}));
+        if (!res.ok || !resData.success) {
+          throw new Error(resData.error || b('যোগ করতে ব্যর্থ হয়েছে।', 'Failed to add event.'));
         }
+        showToast('success', b('নতুন নির্ঘণ্ট সফলভাবে যোগ করা হয়েছে!', 'New schedule event added successfully!'));
+        setFormData({ title: '', date: '2026-10-17', text: '', year: selectedYear });
+        fetchEvents();
       }
     } catch (err) {
       showToast('error', b('ত্রুটি: ' + err.message, 'Error: ' + err.message));

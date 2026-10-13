@@ -178,7 +178,7 @@ export default function MediaManagerPage() {
         method: 'POST',
         body: formData,
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (res.ok && data.success) {
         showToast('success', b(`'${slot.nameBn}' ব্যানার সফলভাবে আপডেট করা হয়েছে!`, `'${slot.nameEn}' successfully updated!`));
@@ -226,7 +226,7 @@ export default function MediaManagerPage() {
         method: 'POST',
         body: formData,
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (res.ok && data.success) {
         showToast('success', b('ঢাকের বাদ্যি অডিও সফলভাবে আপডেট হয়েছে!', 'Dhak audio successfully updated!'));

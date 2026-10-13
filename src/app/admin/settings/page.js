@@ -52,7 +52,10 @@ export default function SettingsManagerPage() {
 
   useEffect(() => {
     fetch('/api/admin/settings')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(data => {
         setSettings(prev => ({ ...prev, ...data }));
         setLoading(false);
@@ -87,7 +90,67 @@ export default function SettingsManagerPage() {
   };
 
   const clubHeroFileInputRef = useRef(null);
-  const [uploadingHero, setUploadingHero] = useState(false);
+  const optimizeImageForWeb = async (imgFile, maxDimension = 1920, quality = 0.85) => {
+    if (typeof window === 'undefined') return imgFile;
+    if (!imgFile.type?.startsWith('image/') || imgFile.type === 'image/gif' || imgFile.type === 'image/svg+xml') {
+      return imgFile;
+    }
+    if (imgFile.size <= 800 * 1024) return imgFile;
+
+    return new Promise((resolve) => {
+      try {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new window.Image();
+          img.onload = () => {
+            try {
+              let width = img.width;
+              let height = img.height;
+              if (width <= maxDimension && height <= maxDimension && imgFile.size < 1.5 * 1024 * 1024) {
+                resolve(imgFile);
+                return;
+              }
+              if (width > maxDimension || height > maxDimension) {
+                if (width > height) {
+                  height = Math.round((height * maxDimension) / width);
+                  width = maxDimension;
+                } else {
+                  width = Math.round((width * maxDimension) / height);
+                  height = maxDimension;
+                }
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              if (!ctx) { resolve(imgFile); return; }
+              ctx.drawImage(img, 0, 0, width, height);
+              canvas.toBlob(
+                (blob) => {
+                  if (!blob || blob.size >= imgFile.size) {
+                    resolve(imgFile);
+                  } else {
+                    const newName = imgFile.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                    resolve(new File([blob], newName, { type: 'image/jpeg', lastModified: Date.now() }));
+                  }
+                },
+                'image/jpeg',
+                quality
+              );
+            } catch {
+              resolve(imgFile);
+            }
+          };
+          img.onerror = () => resolve(imgFile);
+          img.src = e.target.result;
+        };
+        reader.onerror = () => resolve(imgFile);
+        reader.readAsDataURL(imgFile);
+      } catch {
+        resolve(imgFile);
+      }
+    });
+  };
 
   const handleHeroUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -95,8 +158,9 @@ export default function SettingsManagerPage() {
 
     setUploadingHero(true);
     try {
+      const fileToUpload = await optimizeImageForWeb(file, 1920, 0.85);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', fileToUpload);
       formData.append('type', 'club-hero');
 
       const res = await fetch('/api/admin/upload', {
@@ -104,7 +168,7 @@ export default function SettingsManagerPage() {
         body: formData,
       });
 
-      const resData = await res.json();
+      const resData = await res.json().catch(() => ({}));
       if (res.ok && resData.url) {
         const freshUrl = resData.url + '?t=' + Date.now();
         handleChange('clubHeroImage', freshUrl);
@@ -130,8 +194,9 @@ export default function SettingsManagerPage() {
 
     setUploadingSamitiHero(true);
     try {
+      const fileToUpload = await optimizeImageForWeb(file, 1920, 0.85);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', fileToUpload);
       formData.append('type', 'samiti-hero');
 
       const res = await fetch('/api/admin/upload', {
@@ -139,7 +204,7 @@ export default function SettingsManagerPage() {
         body: formData,
       });
 
-      const resData = await res.json();
+      const resData = await res.json().catch(() => ({}));
       if (res.ok && resData.url) {
         const freshUrl = resData.url + '?t=' + Date.now();
         handleChange('samitiHeroImage', freshUrl);
@@ -171,7 +236,8 @@ export default function SettingsManagerPage() {
         setMessage(b('সেটিংস সফলভাবে সংরক্ষিত হয়েছে!', 'Settings saved successfully!'));
         setTimeout(() => setMessage(''), 4000);
       } else {
-        setMessage(b('ত্রুটি: সেটিংস সংরক্ষণ ব্যর্থ হয়েছে।', 'Error: Failed to save settings.'));
+        const errData = await res.json().catch(() => ({}));
+        setMessage(b('ত্রুটি: ' + (errData.error || 'সেটিংস সংরক্ষণ ব্যর্থ হয়েছে।'), 'Error: ' + (errData.error || 'Failed to save settings.')));
       }
     } catch (err) {
       setMessage(b('ত্রুটি: ' + err.message, 'Error: ' + err.message));
@@ -396,7 +462,7 @@ export default function SettingsManagerPage() {
                         className="px-2 py-0.5 rounded-md text-[10px] font-bold"
                         style={{ backgroundColor: settings.secondaryColor, color: '#1c1917' }}
                       >
-                        {settings.currentYear || '74'}তম বর্ষ
+                        {settings.currentYear ? `${settings.currentYear}তম বর্ষ` : b('শারদোৎসব ২০২৬', 'Sharadotsav 2026')}
                       </span>
                     </div>
                     <p className="text-[11px] text-stone-300 mt-0.5">
@@ -493,12 +559,12 @@ export default function SettingsManagerPage() {
               </label>
               <input
                 type="text"
-                value={settings.currentYear || '74'}
+                value={settings.currentYear || ''}
                 onChange={(e) => handleChange('currentYear', e.target.value)}
                 className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-bold font-mono focus:ring-2 focus:ring-brand-maroon/20 focus:border-brand-maroon outline-none"
-                placeholder="74"
+                placeholder={b('ঐচ্ছিক (যেমন: ৭৫)', 'Optional (e.g. 75)')}
               />
-              <p className="text-[10px] text-stone-400 mt-1">{b('যেমন: 74 (৭৪তম বর্ষের শারদোৎসব)', 'e.g. 74th year celebration')}</p>
+              <p className="text-[10px] text-stone-400 mt-1">{b('যদি নির্দিষ্ট বর্ষ সংখ্যা জানা থাকে তবেই লিখুন (ঐচ্ছিক)', 'Enter only if exact anniversary edition is verified (optional)')}</p>
             </div>
           </div>
         )}
@@ -946,7 +1012,7 @@ export default function SettingsManagerPage() {
           </div>
         )}
 
-        {/* 7. Sonali Park Unnayan Samiti Controls */}
+        {/* 7. Sonali Park Unnayan Samity Controls */}
         {activeTab === 'samiti' && (
           <div className="space-y-6">
             <div className="border-b border-stone-100 pb-3 flex items-center justify-between">
@@ -1128,7 +1194,7 @@ export default function SettingsManagerPage() {
                     className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none"
                     placeholder="₹ ১১,৫০,০০০"
                   />
-                  <p className="text-[11px] text-stone-400 mt-1">{b('নিরাপত্তা গার্ড, পথবাতি, ড্রেন পরিষ্কার ও পরিচ্ছন্নতা', 'Security guards, streetlights, drainage & garbage clearing')}</p>
+                  <p className="text-[11px] text-stone-400 mt-1">{b('নিরাপত্তা কর্মী, পথবাতি, পরিচ্ছন্নতা ও সিসিটিভি', 'Security staff, streetlights, lane cleanliness & CCTV')}</p>
                 </div>
               </div>
 
@@ -1142,7 +1208,7 @@ export default function SettingsManagerPage() {
                     value={settings.samitiMajorExpenseTitle || ''}
                     onChange={(e) => handleChange('samitiMajorExpenseTitle', e.target.value)}
                     className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none"
-                    placeholder="রাস্তা সংস্কার ও জলনিকাশি"
+                    placeholder="অভ্যন্তরীণ লেন, পথবাতি ও সিসিটিভি"
                   />
                 </div>
 
@@ -1155,7 +1221,7 @@ export default function SettingsManagerPage() {
                     value={settings.samitiMajorExpenseAmount || ''}
                     onChange={(e) => handleChange('samitiMajorExpenseAmount', e.target.value)}
                     className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2 text-base sm:text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none"
-                    placeholder="₹ ৫,১০,০০০"
+                    placeholder="যেমন: ₹ ৫,১০,০০০"
                   />
                 </div>
               </div>

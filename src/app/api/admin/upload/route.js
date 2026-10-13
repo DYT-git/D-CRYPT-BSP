@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import dns from 'dns';
 import { prisma } from '@/lib/prisma';
+
+// Ensure fast IPv4 resolution on all environments (prevents Node.js EAI_AGAIN on Windows/Node)
+try {
+  dns.setDefaultResultOrder?.('ipv4first');
+} catch {}
 
 export const dynamic = 'force-dynamic';
 
@@ -37,56 +43,88 @@ export async function POST(request) {
     for (const file of rawFiles) {
       if (!file || typeof file === 'string') continue;
       const bytes = await file.arrayBuffer();
+      if (!bytes || bytes.byteLength === 0) continue;
       const buffer = Buffer.from(bytes);
 
       let publicUrl = '';
+      const isPdf = Boolean(
+        type === 'finance' ||
+        type === 'notice' ||
+        file.name?.toLowerCase().endsWith('.pdf') ||
+        (file.type && file.type === 'application/pdf')
+      );
 
-      // Optional Cloudinary Upload
+      // 1. Cloudinary Upload (Essential for Live Website / Vercel Serverless CDN)
       if (cloudName && uploadPreset) {
         try {
           const cloudFormData = new FormData();
-          const base64String = `data:${file.type || 'application/octet-stream'};base64,${buffer.toString('base64')}`;
-          cloudFormData.append('file', base64String);
+          const mimeType = file.type || (type === 'audio' ? 'audio/mpeg' : isPdf ? 'application/pdf' : 'image/jpeg');
+          const blob = new Blob([buffer], { type: mimeType });
+          cloudFormData.append('file', blob, file.name || 'upload.jpg');
           cloudFormData.append('upload_preset', uploadPreset);
           cloudFormData.append('folder', `sonali-park/${type}`);
 
           const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
             method: 'POST',
             body: cloudFormData,
+            signal: AbortSignal.timeout(15000),
           });
 
           if (cloudRes.ok) {
             const cloudData = await cloudRes.json();
-            publicUrl = cloudData.secure_url;
+            if (cloudData.secure_url) {
+              publicUrl = cloudData.secure_url;
+            }
+          } else {
+            const errText = await cloudRes.text().catch(() => '');
+            console.warn(`Cloudinary upload returned ${cloudRes.status}:`, errText);
           }
         } catch (cloudErr) {
-          console.warn('Cloudinary upload failed, falling back to local:', cloudErr.message);
+          console.warn('Cloudinary upload attempt error, checking local fallback:', cloudErr.message);
         }
       }
 
-      // Local storage fallback
-      let filename = file.name || 'upload.jpg';
-      let saveDir = path.join(process.cwd(), 'public', 'uploads');
+      // 2. Local disk backup & fallback (Used when running locally or if Cloudinary is unavailable)
+      try {
+        let filename = file.name || 'upload.jpg';
+        let saveDir = path.join(process.cwd(), 'public', 'uploads');
 
-      if (isAsset) {
-        filename = heroMap[type].filename;
-        saveDir = path.join(process.cwd(), 'public', 'assets');
-      } else {
-        const ext = path.extname(filename) || (type === 'finance' ? '.pdf' : '.jpg');
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        filename = `${type}-${uniqueSuffix}${ext}`;
+        if (isAsset) {
+          filename = heroMap[type].filename;
+          saveDir = path.join(process.cwd(), 'public', 'assets');
+        } else {
+          const ext = path.extname(filename) || (isPdf ? '.pdf' : type === 'audio' ? '.mp3' : '.jpg');
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const safeBasename = path.basename(filename, ext).replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30) || 'doc';
+          filename = `${type}-${safeBasename}-${uniqueSuffix}${ext}`;
+        }
+
+        await mkdir(saveDir, { recursive: true });
+        const filepath = path.join(saveDir, filename);
+        await writeFile(filepath, buffer);
+
+        // If Cloudinary was not available or didn't return a URL, use local file URL
+        if (!publicUrl) {
+          publicUrl = isAsset ? `/assets/${filename}` : `/uploads/${filename}`;
+        }
+      } catch (fsErr) {
+        // Read-only filesystem is expected on serverless hosts like Vercel
       }
 
-      await mkdir(saveDir, { recursive: true });
-      const filepath = path.join(saveDir, filename);
-      await writeFile(filepath, buffer);
-
-      if (!publicUrl) {
-        publicUrl = isAsset ? `/assets/${filename}` : `/uploads/${filename}`;
+      // 3. For site assets (like hero banners), update local asset file if filesystem allows
+      if (isAsset && publicUrl && publicUrl.startsWith('http')) {
+        try {
+          const filename = heroMap[type].filename;
+          const saveDir = path.join(process.cwd(), 'public', 'assets');
+          await mkdir(saveDir, { recursive: true });
+          await writeFile(path.join(saveDir, filename), buffer);
+        } catch (fsErr) {
+          // Non-fatal on serverless hosts
+        }
       }
 
-      // Persist setting in database for time-of-day hero banners & audio
-      if (isAsset && heroMap[type].settingKey) {
+      // 4. Persist setting in database for time-of-day hero banners & audio
+      if (isAsset && heroMap[type].settingKey && publicUrl) {
         try {
           await prisma.siteSetting.upsert({
             where: { key: heroMap[type].settingKey },
@@ -98,7 +136,15 @@ export async function POST(request) {
         }
       }
 
-      uploadedUrls.push(publicUrl);
+      if (publicUrl) {
+        uploadedUrls.push(publicUrl);
+      }
+    }
+
+    if (uploadedUrls.length === 0) {
+      return NextResponse.json({
+        error: 'ফাইল আপলোড ব্যর্থ হয়েছে। ক্লাউড স্টোরেজ ও লোকাল ফাইল সিস্টেমে ফাইল সংরক্ষণ করা সম্ভব হয়নি।'
+      }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -113,3 +159,4 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Failed to upload file: ' + error.message }, { status: 500 });
   }
 }
+

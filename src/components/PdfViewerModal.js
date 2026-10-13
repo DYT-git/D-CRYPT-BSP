@@ -5,9 +5,9 @@ import { triggerDownload } from '@/utils/download';
 
 export default function PdfViewerModal({ isOpen, onClose, pdfUrl, title }) {
   const [copied, setCopied] = useState(false);
+  const [useGoogleViewer, setUseGoogleViewer] = useState(false);
+  const [iframeLoading, setIframeLoading] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
-  const [useGoogleViewer, setUseGoogleViewer] = useState(true);
-  const [iframeLoading, setIframeLoading] = useState(true);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && pdfUrl) {
@@ -15,9 +15,11 @@ export default function PdfViewerModal({ isOpen, onClose, pdfUrl, title }) {
       url.searchParams.set('viewPdf', encodeURIComponent(pdfUrl));
       url.searchParams.set('pdfTitle', encodeURIComponent(title || ''));
       setShareUrl(url.toString());
-      setIframeLoading(true);
+      if (useGoogleViewer) {
+        setIframeLoading(true);
+      }
     }
-  }, [pdfUrl, title]);
+  }, [pdfUrl, title, useGoogleViewer]);
 
   // Handle ESC key to close
   useEffect(() => {
