@@ -130,12 +130,12 @@ export default function Navbar() {
                   <span className={`font-black uppercase tracking-tight sm:tracking-normal text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm transition-colors truncate ${
                     hasDarkHero ? 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]' : 'text-stone-900'
                   }`}>
-                    {b('বাঁশদ্রোণী সোনালী সঙ্ঘ', 'Bansdroni Sonali Sangha')}
+                    {b('সোনালী পার্ক অধিবাসীবৃন্দ', 'Sonali Park Adhibasibrinda')}
                   </span>
                   <span className={`text-[8.5px] xs:text-[9.5px] sm:text-[10px] md:text-[11px] font-bold tracking-wider transition-colors truncate ${
                     hasDarkHero ? 'text-amber-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]' : 'text-brand-maroon'
                   }`}>
-                    {b('রেজি: SO067242', 'Reg: SO067242')}
+                    {b('শ্রী শ্রী দুর্গা পূজা ২০২৬', 'Sri Sri Durga Puja 2026')}
                   </span>
                 </div>
               </Link>

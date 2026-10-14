@@ -22,7 +22,7 @@ export default function Footer() {
                 {b('বাঁশদ্রোণী সোনালী পার্ক', 'Bansdroni Sonali Park')}
               </strong>
               <span className="text-[10px] font-semibold text-amber-400 tracking-wider uppercase">
-                {b('ক্লাব, পূজা ও উন্নয়ন সমিতি', 'Club, Puja & Civic RWA')}
+                {b('সোনালী পার্ক অধিবাসীবৃন্দ • ক্লাব ও সমিতি', 'Sonali Park Adhibasibrinda • Club & Samiti')}
               </span>
             </div>
           </div>
@@ -68,8 +68,8 @@ export default function Footer() {
               <MapPin className="text-amber-400 w-4 h-4 shrink-0 mt-0.5" />
               <span>
                 {b(
-                  'বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০',
-                  'B/137, Sonali Park, Bansdroni, Kolkata - 70'
+                  'বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০০ ০৭০',
+                  'B/137, Sonali Park, Bansdroni, Kolkata - 700 070'
                 )}
               </span>
             </li>

@@ -30,13 +30,34 @@ export default function PujaSchedule() {
         <YearSelector />
       </div>
 
-      {/* ═══ Clean Editorial Header (Minimal & Spacious) ═══ */}
-      <header className="max-w-3xl mx-auto text-center mt-6 sm:mt-8 mb-8 sm:mb-12 px-4">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-2 tracking-tight leading-tight">
-          {b('শারদীয়া', 'Sharadiya')} <span className="text-brand-maroon">{b('দুর্গোৎসব', 'Durga Puja')}</span> {toDigits(selectedYear)}
+      {/* ═══ Clean Editorial Header (Official Poster Identity) ═══ */}
+      <header className="max-w-4xl mx-auto text-center mt-6 sm:mt-8 mb-8 sm:mb-12 px-4">
+        {/* Top Eyebrow: Official Puja Title */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-brand-maroon/20 text-brand-maroon text-xs sm:text-sm font-serif font-bold tracking-wider uppercase mb-3 shadow-2xs">
+          <DiyaIcon className="w-3.5 h-3.5 text-brand-maroon" />
+          <span>{b(`শ্রী শ্রী দুর্গা পূজা - ${toDigits(selectedYear)}`, `Sri Sri Durga Puja - ${selectedYear}`)}</span>
+          <span className="opacity-40">•</span>
+          <span className="text-stone-600 font-mono text-[11px] sm:text-xs">{b('সন ১৪৩৩', '1433 Bangabda')}</span>
+        </div>
+
+        {/* Primary H1 Heading: সোনালী পার্ক অধিবাসীবৃন্দ */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-black text-stone-900 mb-2 tracking-tight leading-tight">
+          {b('সোনালী পার্ক অধিবাসীবৃন্দ', 'Sonali Park Adhibasibrinda')}
         </h1>
-        <div className="flex justify-center mt-3">
-          <FestiveWaveAccent className="w-16 h-2 text-amber-500/80" />
+
+        {/* Official Organizing Line & Address */}
+        <div className="max-w-2xl mx-auto mt-2 space-y-1">
+          <p className="text-sm sm:text-base md:text-lg text-stone-700 font-serif leading-relaxed">
+            <span className="font-bold text-brand-maroon">{b('পরিচালনায় :', 'Organized by :')}</span>{' '}
+            <span className="font-semibold">{b('সোনালী পার্ক অধিবাসীবৃন্দ', 'Sonali Park Adhibasibrinda')}</span>
+          </p>
+          <p className="text-xs sm:text-sm text-stone-500 font-sans">
+            {b('বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০০ ০৭০', 'B/137, Sonali Park, Bansdroni, Kolkata - 700 070')}
+          </p>
+        </div>
+
+        <div className="flex justify-center mt-4">
+          <FestiveWaveAccent className="w-20 h-2 text-amber-500/80" />
         </div>
       </header>
 
@@ -505,7 +526,7 @@ export default function PujaSchedule() {
             <div className="space-y-1.5 text-stone-600 text-xs sm:text-sm md:text-base leading-relaxed">
               <p>
                 <strong className="text-stone-900 font-bold">{b('মণ্ডপের ঠিকানা:', 'Pandal Address:')}</strong>{' '}
-                {b('বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০', 'B/137, Sonali Park, Bansdroni, Kolkata - 70')}
+                {b('বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০০ ০৭০', 'B/137, Sonali Park, Bansdroni, Kolkata - 700 070')}
               </p>
               <p>
                 <strong className="text-stone-900 font-bold">{b('মেট্রো:', 'Metro:')}</strong>{' '}

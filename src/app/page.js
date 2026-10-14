@@ -409,7 +409,7 @@ export default function HomePage() {
             {/* Symmetrical Header Greeting Badge */}
             <div className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs font-bold tracking-wider uppercase backdrop-blur-md pointer-events-auto shadow-md ${curr.badgeClass}`}>
               <PanjikaSealBadge className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300" />
-              <span>{curr.timeGreeting}</span>
+              <span>{b('সোনালী পার্ক অধিবাসীবৃন্দ', 'Sonali Park Adhibasibrinda')}</span>
               <span className="opacity-40">·</span>
               <span className="font-serif normal-case tracking-normal text-amber-200 font-bold">{toDigits(2026)}</span>
             </div>
@@ -462,7 +462,7 @@ export default function HomePage() {
                 href="/puja"
                 className="btn-tactile-crimson text-white pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 sm:py-2 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-3 group shadow-[0_4px_16px_rgba(190,18,60,0.45)]"
               >
-                <span>{b('দুর্গাপূজা ২০২৬', 'Durga Puja 2026')}</span>
+                <span>{b('শ্রী শ্রী দুর্গা পূজা ২০২৬', 'Sri Sri Durga Puja 2026')}</span>
                 <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white text-brand-maroon flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5 font-bold text-xs sm:text-sm">
                   →
                 </span>
@@ -512,7 +512,7 @@ export default function HomePage() {
             >
               <div className="flex items-center gap-1.5 truncate">
                 <DurgaDeviEmblemIcon className="w-3.5 h-3.5 text-amber-200 shrink-0" />
-                <span className="truncate">{b('দুর্গাপূজা ২০২৬', 'Durga Puja 2026')}</span>
+                <span className="truncate">{b('শ্রী শ্রী দুর্গা পূজা ২০২৬', 'Sri Sri Durga Puja 2026')}</span>
               </div>
               <span className="w-5 h-5 rounded-full bg-white text-brand-maroon flex items-center justify-center shadow-xs font-bold text-xs shrink-0 group-hover:translate-x-0.5 transition-transform ml-1">
                 →
@@ -548,7 +548,7 @@ export default function HomePage() {
             {/* Kicker Tag / Eyebrow (Mobile-Friendly Pill) */}
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200/80 text-[10px] sm:text-xs font-serif font-bold text-amber-900 uppercase tracking-wider mb-2 sm:mb-2.5 shadow-2xs">
               <DiyaIcon className="w-3.5 h-3.5 text-amber-600 animate-gentle-float shrink-0" />
-              <span>{b('শারদীয়া বোধন নির্ঘণ্ট ২০২৬', 'Sacred Bodhon Countdown 2026')}</span>
+              <span>{b('সোনালী পার্ক অধিবাসীবৃন্দ • দুর্গোৎসব ২০২৬', 'Sonali Park Adhibasibrinda • Durga Puja 2026')}</span>
             </div>
 
             {/* Main Heading — Clean, Balanced & Mobile-Optimized */}
@@ -614,7 +614,7 @@ export default function HomePage() {
         <div className="group relative bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_8px_24px_rgba(28,13,19,0.05)] hover:shadow-[0_16px_36px_rgba(159,18,57,0.1)] rounded-3xl pt-8 pb-5 pl-10 sm:pl-14 pr-5 sm:pr-8 transition-all duration-300">
           {/* Top Pinned Textured Washi Tape */}
           <div className="absolute -top-3.5 left-7 sm:left-10 z-30 pointer-events-none">
-            <WashiTapePin text={b('শারদ থিম পরিক্রমা ২০২৬', 'Curated Theme 2026')} variant="amber" />
+            <WashiTapePin text={b('সোনালী পার্ক অধিবাসীবৃন্দ • শারদ থিম ২০২৬', 'Sonali Park Adhibasibrinda • Curated Theme 2026')} variant="amber" />
           </div>
 
           {/* Left Perforated Spiral Binder Margin - Authentic 3D Punched Holes */}
@@ -731,11 +731,14 @@ export default function HomePage() {
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
               <span className="w-1.5 h-1.5 rounded-full bg-brand-maroon" />
-              <span>{b('পুজো ক্যালেন্ডার', 'Festival Calendar')}</span>
+              <span>{b('সন ১৪৩৩ • ইং ২০২৬ শ্রী শ্রী শারদীয়া দুর্গাপূজা', '1433 Bangabda • 2026 CE Durga Puja')}</span>
             </div>
             <h2 className={`text-xl sm:text-2xl lg:text-3xl font-serif font-black ${curr.textHead} tracking-tight leading-snug`}>
-              {b('শারদীয়া উৎসবের দিনপঞ্জি', 'The Sacred Days of Durga Puja')}
+              {b('শ্রী শ্রী শারদীয়া দুর্গাপূজার সময় নির্ঘণ্ট', 'Official Sacred Rituals & Timetable')}
             </h2>
+            <p className="text-xs sm:text-sm text-stone-500 font-serif mt-1">
+              {b('পরিচালনায় : সোনালী পার্ক অধিবাসীবৃন্দ • বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০০ ০৭০', 'Organized by : Sonali Park Adhibasibrinda • B/137, Sonali Park, Bansdroni, Kolkata - 700 070')}
+            </p>
           </div>
           <Link
             href="/puja"
@@ -1332,7 +1335,7 @@ export default function HomePage() {
                   <div className="pt-3.5 sm:pt-4 border-t border-stone-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs relative z-10">
                     <span className="text-stone-500 font-serif italic text-[11px] sm:text-xs flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                      <span className="truncate">{b('বাঁশদ্রোণী সোনালী পার্ক পূজা পরিচালনা কমিটি কর্তৃক অনুমোদিত', 'Authorized by Bansdroni Sonali Park Puja Committee')}</span>
+                      <span className="truncate">{b('সোনালী পার্ক অধিবাসীবৃন্দ কর্তৃক পরিচালিত ও অনুমোদিত', 'Organized & Authorized by Sonali Park Adhibasibrinda')}</span>
                     </span>
 
                     <div className="flex items-center gap-2 self-end sm:self-auto shrink-0 flex-wrap">

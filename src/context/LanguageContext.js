@@ -74,6 +74,11 @@ const dictBn = {
   "Senior Citizens Coordinator": "প্রবীণ নাগরিক সমন্বয়ক",
 
   // Community & Wings
+  "Sonali Park Adhibasibrinda": "সোনালী পার্ক অধিবাসীবৃন্দ",
+  "Residents of Sonali Park": "সোনালী পার্ক অধিবাসীবৃন্দ",
+  "Sonali Park Residents": "সোনালী পার্ক অধিবাসীবৃন্দ",
+  "Sri Sri Durga Puja 2026": "শ্রী শ্রী দুর্গা পূজা ২০২৬",
+  "Sacred Rituals & Timetable of Durga Puja": "শ্রী শ্রী শারদীয়া দুর্গাপূজার সময় নির্ঘণ্ট",
   "Bansdroni Sonali Park": "বাঁশদ্রোণী সোনালী পার্ক",
   "Bansdroni Sonali Sangha": "বাঁশদ্রোণী সোনালী সঙ্ঘ",
   "Sonali Sangha": "সোনালী সঙ্ঘ",
@@ -243,6 +248,9 @@ const dictEn = {
   "উন্নয়ন পরিষদ সদস্য": "Development Council Member",
 
   // Community
+  "সোনালী পার্ক অধিবাসীবৃন্দ": "Sonali Park Adhibasibrinda",
+  "শ্রী শ্রী দুর্গা পূজা ২০২৬": "Sri Sri Durga Puja 2026",
+  "শ্রী শ্রী শারদীয়া দুর্গাপূজার সময় নির্ঘণ্ট": "Sacred Rituals & Timetable of Durga Puja",
   "বাঁশদ্রোণী সোনালী পার্ক": "Bansdroni Sonali Park",
   "বাঁশদ্রোণী সোনালী সঙ্ঘ": "Bansdroni Sonali Sangha",
   "সোনালী সঙ্ঘ": "Sonali Sangha",
