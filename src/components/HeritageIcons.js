@@ -581,5 +581,38 @@ export function CornerFiligree({ className = "w-4 h-4 text-amber-400" }) {
   );
 }
 
+// 9. Traditional Bengali Floral Alpona Corner Motif (Blooming Lotus & Kolka Vine)
+export function CornerFloralAlpona({ className = "w-6 h-6 text-amber-700/35" }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" fill="none" stroke="currentColor">
+      {/* Outer L-Frame Bracket */}
+      <path d="M2 2V24M2 2H24" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
+      {/* Corner Lotus Blossom Petals */}
+      <path
+        d="M2 2C8 2 14 7 14 14C7 14 2 8 2 2Z"
+        strokeWidth="1.3"
+        fill="currentColor"
+        fillOpacity="0.18"
+      />
+      {/* Central Radiating Petal Vein */}
+      <path d="M2 2L10 10" strokeWidth="1.3" strokeLinecap="round" />
+      <circle cx="10" cy="10" r="1.5" fill="currentColor" stroke="none" />
+      {/* Fine Stippled Pearls along the Alpona border */}
+      <circle cx="3" cy="3" r="1.5" fill="currentColor" stroke="none" />
+      <circle cx="17" cy="4" r="1.2" fill="currentColor" stroke="none" />
+      <circle cx="4" cy="17" r="1.2" fill="currentColor" stroke="none" />
+      <circle cx="22" cy="7" r="1" fill="currentColor" stroke="none" />
+      <circle cx="7" cy="22" r="1" fill="currentColor" stroke="none" />
+      {/* Delicate Inner Kolka Curve */}
+      <path
+        d="M6 6C10 4 14 8 12 12C8 14 4 10 6 6Z"
+        strokeWidth="1"
+        fill="currentColor"
+        fillOpacity="0.25"
+      />
+    </svg>
+  );
+}
+
 
 

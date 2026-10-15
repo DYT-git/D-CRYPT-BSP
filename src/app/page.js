@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { Sun, Sunset, Moon, Bell, Share2, Check, ChevronLeft, ChevronRight, FileText, Download, Link2 } from 'lucide-react';
+import { Sun, Sunset, Moon, Bell, Share2, Check, ChevronLeft, ChevronRight, FileText, Download, Link2, X } from 'lucide-react';
 import Countdown from "@/components/Countdown";
 import HeroParticles from "@/components/HeroParticles";
 import { triggerDownload } from "@/utils/download";
@@ -37,8 +37,8 @@ import {
   BinderHoles,
   TornDeckleEdge,
   DurgaDeviEmblemIcon,
-  PanjikaSealBadge,
-  CornerFiligree
+  CornerFiligree,
+  SacredAlponaMandala
 } from "@/components/HeritageIcons";
 
 export default function HomePage() {
@@ -65,6 +65,8 @@ export default function HomePage() {
   const [activeNoticeIndex, setActiveNoticeIndex] = useState(0);
   const [noticeTouchStart, setNoticeTouchStart] = useState(null);
   const [copiedNoticeId, setCopiedNoticeId] = useState(null);
+
+
 
   // Multi-Pillar Hero Carousel State ('puja' | 'club' | 'samiti')
   const [activeHeroPillar, setActiveHeroPillar] = useState('puja');
@@ -336,6 +338,127 @@ export default function HomePage() {
     },
   ];
 
+  const FESTIVAL_DAILY_WISHES = {
+    shashti: {
+      id: 'shashti',
+      dateLabelBn: 'মহাষষ্ঠী • ১৬ অক্টোবর ২০২৬',
+      dateLabelEn: 'Maha Shashti • 16 October 2026',
+      headingBn: 'শুভ মহাষষ্ঠীর আগমনী শুভেচ্ছা',
+      headingEn: 'Warm Greetings on Sacred Maha Shashti',
+      poeticWishBn: 'শিউলিঝরা শিশিরভেজা ভোরে আজ মা দুর্গার বোধন ও আমন্ত্রণ। বাঁশদ্রোণী সোনালী পার্কের প্রতিটি ঘরে মায়ের আশীর্বাদের পুণ্যধারা বর্ষিত হোক, আনন্দ ও শান্তিতে কাটুক শারদোৎসব।',
+      poeticWishEn: 'With dew-kissed autumn dawns and swaying kash blossoms, Mother Durga is invoked into our hearts. May Her divine arrival bring peace, health, and joy to every home in Bansdroni Sonali Park.',
+      highlightRitualBn: 'সন্ধ্যায় দেবীর বোধন ও বিহিত পূজা',
+      highlightRitualEn: 'Evening Bodhon & Sacred Puja',
+      Icon: ShashtiBilvaIcon,
+    },
+    'saptami-day1': {
+      id: 'saptami-day1',
+      dateLabelBn: 'মহাসপ্তমী (দিন ১) • ১৭ অক্টোবর ২০২৬',
+      dateLabelEn: 'Maha Saptami (Day 1) • 17 October 2026',
+      headingBn: 'শুভ মহাসপ্তমীর শারদ প্রীতি',
+      headingEn: 'Joyous Blessings on Maha Saptami',
+      poeticWishBn: 'নবপত্রিকা প্রবেশ ও প্রাণপ্রতিষ্ঠায় শুরু হলো মহামায়ার মহাপূজা। মায়ের কৃপায় অপসারিত হোক সমস্ত অমঙ্গল, অন্তরে জেগে উঠুক শুভবোধ, শান্তি ও সম্প্রীতি।',
+      poeticWishEn: 'With the sacred entrance and installation of the Nabapatrika, the grand worship of Mahamaya begins. May the Mother dispel all darkness, blessing our community with harmony and grace.',
+      highlightRitualBn: 'সকাল ৭:০৪ গতে নবপত্রিকা প্রবেশ ও স্থাপন',
+      highlightRitualEn: '7:04 AM Nabapatrika Pravesh & Sthapan',
+      Icon: SaptamiNabapatrikaIcon,
+    },
+    'saptami-day2': {
+      id: 'saptami-day2',
+      dateLabelBn: 'মহাসপ্তমী (দিন ২) • ১৮ অক্টোবর ২০২৬',
+      dateLabelEn: 'Maha Saptami (Day 2) • 18 October 2026',
+      headingBn: 'শারদ আনন্দের দ্বিতীয় দিন',
+      headingEn: 'Heartfelt Greetings on Festive Maha Saptami',
+      poeticWishBn: 'ঢাকের বাদ্যি আর সান্ধ্য আরতির সুরে মুখরিত আমাদের সোনালী পার্ক। মা দুর্গার অপার স্নেহে আমাদের পাড়ার প্রতিটি হৃদয় বাঁধা থাকুক পারস্পরিক ভালোবাসা ও একতার বন্ধনে।',
+      poeticWishEn: 'Resounding beats of the Dhak and glowing evening arati fill Sonali Park. May Mother Durga bind our entire community in lasting love, warmth, and solidarity.',
+      highlightRitualBn: 'মহাষ্টমীর বিশেষ অঞ্জলি ও দেবীর পূজা',
+      highlightRitualEn: 'Special Maha Ashtami Pushpanjali & Puja',
+      Icon: AshtamiDhunuchiIcon,
+    },
+    ashtami: {
+      id: 'ashtami',
+      dateLabelBn: 'মহাষ্টমী ও সন্ধিপূজা • ১৯ অক্টোবর ২০২৬',
+      dateLabelEn: 'Maha Ashtami & Sandhi Puja • 19 October 2026',
+      headingBn: 'পবিত্র মহাষ্টমীর পূত আশীর্বাদ',
+      headingEn: 'Sacred Blessings on Maha Ashtami & Sandhi Puja',
+      poeticWishBn: '১০৮ নীলপদ্ম আর প্রদীপের আলোয় শক্তির আবাহন। অষ্টমী ও নবমীর সন্ধিক্ষণে মা চামুণ্ডার কৃপায় দূর হোক সমস্ত বিঘ্ন, সবার ঘরে আসুক শক্তি, সমৃদ্ধি ও পরম শান্তি।',
+      poeticWishEn: 'Under the glow of 108 oil lamps and blue lotuses, we revere the triumphant Mother. In the divine cusp of Ashtami and Navami, may Goddess Chamunda protect your home with courage and peace.',
+      highlightRitualBn: 'মহতী সন্ধিপূজা: দিবা ৭:২৬ – ৮:১৪',
+      highlightRitualEn: 'Sacred Sandhi Puja: 7:26 AM – 8:14 AM',
+      Icon: AshtamiDhunuchiIcon,
+    },
+    navami: {
+      id: 'navami',
+      dateLabelBn: 'মহানবমী • ২০ অক্টোবর ২০২৬',
+      dateLabelEn: 'Maha Navami • 20 October 2026',
+      headingBn: 'শুভ মহানবমীর ভক্তিপূর্ণ প্রণাম',
+      headingEn: 'Devout Greetings on Auspicious Maha Navami',
+      poeticWishBn: 'পবিত্র হোমাগ্নি শিখায় সমর্পিত অন্তরের শ্রদ্ধা। উৎসবের শেষ পূর্ণাঙ্গ লগ্নে দেবীর চরণে প্রার্থনা—আমাদের সোনালী পরিবারের প্রতিটি মানুষের জীবন ভরে উঠুক সুস্থতা ও আনন্দে।',
+      poeticWishEn: 'As sacred embers rise in prayer, our hearts offer deepest gratitude to the Mother. On this glorious penultimate day, may Her divine blessings bestow good health and happiness upon all.',
+      highlightRitualBn: 'পূর্বাহ্ণে মহানবমী বিহিত পূজা ও হোমযজ্ঞ',
+      highlightRitualEn: 'Forenoon Maha Navami Puja & Sacred Homa',
+      Icon: NavamiHomaIcon,
+    },
+    dashami: {
+      id: 'dashami',
+      dateLabelBn: 'বিজয়া দশমী • ২১ অক্টোবর ২০২৬',
+      dateLabelEn: 'Vijaya Dashami • 21 October 2026',
+      headingBn: 'শুভ বিজয়া দশমী',
+      headingEn: 'Reverent Greetings on Sacred Vijaya Dashami',
+      poeticWishBn: 'চোখের জলে মাকে বিদায় জানানো, আর সিঁদুরের রঙে রাঙিয়ে তোলা মন। মা চলেছেন কৈলাসে, কিন্তু আমাদের অন্তরে রেখে যাচ্ছেন সম্প্রীতি ও একতার অক্ষয় আলো। "আসছে বছর আবার হবে!"',
+      poeticWishEn: 'With tearful eyes and hearts filled with devotion, we bid the Mother farewell. She journeys to Kailash, leaving us united in harmony, affection, and hope. "Asche Bochhor Abar Hobe!"',
+      highlightRitualBn: 'অপরাজিতা পূজা, সিঁদুর খেলা ও বিসর্জন',
+      highlightRitualEn: 'Aparajita Puja, Sindoor Khela & Immersion',
+      Icon: DashamiTrishulIcon,
+    },
+    bijoya: {
+      id: 'bijoya',
+      dateLabelBn: 'শুভ বিজয়া • সন ১৪৩৩',
+      dateLabelEn: 'Subho Bijoya • 1433 Bangabda',
+      headingBn: 'শুভ বিজয়ার প্রীতি ও সশ্রদ্ধ প্রণাম',
+      headingEn: 'Warmest Subho Bijoya Greetings & Reverence',
+      poeticWishBn: 'মা দুর্গা ফিরে গেলেন কৈলাসে, রেখে গেলেন আশীর্বাদের পুণ্য স্পর্শ। বড়দের সশ্রদ্ধ প্রণাম, ছোটদের অপার স্নেহাশিস আর সমবয়সীদের জানাই বিজয়ার আন্তরিক প্রীতি ও কোলাকুলি।',
+      poeticWishEn: 'Mother Durga returns to Kailash, leaving behind a luminous blessing of peace. Respectful pranam to elders, affectionate love to children, and warmest Bijoya greetings to all friends.',
+      highlightRitualBn: 'শান্তিজল গ্রহণ ও পারস্পরিক মিষ্টিমুখ',
+      highlightRitualEn: 'Shantijal Blessings & Community Fellowship',
+      Icon: DiyaIcon,
+    },
+  };
+
+  const resolveActivePhase = () => {
+    const now = new Date();
+    // 2026 Durga Puja dates in Asia/Kolkata (+05:30) — transitions exactly at 00:00 AM (midnight)
+    const d16 = new Date('2026-10-16T00:00:00+05:30');
+    const d17 = new Date('2026-10-17T00:00:00+05:30');
+    const d18 = new Date('2026-10-18T00:00:00+05:30');
+    const d19 = new Date('2026-10-19T00:00:00+05:30');
+    const d20 = new Date('2026-10-20T00:00:00+05:30');
+    const d21 = new Date('2026-10-21T00:00:00+05:30');
+    const d22 = new Date('2026-10-22T00:00:00+05:30');
+
+    if (now < d16) return 'countdown';
+    if (now < d17) return 'shashti';       // 16 Oct: Shashti (Live from 00:00 AM 16th)
+    if (now < d18) return 'saptami-day1';  // 17 Oct: Saptami 1 (Live from 00:00 AM 17th)
+    if (now < d19) return 'saptami-day2';  // 18 Oct: Saptami 2 (Live from 00:00 AM 18th)
+    if (now < d20) return 'ashtami';       // 19 Oct: Ashtami (Live from 00:00 AM 19th)
+    if (now < d21) return 'navami';        // 20 Oct: Navami (Live from 00:00 AM 20th)
+    if (now < d22) return 'dashami';       // 21 Oct: Dashami (Live from 00:00 AM 21st)
+    return 'bijoya';                       // 22 Oct+: Subho Bijoya (Live from 00:00 AM 22nd)
+  };
+
+  const [activePhase, setActivePhase] = useState(() => resolveActivePhase());
+
+  useEffect(() => {
+    // Automatically switch the day's wish card the moment midnight (00:00 AM) arrives
+    const updatePhase = () => {
+      const nextPhase = resolveActivePhase();
+      setActivePhase((prev) => (prev !== nextPhase ? nextPhase : prev));
+    };
+    updatePhase();
+    const interval = setInterval(updatePhase, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const pujaPhotos = (data.gallery || []).filter(g => getImageWing(g) === 'Puja');
   const currentYearPuja = pujaPhotos.filter(g => g.year === selectedYear);
   const galleryList = (currentYearPuja.length > 0 ? currentYearPuja : pujaPhotos).slice(0, 10);
@@ -473,26 +596,21 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-[radial-gradient(#10B981_1px,transparent_1px)] [background-size:24px_24px] opacity-15 pointer-events-none" />
           </div>
 
-          {/* Desktop Left-Wing Scrim (Hidden on mobile to keep top 100% radiant) */}
-          <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-stone-950/80 via-stone-950/35 to-transparent pointer-events-none z-10 hidden lg:block" />
+          {/* Desktop Left-Wing Scrim (Applied only on Durga Puja to keep idol radiant while text is legible) */}
+          {activeHeroPillar === 'puja' && (
+            <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-stone-950/80 via-stone-950/35 to-transparent pointer-events-none z-10 hidden lg:block" />
+          )}
 
-          {/* Mobile Atmospheric Downside Scrim (Protects text at bottom, leaves top 100% bright & clear) */}
-          <div className="absolute inset-x-0 bottom-0 h-48 sm:h-56 bg-gradient-to-t from-stone-950/95 via-stone-950/50 to-transparent pointer-events-none z-10 lg:hidden" />
+          {/* Mobile Atmospheric Downside Scrim (Applied only on Durga Puja for bottom text clarity) */}
+          {activeHeroPillar === 'puja' && (
+            <div className="absolute inset-x-0 bottom-0 h-48 sm:h-56 bg-gradient-to-t from-stone-950/95 via-stone-950/50 to-transparent pointer-events-none z-10 lg:hidden" />
+          )}
 
-          {/* ════ HERO SACRED INVOCATION WING (MOBILE: DOWNSIDE / DESKTOP: LEFT WING) ════ */}
-          <div className="absolute bottom-6 sm:bottom-8 left-3.5 sm:left-6 right-3.5 sm:right-auto lg:top-36 xl:top-40 lg:bottom-auto lg:left-14 lg:max-w-md z-20 max-w-[85vw] sm:max-w-sm pointer-events-none">
-            
-            {/* ═══ PILLAR 1 CONTENT: DURGA PUJA ═══ */}
-            {activeHeroPillar === 'puja' && (
+          {/* ════ HERO SACRED INVOCATION WING (DURGA PUJA: LEFT WING ON DESKTOP / DOWNSIDE ON MOBILE) ════ */}
+          {activeHeroPillar === 'puja' && (
+            <div className="absolute bottom-6 sm:bottom-8 left-3.5 sm:left-6 right-3.5 sm:right-auto lg:top-36 xl:top-40 lg:bottom-auto lg:left-14 lg:max-w-md z-20 max-w-[85vw] sm:max-w-sm pointer-events-none">
               <div className="animate-fadeIn">
-                <div className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs font-bold tracking-wider uppercase backdrop-blur-md pointer-events-auto shadow-md ${curr.badgeClass}`}>
-                  <PanjikaSealBadge className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300" />
-                  <span>{b('সোনালী পার্ক অধিবাসীবৃন্দ', 'Sonali Park Adhibasibrinda')}</span>
-                  <span className="opacity-40">·</span>
-                  <span className="font-serif normal-case tracking-normal text-amber-200 font-bold">{toDigits(2026)}</span>
-                </div>
-
-                <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-black tracking-tight text-white leading-[1.2] mt-1 sm:mt-3 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+                <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-black tracking-tight text-white leading-[1.2] drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
                   {lang === 'en' ? (
                     <>
                       <span>{curr.headlinePrefix}</span>
@@ -552,74 +670,69 @@ export default function HomePage() {
                   </Link>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* ═══ PILLAR 2 CONTENT: SONALI SANGHA CLUB ═══ */}
-            {activeHeroPillar === 'club' && (
-              <div className="animate-fadeIn">
-                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-amber-300/40 bg-stone-950/75 text-amber-200 text-[10px] sm:text-xs font-bold tracking-wider uppercase backdrop-blur-md pointer-events-auto shadow-md">
-                  <ClubCrestIcon className="w-3.5 h-3.5 text-amber-400" />
-                  <span>{b('রেজি: SO067242 • ক্লাব শাখা', 'Reg: SO067242 • Club Wing')}</span>
-                </div>
-
-                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-black tracking-tight text-white leading-[1.2] mt-1 sm:mt-3 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
-                  <span>{lang === 'en' ? 'Sonali Sangha ' : 'সোনালী সঙ্ঘ '}</span>
-                  <span className="text-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.6)]">
-                    {b('ক্লাব', 'Club')}
-                  </span>
-                </h1>
-
-                <p className="text-[11px] sm:text-sm md:text-base text-amber-100/90 font-serif italic mt-0.5 sm:mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
-                  {b('ক্রীড়া, সংস্কৃতি ও যুবকল্যাণ পরিষদ', 'Sports, Culture & Youth Welfare')}
-                </p>
-
-                <div className="hidden lg:flex flex-wrap items-center gap-3 mt-4 sm:mt-6 pointer-events-auto">
-                  <Link
-                    href="/club"
-                    className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-stone-950 pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 sm:py-2 rounded-full font-black text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-3 group shadow-[0_4px_16px_rgba(245,158,11,0.45)] border border-amber-300/80 hover:scale-102 transition-all active:scale-98"
-                  >
-                    <span>{b('সোনালী সঙ্ঘ ক্লাব জানুন', 'Explore Sonali Club')}</span>
-                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-stone-950 text-amber-300 flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5 font-bold text-xs sm:text-sm">
-                      →
+          {/* ════ HERO MAJESTIC CENTERED TITLE (CLUB & SAMITI: CENTERED FOR ALL DEVICES) ════ */}
+          {activeHeroPillar !== 'puja' && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-8 pb-4 sm:pb-6 z-20 pointer-events-none">
+              {/* ═══ PILLAR 2 CONTENT: SONALI SANGHA CLUB ═══ */}
+              {activeHeroPillar === 'club' && (
+                <div className="animate-fadeIn flex flex-col items-center max-w-2xl mx-auto">
+                  <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-black tracking-tight text-white leading-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)]">
+                    <span>{lang === 'en' ? 'Sonali Sangha ' : 'সোনালী সঙ্ঘ '}</span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-300 drop-shadow-[0_2px_12px_rgba(245,158,11,0.6)]">
+                      {b('ক্লাব', 'Club')}
                     </span>
-                  </Link>
+                  </h1>
+
+                  <p className="text-xs sm:text-base md:text-lg text-amber-100/90 font-serif italic mt-1.5 sm:mt-2.5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
+                    {b('ক্রীড়া, সংস্কৃতি ও যুবকল্যাণ পরিষদ', 'Sports, Culture & Youth Welfare')}
+                  </p>
+
+                  <div className="hidden lg:flex items-center justify-center mt-5 sm:mt-6 pointer-events-auto">
+                    <Link
+                      href="/club"
+                      className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-stone-950 pl-6 pr-2.5 py-2.5 rounded-full font-black text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-3 group shadow-[0_4px_20px_rgba(245,158,11,0.5)] border border-amber-300/80 hover:scale-105 transition-all active:scale-95"
+                    >
+                      <span>{b('সোনালী সঙ্ঘ ক্লাব জানুন', 'Explore Sonali Club')}</span>
+                      <span className="w-7 h-7 rounded-full bg-stone-950 text-amber-300 flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5 font-bold text-sm">
+                        →
+                      </span>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* ═══ PILLAR 3 CONTENT: UNNAYAN SAMITI ═══ */}
-            {activeHeroPillar === 'samiti' && (
-              <div className="animate-fadeIn">
-                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-emerald-300/40 bg-stone-950/75 text-emerald-200 text-[10px] sm:text-xs font-bold tracking-wider uppercase backdrop-blur-md pointer-events-auto shadow-md">
-                  <SamitiEmblemIcon className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>{b('রেজি: SO067242 • সমিতি শাখা', 'Reg: SO067242 • Samiti Wing')}</span>
-                </div>
-
-                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-black tracking-tight text-white leading-[1.2] mt-1 sm:mt-3 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
-                  <span>{lang === 'en' ? 'Sonali Park ' : 'সোনালী পার্ক '}</span>
-                  <span className="text-emerald-400 drop-shadow-[0_2px_8px_rgba(16,185,129,0.6)]">
-                    {b('উন্নয়ন সমিতি', 'Unnayan Samiti')}
-                  </span>
-                </h1>
-
-                <p className="text-[11px] sm:text-sm md:text-base text-emerald-100/90 font-serif italic mt-0.5 sm:mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
-                  {b('নাগরিক পরিষেবা ও আবাসিক কল্যাণ পরিষদ', 'Civic Services & Resident Welfare')}
-                </p>
-
-                <div className="hidden lg:flex flex-wrap items-center gap-3 mt-4 sm:mt-6 pointer-events-auto">
-                  <Link
-                    href="/samiti"
-                    className="bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-800 text-white pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 sm:py-2 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-3 group shadow-[0_4px_16px_rgba(16,185,129,0.45)] border border-emerald-300/80 hover:scale-102 transition-all active:scale-98"
-                  >
-                    <span>{b('উন্নয়ন সমিতি জানুন', 'Explore Unnayan Samiti')}</span>
-                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5 font-bold text-xs sm:text-sm">
-                      →
+              {/* ═══ PILLAR 3 CONTENT: UNNAYAN SAMITI ═══ */}
+              {activeHeroPillar === 'samiti' && (
+                <div className="animate-fadeIn flex flex-col items-center max-w-2xl mx-auto">
+                  <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-black tracking-tight text-white leading-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)]">
+                    <span>{lang === 'en' ? 'Sonali Park ' : 'সোনালী পার্ক '}</span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 via-emerald-400 to-emerald-300 drop-shadow-[0_2px_12px_rgba(16,185,129,0.6)]">
+                      {b('উন্নয়ন সমিতি', 'Unnayan Samiti')}
                     </span>
-                  </Link>
+                  </h1>
+
+                  <p className="text-xs sm:text-base md:text-lg text-emerald-100/90 font-serif italic mt-1.5 sm:mt-2.5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
+                    {b('নাগরিক পরিষেবা ও আবাসিক কল্যাণ পরিষদ', 'Civic Services & Resident Welfare')}
+                  </p>
+
+                  <div className="hidden lg:flex items-center justify-center mt-5 sm:mt-6 pointer-events-auto">
+                    <Link
+                      href="/samiti"
+                      className="bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-800 text-white pl-6 pr-2.5 py-2.5 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-3 group shadow-[0_4px_20px_rgba(16,185,129,0.5)] border border-emerald-300/80 hover:scale-105 transition-all active:scale-95"
+                    >
+                      <span>{b('উন্নয়ন সমিতি জানুন', 'Explore Unnayan Samiti')}</span>
+                      <span className="w-7 h-7 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5 font-bold text-sm">
+                        →
+                      </span>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* ════ GENTLE TEMPLE ARCH CURVE (SEAMLESS ARCHITECTURAL TRANSITION) ════ */}
           <div className="absolute -bottom-px inset-x-0 w-full overflow-hidden leading-none z-10 pointer-events-none">
@@ -730,62 +843,101 @@ export default function HomePage() {
             )}
           </div>
 
-          {/* The Artisanal Countdown Pavilion Card */}
-          <div className="relative pt-6 sm:pt-8 pb-5 sm:pb-7 px-3.5 sm:px-6 md:px-8 rounded-2xl sm:rounded-3xl bg-[#FFFDF9] border border-[#E5DAC8] shadow-[0_8px_30px_rgba(28,13,19,0.05)] overflow-hidden flex flex-col items-center justify-center text-center group">
-            {/* Top Alta Seam Accent */}
-            <div className="absolute top-0 inset-x-0 h-[2.5px] bg-gradient-to-r from-transparent via-[#BE123C]/60 to-transparent" />
 
-            {/* Decorative Traditional Corner Kolka Watermarks (Desktop only to prevent mobile clutter) */}
-            <div className="absolute top-2.5 left-2.5 text-brand-maroon/10 pointer-events-none hidden sm:block">
-              <CornerKolka className="w-5 h-5 sm:w-6 sm:h-6" />
-            </div>
-            <div className="absolute top-2.5 right-2.5 text-brand-maroon/10 pointer-events-none rotate-90 hidden sm:block">
-              <CornerKolka className="w-5 h-5 sm:w-6 sm:h-6" />
-            </div>
 
-            {/* Kicker Tag / Eyebrow (Mobile-Friendly Pill) */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200/80 text-[10px] sm:text-xs font-serif font-bold text-amber-900 uppercase tracking-wider mb-2 sm:mb-2.5 shadow-2xs">
-              <DiyaIcon className="w-3.5 h-3.5 text-amber-600 animate-gentle-float shrink-0" />
-              <span>{b('সোনালী পার্ক অধিবাসীবৃন্দ • দুর্গোৎসব ২০২৬', 'Sonali Park Adhibasibrinda • Durga Puja 2026')}</span>
-            </div>
+          {/* The Aristocratic Festive Pavilion Card */}
+          <div className="relative pt-8 sm:pt-10 pb-7 sm:pb-9 px-6 sm:px-12 md:px-16 rounded-2xl bg-[#FFFDF9] border border-[#E4D9C5] shadow-[0_4px_24px_rgba(28,13,19,0.04)] overflow-hidden flex flex-col items-center justify-center text-center">
+            {/* Architectural Double-Line Letterpress Inset Frame (Pure luxury, zero clipart) */}
+            <div className="absolute inset-2.5 sm:inset-3.5 border border-[#DECDB3]/70 rounded-xl pointer-events-none" />
 
-            {/* Main Heading — Clean, Balanced & Mobile-Optimized */}
-            <h2 className="text-lg sm:text-2xl md:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug px-2 max-w-lg">
-              {(!settings.countdownHeading || settings.countdownHeading === 'মা আসছেন...' || settings.countdownHeading === 'মহাষ্টমী আসতে আর মাত্র' || lang === 'en')
-                ? curr.counterHeading
-                : settings.countdownHeading}
-            </h2>
+            {/* Top Seam Alta Crimson Hairline */}
+            <div className="absolute top-0 inset-x-8 sm:inset-x-20 h-[2px] bg-gradient-to-r from-transparent via-[#9F1239] to-transparent" />
 
-            {/* Poetic Subtitle */}
-            <p className="text-[11px] sm:text-xs md:text-sm text-stone-500 font-serif italic mt-1 sm:mt-1.5 mb-3 sm:mb-5 max-w-md mx-auto">
-              {b('মহিষাসুরমর্দিনীর আবাহনে পুণ্য মুহূর্তের প্রতীক্ষা', 'Awaiting the sacred invocation of Mother Durga')}
-            </p>
+            {/* DUAL MODE RENDER: COUNTDOWN vs ARISTOCRATIC FESTIVE WISH */}
+            {activePhase === 'countdown' ? (
+              <div className="relative z-10 flex flex-col items-center max-w-xl mx-auto w-full">
+                {/* Clean Letterpress Eyebrow */}
+                <div className="text-[11px] sm:text-xs font-serif font-bold text-[#8C2B38] tracking-[0.2em] uppercase mb-1.5 sm:mb-2">
+                  {b('সোনালী পার্ক অধিবাসীবৃন্দ • দুর্গোৎসব ২০২৬', 'Sonali Park Adhibasibrinda • Durga Puja 2026')}
+                </div>
 
-            {/* Handcrafted Letterpress Countdown Dials */}
-            <Countdown targetDate={settings.countdownDate || '2026-10-16T06:00:00+05:30'} variant="festive-boxes" />
+                {/* Main Heading */}
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-black text-stone-900 tracking-tight leading-snug px-2 max-w-lg">
+                  {(!settings.countdownHeading || settings.countdownHeading === 'মা আসছেন...' || settings.countdownHeading === 'মহাষ্টমী আসতে আর মাত্র' || lang === 'en')
+                    ? curr.counterHeading
+                    : settings.countdownHeading}
+                </h2>
 
-            {/* Editorial Status & Logistics Seam */}
-            <div className="flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2 mt-4 pt-3.5 border-t border-stone-200/70 w-full max-w-xl text-[11px] sm:text-[13px] text-stone-600 font-medium">
-              <span className="inline-flex items-center gap-1.5 text-stone-700">
-                <CalendarPlaqueIcon className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                <span>{curr.counterSub}</span>
-              </span>
-              <span className="hidden sm:inline text-stone-300">•</span>
-              <span className="inline-flex items-center gap-1.5 text-emerald-700">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                <span>{b('মণ্ডপ প্রস্তুতি চলছে', 'Pandal Work in Progress')}</span>
-              </span>
-              <span className="hidden sm:inline text-stone-300">•</span>
-              <a
-                href="https://maps.google.com/?q=Bansdroni+Sonali+Park+Kolkata"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-stone-600 hover:text-brand-maroon transition-colors group underline decoration-stone-300 underline-offset-4 hover:decoration-brand-maroon"
-              >
-                <MetroTransitIcon className="w-3.5 h-3.5 text-stone-500 group-hover:text-brand-maroon transition-colors shrink-0" />
-                <span>{b('মেট্রো থেকে ১০ মিনিট', '10 mins from Metro')}</span>
-              </a>
-            </div>
+                {/* Poetic Subtitle */}
+                <p className="text-xs sm:text-sm text-stone-500 font-serif italic mt-1 mb-4 sm:mb-5 max-w-md mx-auto">
+                  {b('মহিষাসুরমর্দিনীর আবাহনে পুণ্য মুহূর্তের প্রতীক্ষা', 'Awaiting the sacred invocation of Mother Durga')}
+                </p>
+
+                {/* Handcrafted Letterpress Countdown Dials */}
+                <Countdown targetDate={settings.countdownDate || '2026-10-16T06:00:00+05:30'} variant="festive-boxes" />
+
+                {/* Editorial Status & Logistics Seam */}
+                <div className="flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-2 mt-4 pt-3.5 border-t border-[#EAE1D1] w-full max-w-xl text-[11px] sm:text-xs text-stone-600 font-serif">
+                  <span className="text-stone-700">{curr.counterSub}</span>
+                  <span className="hidden sm:inline text-stone-300">|</span>
+                  <span className="text-emerald-700 font-sans font-medium">{b('মণ্ডপ প্রস্তুতি চলছে', 'Pandal Work in Progress')}</span>
+                  <span className="hidden sm:inline text-stone-300">|</span>
+                  <a
+                    href="https://maps.google.com/?q=Bansdroni+Sonali+Park+Kolkata"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-stone-600 hover:text-brand-maroon underline underline-offset-4 transition-colors"
+                  >
+                    {b('মেট্রো থেকে ১০ মিনিট', '10 mins from Metro')}
+                  </a>
+                </div>
+              </div>
+            ) : (
+              (() => {
+                const currentWish = FESTIVAL_DAILY_WISHES[activePhase] || FESTIVAL_DAILY_WISHES['shashti'];
+                return (
+                  <div className="relative z-10 flex flex-col items-center max-w-xl mx-auto w-full">
+                    {/* 1. Letterpress Sacred Date (Pure, Dignified Typography — No Pill Badge, No Icons) */}
+                    <div className="text-[11px] sm:text-xs font-serif font-bold text-[#8C2B38] tracking-[0.2em] uppercase mb-1.5 sm:mb-2">
+                      {b(currentWish.dateLabelBn, currentWish.dateLabelEn)}
+                    </div>
+
+                    {/* 2. Main Sacred Heading — Aristocratic Royal Crimson */}
+                    <h2 className="text-2xl sm:text-3xl md:text-[34px] font-serif font-black tracking-tight leading-tight px-3 text-[#5C0A1E]">
+                      {b(currentWish.headingBn, currentWish.headingEn)}
+                    </h2>
+
+                    {/* 3. Razor-Fine Antique Gold Hairline Rule (Zero Icons) */}
+                    <div className="w-16 sm:w-24 h-px bg-gradient-to-r from-transparent via-[#C29B38]/60 to-transparent my-3 sm:my-4" />
+
+                    {/* 4. Poetic Literary Prose — Book-Quality Warm Typography */}
+                    <p className="text-[13px] sm:text-[15px] md:text-base text-[#382F2D] font-serif leading-relaxed sm:leading-loose text-center mb-4 sm:mb-5 px-3 max-w-lg">
+                      {b(currentWish.poeticWishBn, currentWish.poeticWishEn)}
+                    </p>
+
+                    {/* 5. Minimal Literary Footer — Quiet, Prestigious, Editorial */}
+                    <div className="w-full pt-3.5 border-t border-[#EAE1D1] flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-1.5 text-xs font-serif">
+                      <span className="text-stone-600">
+                        <span className="text-stone-400 mr-1.5">—</span>
+                        {b(currentWish.highlightRitualBn, currentWish.highlightRitualEn)}
+                      </span>
+                      <span className="hidden sm:inline text-stone-300 select-none">|</span>
+                      <a
+                        href="#schedule"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const el = document.getElementById('schedule');
+                          if (el) el.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="text-[#881337] hover:text-[#50071C] font-semibold tracking-wide hover:underline underline-offset-4 transition-colors"
+                      >
+                        {b('পূজার সম্পূর্ণ নির্ঘণ্ট', 'Puja Schedule')} →
+                      </a>
+                    </div>
+                  </div>
+                );
+              })()
+            )}
           </div>
         </div>
       </section>
@@ -924,7 +1076,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══ 2. FESTIVAL CALENDAR PREVIEW (Authentic Panjika Calendar Leaves) ═══ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14">
+      <section id="schedule" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10 sm:my-14 scroll-mt-24">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b border-stone-200/70">
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-stone-800 bg-[#FFFDF9] shadow-[2px_2px_0px_0px_rgba(28,13,19,0.9)] text-[10px] sm:text-[11px] font-mono font-bold tracking-wider uppercase text-stone-900 mb-2">
