@@ -66,6 +66,40 @@ export default function HomePage() {
   const [noticeTouchStart, setNoticeTouchStart] = useState(null);
   const [copiedNoticeId, setCopiedNoticeId] = useState(null);
 
+  // Multi-Pillar Hero Carousel State ('puja' | 'club' | 'samiti')
+  const [activeHeroPillar, setActiveHeroPillar] = useState('puja');
+  const [isHeroHovered, setIsHeroHovered] = useState(false);
+  const [heroTouchStart, setHeroTouchStart] = useState(null);
+
+  // Weighted Auto-Rotation: 35s for Durga Puja (30-40s range), 12s for Club, 12s for Samiti (10-15s range)
+  useEffect(() => {
+    if (isHeroHovered) return;
+    const duration = activeHeroPillar === 'puja' ? 35000 : 12000;
+    const timer = setTimeout(() => {
+      setActiveHeroPillar((prev) => {
+        if (prev === 'puja') return 'club';
+        if (prev === 'club') return 'samiti';
+        return 'puja';
+      });
+    }, duration);
+    return () => clearTimeout(timer);
+  }, [activeHeroPillar, isHeroHovered]);
+
+  const handleHeroTouchStart = (e) => {
+    setHeroTouchStart(e.touches[0].clientX);
+  };
+
+  const handleHeroTouchEnd = (e) => {
+    if (heroTouchStart === null) return;
+    const diff = heroTouchStart - e.changedTouches[0].clientX;
+    if (diff > 50) {
+      setActiveHeroPillar((prev) => (prev === 'puja' ? 'club' : prev === 'club' ? 'samiti' : 'puja'));
+    } else if (diff < -50) {
+      setActiveHeroPillar((prev) => (prev === 'puja' ? 'samiti' : prev === 'samiti' ? 'club' : 'puja'));
+    }
+    setHeroTouchStart(null);
+  };
+
   const scrollGallery = (direction) => {
     if (galleryScrollRef.current) {
       const amount = direction === 'left' ? -380 : 380;
@@ -378,25 +412,66 @@ export default function HomePage() {
           ══════════════════════════════════════════════════════ */}
       <section className="relative w-full overflow-hidden transition-colors duration-700" style={{ backgroundColor: curr.pageBg }}>
 
-        {/* Sacred Festival Deity Frame — 100% Uncropped, Zero Text Obstruction on Any Device */}
-        <div className="relative w-full aspect-[4/3.8] sm:aspect-[16/10] lg:aspect-[16/9] min-h-[350px] sm:min-h-0 overflow-hidden">
-          {(['morning', 'afternoon', 'evening']).map((tod) => (
-            <div
-              key={tod}
-              className="absolute inset-0 transition-opacity duration-1000"
-              style={{ opacity: timeOfDay === tod ? 1 : 0 }}
-            >
-              <img
-                src={themes[tod].photo}
-                alt="Maa Durga — Sharadiya Durga Puja 2026"
-                onError={(e) => { e.currentTarget.src = themes[tod].photoFallback; }}
-                className="w-full h-full object-cover object-center"
-              />
-            </div>
-          ))}
+        {/* Sacred Festival Deity Frame — 100% Uncropped, Multi-Pillar Weighted Carousel */}
+        <div
+          className="relative w-full aspect-[4/3.8] sm:aspect-[16/10] lg:aspect-[16/9] min-h-[350px] sm:min-h-0 overflow-hidden"
+          onMouseEnter={() => setIsHeroHovered(true)}
+          onMouseLeave={() => setIsHeroHovered(false)}
+          onTouchStart={handleHeroTouchStart}
+          onTouchEnd={handleHeroTouchEnd}
+        >
+          {/* ═══ SLIDE 1: Sacred Durga Puja (Time-of-Day Aware & Floating Petals) ═══ */}
+          <div
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              activeHeroPillar === 'puja' ? 'opacity-100 z-0' : 'opacity-0 -z-10 pointer-events-none'
+            }`}
+          >
+            {(['morning', 'afternoon', 'evening']).map((tod) => (
+              <div
+                key={tod}
+                className="absolute inset-0 transition-opacity duration-1000"
+                style={{ opacity: timeOfDay === tod ? 1 : 0 }}
+              >
+                <img
+                  src={themes[tod].photo}
+                  alt="Maa Durga — Sharadiya Durga Puja 2026"
+                  onError={(e) => { e.currentTarget.src = themes[tod].photoFallback; }}
+                  className="w-full h-full object-cover object-center"
+                />
+              </div>
+            ))}
+            <HeroParticles timeOfDay={timeOfDay} />
+          </div>
 
-          {/* Time-Aware Atmospheric Floating Particles */}
-          <HeroParticles timeOfDay={timeOfDay} />
+          {/* ═══ SLIDE 2: Sonali Sangha Club Banner ═══ */}
+          <div
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              activeHeroPillar === 'club' ? 'opacity-100 z-0' : 'opacity-0 -z-10 pointer-events-none'
+            }`}
+          >
+            <img
+              src={settings?.clubHeroImage || '/assets/club-hero-banner.jpg'}
+              alt="Bansdroni Sonali Sangha Club"
+              className="w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/70 to-black/30" />
+            <div className="absolute inset-0 bg-[radial-gradient(#F59E0B_1px,transparent_1px)] [background-size:24px_24px] opacity-15 pointer-events-none" />
+          </div>
+
+          {/* ═══ SLIDE 3: Sonali Park Unnayan Samiti Banner ═══ */}
+          <div
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              activeHeroPillar === 'samiti' ? 'opacity-100 z-0' : 'opacity-0 -z-10 pointer-events-none'
+            }`}
+          >
+            <img
+              src={settings?.samitiHeroImage || '/assets/samiti-hero-banner.jpg'}
+              alt="Bansdroni Sonali Park Unnayan Samiti"
+              className="w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/70 to-black/30" />
+            <div className="absolute inset-0 bg-[radial-gradient(#10B981_1px,transparent_1px)] [background-size:24px_24px] opacity-15 pointer-events-none" />
+          </div>
 
           {/* Desktop Left-Wing Scrim (Hidden on mobile to keep top 100% radiant) */}
           <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-stone-950/80 via-stone-950/35 to-transparent pointer-events-none z-10 hidden lg:block" />
@@ -406,80 +481,145 @@ export default function HomePage() {
 
           {/* ════ HERO SACRED INVOCATION WING (MOBILE: DOWNSIDE / DESKTOP: LEFT WING) ════ */}
           <div className="absolute bottom-6 sm:bottom-8 left-3.5 sm:left-6 right-3.5 sm:right-auto lg:top-36 xl:top-40 lg:bottom-auto lg:left-14 lg:max-w-md z-20 max-w-[85vw] sm:max-w-sm pointer-events-none">
-            {/* Symmetrical Header Greeting Badge */}
-            <div className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs font-bold tracking-wider uppercase backdrop-blur-md pointer-events-auto shadow-md ${curr.badgeClass}`}>
-              <PanjikaSealBadge className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300" />
-              <span>{b('সোনালী পার্ক অধিবাসীবৃন্দ', 'Sonali Park Adhibasibrinda')}</span>
-              <span className="opacity-40">·</span>
-              <span className="font-serif normal-case tracking-normal text-amber-200 font-bold">{toDigits(2026)}</span>
-            </div>
+            
+            {/* ═══ PILLAR 1 CONTENT: DURGA PUJA ═══ */}
+            {activeHeroPillar === 'puja' && (
+              <div className="animate-fadeIn">
+                <div className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs font-bold tracking-wider uppercase backdrop-blur-md pointer-events-auto shadow-md ${curr.badgeClass}`}>
+                  <PanjikaSealBadge className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300" />
+                  <span>{b('সোনালী পার্ক অধিবাসীবৃন্দ', 'Sonali Park Adhibasibrinda')}</span>
+                  <span className="opacity-40">·</span>
+                  <span className="font-serif normal-case tracking-normal text-amber-200 font-bold">{toDigits(2026)}</span>
+                </div>
 
-            {/* Dynamic Symmetrical Headline */}
-            <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-black tracking-tight text-white leading-[1.2] mt-1 sm:mt-3 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
-              {lang === 'en' ? (
-                <>
-                  <span>{curr.headlinePrefix}</span>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-rose-200 to-amber-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-                    {curr.headlineHighlight}
+                <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-black tracking-tight text-white leading-[1.2] mt-1 sm:mt-3 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+                  {lang === 'en' ? (
+                    <>
+                      <span>{curr.headlinePrefix}</span>
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-rose-200 to-amber-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                        {curr.headlineHighlight}
+                      </span>
+                    </>
+                  ) : settings.heroHeading &&
+                    settings.heroHeading !== 'শারদ প্রাতে মায়ের আগমন...' &&
+                    settings.heroHeading !== 'শারদ প্রাতে মায়ের আগমন...' ? (
+                    settings.heroHeading
+                  ) : (
+                    <>
+                      <span>{curr.headlinePrefix}</span>
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-rose-200 to-amber-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                        {curr.headlineHighlight}
+                      </span>
+                    </>
+                  )}
+                </h1>
+
+                <p className="text-[11px] sm:text-sm md:text-base lg:text-lg text-rose-100/95 font-serif italic mt-0.5 sm:mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
+                  {lang === 'en'
+                    ? curr.subline
+                    : settings.heroSubHeading &&
+                      settings.heroSubHeading !== 'আনন্দ আর আলোয় সাজুক ভুবন।' &&
+                      settings.heroSubHeading !== 'আনন্দ আর আলোয় সাজুক ভুবন।' &&
+                      settings.heroSubHeading !== 'আনন্দ আর আলোয় সাজুক ভুবন'
+                    ? settings.heroSubHeading
+                    : curr.subline}
+                </p>
+
+                <div className="mt-1.5 sm:mt-3 pl-2.5 sm:pl-3.5 pr-3 sm:pr-4 py-1 sm:py-1.5 rounded-r-xl sm:rounded-r-2xl bg-gradient-to-r from-stone-950/85 via-stone-950/55 to-transparent backdrop-blur-md border-l-[3px] sm:border-l-4 border-rose-500 shadow-md pointer-events-auto max-w-[280px] sm:max-w-fit">
+                  <span className="text-[10px] sm:text-xs md:text-sm lg:text-base font-serif italic leading-relaxed text-[#FFF5F6] drop-shadow-sm line-clamp-2 sm:line-clamp-none">
+                    &ldquo;{curr.quote}&rdquo;
                   </span>
-                </>
-              ) : settings.heroHeading &&
-                settings.heroHeading !== 'শারদ প্রাতে মায়ের আগমন...' &&
-                settings.heroHeading !== 'শারদ প্রাতে মায়ের আগমন...' ? (
-                settings.heroHeading
-              ) : (
-                <>
-                  <span>{curr.headlinePrefix}</span>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-rose-200 to-amber-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-                    {curr.headlineHighlight}
+                </div>
+
+                <div className="hidden lg:flex flex-wrap items-center gap-3 mt-4 sm:mt-6 pointer-events-auto">
+                  <Link
+                    href="/puja"
+                    className="btn-tactile-crimson text-white pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 sm:py-2 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-3 group shadow-[0_4px_16px_rgba(190,18,60,0.45)]"
+                  >
+                    <span>{b('শ্রী শ্রী দুর্গা পূজা ২০২৬', 'Sri Sri Durga Puja 2026')}</span>
+                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white text-brand-maroon flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5 font-bold text-xs sm:text-sm">
+                      →
+                    </span>
+                  </Link>
+                  <Link
+                    href="/transparency"
+                    className="btn-tactile-parchment pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 rounded-full font-semibold text-xs sm:text-sm text-stone-800 hover:text-brand-maroon whitespace-nowrap inline-flex items-center gap-2.5 group"
+                  >
+                    <span>{b('হিসাব নিকাশ', 'Financial Accounts')}</span>
+                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-stone-200/80 group-hover:bg-brand-maroon group-hover:text-white text-stone-700 flex items-center justify-center shadow-2xs transition-all duration-200 text-xs">
+                      →
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* ═══ PILLAR 2 CONTENT: SONALI SANGHA CLUB ═══ */}
+            {activeHeroPillar === 'club' && (
+              <div className="animate-fadeIn">
+                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-amber-300/40 bg-stone-950/75 text-amber-200 text-[10px] sm:text-xs font-bold tracking-wider uppercase backdrop-blur-md pointer-events-auto shadow-md">
+                  <ClubCrestIcon className="w-3.5 h-3.5 text-amber-400" />
+                  <span>{b('রেজি: SO067242 • ক্লাব শাখা', 'Reg: SO067242 • Club Wing')}</span>
+                </div>
+
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-black tracking-tight text-white leading-[1.2] mt-1 sm:mt-3 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+                  <span>{lang === 'en' ? 'Sonali Sangha ' : 'সোনালী সঙ্ঘ '}</span>
+                  <span className="text-amber-400 drop-shadow-[0_2px_8px_rgba(245,158,11,0.6)]">
+                    {b('ক্লাব', 'Club')}
                   </span>
-                </>
-              )}
-            </h1>
+                </h1>
 
-            {/* Subline */}
-            <p className="text-[11px] sm:text-sm md:text-base lg:text-lg text-rose-100/95 font-serif italic mt-0.5 sm:mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
-              {lang === 'en'
-                ? curr.subline
-                : settings.heroSubHeading &&
-                  settings.heroSubHeading !== 'আনন্দ আর আলোয় সাজুক ভুবন।' &&
-                  settings.heroSubHeading !== 'আনন্দ আর আলোয় সাজুক ভুবন।' &&
-                  settings.heroSubHeading !== 'আনন্দ আর আলোয় সাজুক ভুবন'
-                ? settings.heroSubHeading
-                : curr.subline}
-            </p>
+                <p className="text-[11px] sm:text-sm md:text-base text-amber-100/90 font-serif italic mt-0.5 sm:mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
+                  {b('ক্রীড়া, সংস্কৃতি ও যুবকল্যাণ পরিষদ', 'Sports, Culture & Youth Welfare')}
+                </p>
 
-            {/* Dynamic Poetic Bengali Quote Inscribed Plaque ("a small line on left side") */}
-            <div className="mt-1.5 sm:mt-3 pl-2.5 sm:pl-3.5 pr-3 sm:pr-4 py-1 sm:py-1.5 rounded-r-xl sm:rounded-r-2xl bg-gradient-to-r from-stone-950/85 via-stone-950/55 to-transparent backdrop-blur-md border-l-[3px] sm:border-l-4 border-rose-500 shadow-md pointer-events-auto max-w-[280px] sm:max-w-fit">
-              <span className="text-[10px] sm:text-xs md:text-sm lg:text-base font-serif italic leading-relaxed text-[#FFF5F6] drop-shadow-sm line-clamp-2 sm:line-clamp-none">
-                &ldquo;{curr.quote}&rdquo;
-              </span>
-            </div>
+                <div className="hidden lg:flex flex-wrap items-center gap-3 mt-4 sm:mt-6 pointer-events-auto">
+                  <Link
+                    href="/club"
+                    className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-stone-950 pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 sm:py-2 rounded-full font-black text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-3 group shadow-[0_4px_16px_rgba(245,158,11,0.45)] border border-amber-300/80 hover:scale-102 transition-all active:scale-98"
+                  >
+                    <span>{b('সোনালী সঙ্ঘ ক্লাব জানুন', 'Explore Sonali Club')}</span>
+                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-stone-950 text-amber-300 flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5 font-bold text-xs sm:text-sm">
+                      →
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            )}
 
-            {/* CTA Action Buttons (Desktop Only Inside Frame — On Mobile Shifted Down Before Timer) */}
-            <div className="hidden lg:flex flex-wrap items-center gap-3 mt-4 sm:mt-6 pointer-events-auto">
-              <Link
-                href="/puja"
-                className="btn-tactile-crimson text-white pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 sm:py-2 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-3 group shadow-[0_4px_16px_rgba(190,18,60,0.45)]"
-              >
-                <span>{b('শ্রী শ্রী দুর্গা পূজা ২০২৬', 'Sri Sri Durga Puja 2026')}</span>
-                <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white text-brand-maroon flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5 font-bold text-xs sm:text-sm">
-                  →
-                </span>
-              </Link>
-              <Link
-                href="/transparency"
-                className="btn-tactile-parchment pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 rounded-full font-semibold text-xs sm:text-sm text-stone-800 hover:text-brand-maroon whitespace-nowrap inline-flex items-center gap-2.5 group"
-              >
-                <span>{b('হিসাব নিকাশ', 'Financial Accounts')}</span>
-                <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-stone-200/80 group-hover:bg-brand-maroon group-hover:text-white text-stone-700 flex items-center justify-center shadow-2xs transition-all duration-200 text-xs">
-                  →
-                </span>
-              </Link>
-            </div>
+            {/* ═══ PILLAR 3 CONTENT: UNNAYAN SAMITI ═══ */}
+            {activeHeroPillar === 'samiti' && (
+              <div className="animate-fadeIn">
+                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-emerald-300/40 bg-stone-950/75 text-emerald-200 text-[10px] sm:text-xs font-bold tracking-wider uppercase backdrop-blur-md pointer-events-auto shadow-md">
+                  <SamitiEmblemIcon className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>{b('রেজি: SO067242 • সমিতি শাখা', 'Reg: SO067242 • Samiti Wing')}</span>
+                </div>
+
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif font-black tracking-tight text-white leading-[1.2] mt-1 sm:mt-3 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+                  <span>{lang === 'en' ? 'Sonali Park ' : 'সোনালী পার্ক '}</span>
+                  <span className="text-emerald-400 drop-shadow-[0_2px_8px_rgba(16,185,129,0.6)]">
+                    {b('উন্নয়ন সমিতি', 'Unnayan Samiti')}
+                  </span>
+                </h1>
+
+                <p className="text-[11px] sm:text-sm md:text-base text-emerald-100/90 font-serif italic mt-0.5 sm:mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
+                  {b('নাগরিক পরিষেবা ও আবাসিক কল্যাণ পরিষদ', 'Civic Services & Resident Welfare')}
+                </p>
+
+                <div className="hidden lg:flex flex-wrap items-center gap-3 mt-4 sm:mt-6 pointer-events-auto">
+                  <Link
+                    href="/samiti"
+                    className="bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-800 text-white pl-5 sm:pl-6 pr-2 sm:pr-2.5 py-2 sm:py-2 rounded-full font-bold text-xs sm:text-sm whitespace-nowrap inline-flex items-center gap-3 group shadow-[0_4px_16px_rgba(16,185,129,0.45)] border border-emerald-300/80 hover:scale-102 transition-all active:scale-98"
+                  >
+                    <span>{b('উন্নয়ন সমিতি জানুন', 'Explore Unnayan Samiti')}</span>
+                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-110 group-hover:translate-x-0.5 font-bold text-xs sm:text-sm">
+                      →
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
-
-
 
           {/* ════ GENTLE TEMPLE ARCH CURVE (SEAMLESS ARCHITECTURAL TRANSITION) ════ */}
           <div className="absolute -bottom-px inset-x-0 w-full overflow-hidden leading-none z-10 pointer-events-none">
@@ -504,32 +644,90 @@ export default function HomePage() {
 
         {/* ════ UNIFIED HERITAGE SHARAD COUNTDOWN PAVILION (RESPONSIVE DESKTOP & MOBILE) ════ */}
         <div className="max-w-2xl sm:max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 pt-2 pb-6 sm:pb-10">
-          {/* Mobile Only: Touch Friendly Action Buttons */}
+          {/* Mobile Only: Touch Friendly Action Buttons Adaptive to Active Pillar */}
           <div className="grid grid-cols-2 gap-2.5 mb-3.5 w-full lg:hidden">
-            <Link
-              href="/puja"
-              className="btn-tactile-crimson text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-between text-center whitespace-nowrap group shadow-[0_4px_16px_rgba(190,18,60,0.35)]"
-            >
-              <div className="flex items-center gap-1.5 truncate">
-                <DurgaDeviEmblemIcon className="w-3.5 h-3.5 text-amber-200 shrink-0" />
-                <span className="truncate">{b('শ্রী শ্রী দুর্গা পূজা ২০২৬', 'Sri Sri Durga Puja 2026')}</span>
-              </div>
-              <span className="w-5 h-5 rounded-full bg-white text-brand-maroon flex items-center justify-center shadow-xs font-bold text-xs shrink-0 group-hover:translate-x-0.5 transition-transform ml-1">
-                →
-              </span>
-            </Link>
-            <Link
-              href="/transparency"
-              className="btn-tactile-parchment py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl font-semibold text-xs sm:text-sm text-stone-800 hover:text-brand-maroon flex items-center justify-between text-center whitespace-nowrap border border-[#E5DAC8] group shadow-2xs"
-            >
-              <div className="flex items-center gap-1.5 truncate">
-                <NoticeScrollIcon className="w-3.5 h-3.5 text-brand-maroon shrink-0" />
-                <span className="truncate">{b('হিসাব নিকাশ', 'Accounts')}</span>
-              </div>
-              <span className="w-5 h-5 rounded-full bg-stone-200/80 group-hover:bg-brand-maroon group-hover:text-white text-stone-700 flex items-center justify-center text-xs shrink-0 transition-colors ml-1">
-                →
-              </span>
-            </Link>
+            {activeHeroPillar === 'club' ? (
+              <>
+                <Link
+                  href="/club"
+                  className="bg-gradient-to-r from-amber-500 to-amber-700 text-stone-950 py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-between text-center whitespace-nowrap group shadow-[0_4px_16px_rgba(245,158,11,0.35)] border border-amber-300"
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <ClubCrestIcon className="w-3.5 h-3.5 text-stone-950 shrink-0" />
+                    <span className="truncate">{b('সোনালী ক্লাব', 'Sonali Club')}</span>
+                  </div>
+                  <span className="w-5 h-5 rounded-full bg-stone-950 text-amber-300 flex items-center justify-center shadow-xs font-bold text-xs shrink-0 group-hover:translate-x-0.5 transition-transform ml-1">
+                    →
+                  </span>
+                </Link>
+                <Link
+                  href="/club#club-notices"
+                  className="btn-tactile-parchment py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl font-semibold text-xs sm:text-sm text-stone-800 hover:text-amber-800 flex items-center justify-between text-center whitespace-nowrap border border-[#E5DAC8] group shadow-2xs"
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <NoticeScrollIcon className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                    <span className="truncate">{b('ক্লাব নোটিশ', 'Club Notices')}</span>
+                  </div>
+                  <span className="w-5 h-5 rounded-full bg-stone-200/80 group-hover:bg-amber-600 group-hover:text-white text-stone-700 flex items-center justify-center text-xs shrink-0 transition-colors ml-1">
+                    →
+                  </span>
+                </Link>
+              </>
+            ) : activeHeroPillar === 'samiti' ? (
+              <>
+                <Link
+                  href="/samiti"
+                  className="bg-gradient-to-r from-emerald-600 to-emerald-800 text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-between text-center whitespace-nowrap group shadow-[0_4px_16px_rgba(16,185,129,0.35)] border border-emerald-300"
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <SamitiEmblemIcon className="w-3.5 h-3.5 text-emerald-100 shrink-0" />
+                    <span className="truncate">{b('উন্নয়ন সমিতি', 'Samiti')}</span>
+                  </div>
+                  <span className="w-5 h-5 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-xs font-bold text-xs shrink-0 group-hover:translate-x-0.5 transition-transform ml-1">
+                    →
+                  </span>
+                </Link>
+                <Link
+                  href="/samiti#samiti-notices"
+                  className="btn-tactile-parchment py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl font-semibold text-xs sm:text-sm text-stone-800 hover:text-emerald-800 flex items-center justify-between text-center whitespace-nowrap border border-[#E5DAC8] group shadow-2xs"
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <NoticeScrollIcon className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                    <span className="truncate">{b('নাগরিক নোটিশ', 'Civic Notices')}</span>
+                  </div>
+                  <span className="w-5 h-5 rounded-full bg-stone-200/80 group-hover:bg-emerald-700 group-hover:text-white text-stone-700 flex items-center justify-center text-xs shrink-0 transition-colors ml-1">
+                    →
+                  </span>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/puja"
+                  className="btn-tactile-crimson text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-between text-center whitespace-nowrap group shadow-[0_4px_16px_rgba(190,18,60,0.35)]"
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <DurgaDeviEmblemIcon className="w-3.5 h-3.5 text-amber-200 shrink-0" />
+                    <span className="truncate">{b('শ্রী শ্রী দুর্গা পূজা ২০২৬', 'Sri Sri Durga Puja 2026')}</span>
+                  </div>
+                  <span className="w-5 h-5 rounded-full bg-white text-brand-maroon flex items-center justify-center shadow-xs font-bold text-xs shrink-0 group-hover:translate-x-0.5 transition-transform ml-1">
+                    →
+                  </span>
+                </Link>
+                <Link
+                  href="/transparency"
+                  className="btn-tactile-parchment py-2.5 sm:py-3 px-3 sm:px-4 rounded-2xl font-semibold text-xs sm:text-sm text-stone-800 hover:text-brand-maroon flex items-center justify-between text-center whitespace-nowrap border border-[#E5DAC8] group shadow-2xs"
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <NoticeScrollIcon className="w-3.5 h-3.5 text-brand-maroon shrink-0" />
+                    <span className="truncate">{b('হিসাব নিকাশ', 'Accounts')}</span>
+                  </div>
+                  <span className="w-5 h-5 rounded-full bg-stone-200/80 group-hover:bg-brand-maroon group-hover:text-white text-stone-700 flex items-center justify-center text-xs shrink-0 transition-colors ml-1">
+                    →
+                  </span>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* The Artisanal Countdown Pavilion Card */}
