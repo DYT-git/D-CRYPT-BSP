@@ -374,22 +374,19 @@ function TransparencyContent() {
             })}
           </div>
         ) : (
-          <div className="text-center py-12 sm:py-16 px-4 bg-[#FFFDF9] rounded-3xl border border-stone-200/80 shadow-xs max-w-2xl mx-auto">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-700 flex items-center justify-center mx-auto mb-4">
+          <div className="text-center py-10 sm:py-14 px-4 bg-[#FFFDF9] rounded-3xl border border-stone-200/80 shadow-xs max-w-xl mx-auto">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-700 flex items-center justify-center mx-auto mb-3.5">
               <FileText className="w-6 h-6" />
             </div>
-            <h3 className="text-lg sm:text-xl font-serif font-bold text-stone-800 mb-1.5">
-              {toDigits(selectedYear, lang)} {b('সালের নিরীক্ষিত অডিট রিপোর্ট প্রক্রিয়াধীন', 'Audited Accounts in Progress')}
+            <h3 className="text-base sm:text-lg font-serif font-bold text-stone-800 mb-1">
+              {b('নতুন নিরীক্ষিত অডিট রিপোর্ট আপলোড হলে এখানে প্রকাশিত হবে।', 'New audited reports will be updated here once verified.')}
             </h3>
-            <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
-              {b(
-                'বাৎসরিক সাধারণ সভা (AGM) ও চার্টার্ড অ্যাকাউন্ট্যান্ট দ্বারা নিরীক্ষা সম্পন্ন হওয়ার পর স্বাক্ষরিত অডিট রিপোর্ট এখানে আপলোড করা হবে।',
-                'Signed audit reports will be published here following the Annual General Meeting (AGM) and formal verification.'
-              )}
+            <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto">
+              {b('হিসাব নিরীক্ষা প্রক্রিয়াধীন রয়েছে।', 'Accounts verification is in progress.')}
             </p>
-            <div className="mt-4 inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200 shadow-2xs">
+            <div className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200 shadow-2xs">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-              <span>{b('শীঘ্রই আপডেট হবে', 'To be Updated Soon')}</span>
+              <span>{b('শীঘ্রই আপডেট হবে', 'To be Updated')}</span>
             </div>
           </div>
         )}

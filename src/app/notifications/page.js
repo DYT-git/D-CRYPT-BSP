@@ -345,7 +345,6 @@ function NotificationsContent() {
         {filteredNotices.length > 0 ? (
           <div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-6xl mx-auto pt-2">
             {filteredNotices.map((notice, idx) => {
-              const noticePdf = notice.pdfUrl || (notice.wing === 'Club' ? '/docs/sample-club-notice-2026.pdf' : notice.wing === 'Samiti' ? '/docs/sample-samiti-notice-2026.pdf' : '/docs/sample-puja-notice-2026.pdf');
               const isCopied = copiedId === notice.id;
 
               return (
@@ -501,13 +500,14 @@ function NotificationsContent() {
               📜
             </div>
             <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900 mb-1">
-              {b('কোনো বিজ্ঞপ্তি পাওয়া যায়নি', 'No Notices Found')}
+              {onlyWithPdf
+                ? b('কোনো সংযুক্ত PDF সার্কুলার নেই', 'No Attached PDF Circulars')
+                : b('কোনো বিজ্ঞপ্তি পাওয়া যায়নি', 'No Notices Found')}
             </h3>
             <p className="text-xs text-stone-500 mb-4 leading-relaxed">
-              {b(
-                'নির্বাচিত ফিল্টার বা অনুসন্ধানে কোনো সক্রিয় নোটিশ নেই। ফিল্টার রিসেট করতে নিচের বাটনে ক্লিক করুন।',
-                'No notices match the selected wing or search criteria. Reset filters to see all circulars.'
-              )}
+              {onlyWithPdf
+                ? b('নতুন সার্কুলার আপলোড হলে এখানে পাওয়া যাবে।', 'New circulars will be updated here once uploaded.')
+                : b('নতুন বিজ্ঞপ্তি প্রকাশিত হলে এখানে আপডেট করা হবে।', 'New official notices will be published here once released.')}
             </p>
             <button
               type="button"

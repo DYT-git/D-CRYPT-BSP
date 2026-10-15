@@ -28,9 +28,7 @@ const DEFAULT_DATA = {
     { year: 2026, title: "রক্তদান শিবির", program: "Social Work", category: "General", src: "/assets/gallery/sample-pandal.svg" },
     { year: 2025, title: "ফুটবল টুর্নামেন্ট", program: "Annual Sports", category: "General", src: "/assets/gallery/sample-dhak.svg" }
   ],
-  finances: [
-    { year: 2026, title: "Sample Durga Puja Budget 2026", url: "/docs/sample-puja-programme-2026.pdf" }
-  ]
+  finances: []
 };
 
 async function main() {

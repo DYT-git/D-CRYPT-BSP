@@ -107,7 +107,7 @@ export default function SamitiPage() {
           .map(n => ({
             ...n,
             title: n.title.replace(/^\[(Samiti|Samity)\]\s*/i, ''),
-            pdfUrl: n.pdfUrl || '/sample-notice.pdf'
+            pdfUrl: n.pdfUrl || null
           }))
       : [];
 
@@ -121,7 +121,7 @@ export default function SamitiPage() {
           'সকল অভ্যন্তরীণ লেন ও প্রাঙ্গণ • সকাল ৮:০০ টা হইতে অপরাহ্ন ১:০০ টা\n\nআসন্ন বর্ষা মৌসুমের পূর্বে সোনালী পার্কের প্রতিটি অভ্যন্তরীণ লেনে ব্লিচিং ও ডেঙ্গি প্রতিরোধে লার্ভিসাইড স্প্রে করা হবে। বাসিন্দাদের যত্রতত্র প্লাস্টিক বর্জ্য বা জল জমিয়ে না রাখার জন্য বিশেষ অনুরোধ জানানো হচ্ছে।',
           'All Neighborhood Lanes • 8:00 AM to 1:00 PM\n\nIntensive sanitation and anti-larval chemical spraying will be conducted across all neighborhood lanes before monsoon. Residents are requested to ensure no water accumulation or plastic waste disposal.'
         ),
-        pdfUrl: '/sample-notice.pdf',
+        pdfUrl: null,
         isUrgent: true,
         year: 2026,
         date: '2026-09-15'
@@ -133,7 +133,7 @@ export default function SamitiPage() {
           'কমিউনিটি হল ভবন • অপরাহ্ন ৬:০০ ঘটিকা\n\nউন্নয়ন সমিতির বাৎসরিক সাধারণ সভা (AGM) আগামী মাসে অনুষ্ঠিত হবে। বিগত বছরের অডিট রিপোর্ট পেশ, পাড়ার নতুন সিসিটিভি ক্যামেরা স্থাপন ও রাতের নিরাপত্তা ব্যবস্থা নিয়ে আলোচনা হবে। সকল আবাসিক পরিবারের উপস্থিতি কাম্য।',
           'Community Hall • 6:00 PM Onwards\n\nThe Annual General Meeting (AGM) of Unnayan Samiti will take place next month. Discussion on annual audit presentation, new CCTV surveillance nodes, and neighborhood night guards.'
         ),
-        pdfUrl: '/sample-notice.pdf',
+        pdfUrl: null,
         isUrgent: false,
         year: 2026,
         date: '2026-09-10'
@@ -1093,13 +1093,10 @@ export default function SamitiPage() {
                 <FileText className="w-6 h-6" />
               </div>
               <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900 mb-1">
-                {b('উন্নয়ন সমিতির নিরীক্ষিত অডিট রিপোর্ট প্রক্রিয়াধীন', 'Samiti Audited Accounts in Progress')}
+                {b('উন্নয়ন সমিতির নতুন নিরীক্ষিত অডিট রিপোর্ট আপলোড হলে এখানে প্রকাশিত হবে।', 'New Unnayan Samiti audit reports will be updated here once verified.')}
               </h3>
-              <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
-                {b(
-                  'বাৎসরিক অডিট ও সাধারণ সভার অনুমোদনের পর উন্নয়ন সমিতির আর্থিক রিপোর্ট এখানে ও স্বচ্ছতা পেজে আপলোড করা হবে।',
-                  'Audited accounts will be uploaded here and on the transparency portal following verification and AGM approval.'
-                )}
+              <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto">
+                {b('হিসাব নিরীক্ষা প্রক্রিয়াধীন রয়েছে।', 'Accounts verification is in progress.')}
               </p>
               <div className="mt-4">
                 <Link

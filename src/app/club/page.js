@@ -110,7 +110,7 @@ export default function ClubPage() {
           .map(n => ({
             ...n,
             title: n.title.replace(/^\[Club\]\s*/, ''),
-            pdfUrl: n.pdfUrl || '/sample-notice.pdf'
+            pdfUrl: n.pdfUrl || null
           }))
       : [];
 
@@ -124,7 +124,7 @@ export default function ClubPage() {
           'অনুর্ধ্ব-১৯ ও সিনিয়র বিভাগ • সোনালী সঙ্ঘ ময়দান\n\nসোনালী সঙ্ঘের বাৎসরিক ফুটবল ও ক্রিকেট টুর্নামেন্টের দল গঠন প্রক্রিয়া শুরু হয়েছে। পাড়ার আগ্রহী তরুণ ও যুবকদের আগামী ১৫ দিনের মধ্যে ক্লাবের ক্রীড়া সম্পাদকের সাথে যোগাযোগ করার অনুরোধ জানানো হচ্ছে।',
           'U-19 & Senior Category • Sonali Sangha Ground\n\nRegistration is now open for the Annual Football and Cricket Tournament 2026. Neighborhood youth are requested to contact the Club Sports Secretary within the next 15 days.'
         ),
-        pdfUrl: '/sample-notice.pdf',
+        pdfUrl: null,
         isUrgent: true,
         year: 2026,
         date: '2026-09-18'
@@ -136,7 +136,7 @@ export default function ClubPage() {
           'ক্লাব ভবন প্রাঙ্গণ • সকাল ৯:০০ টা হইতে অপরাহ্ন ২:০০ টা\n\nসোনালী সঙ্ঘ ক্লাবের উদ্যোগে আগামী রবিবার সকাল ৯টা থেকে ক্লাব ভবনে বাৎসরিক রক্তদান ও চক্ষু পরীক্ষা শিবির অনুষ্ঠিত হবে। পাড়ার সকল নাগরিককে অংশগ্রহণ করে এই মহৎ উদ্যোগকে সফল করার আবেদন জানানো হচ্ছে।',
           'Club Premises • 9:00 AM to 2:00 PM\n\nA voluntary blood donation camp along with free eye checkups will be held at the club premises next Sunday starting 9:00 AM. All residents are cordially invited to participate.'
         ),
-        pdfUrl: '/sample-notice.pdf',
+        pdfUrl: null,
         isUrgent: false,
         year: 2026,
         date: '2026-09-12'
@@ -1044,13 +1044,10 @@ export default function ClubPage() {
                 <FileText className="w-6 h-6" />
               </div>
               <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900 mb-1">
-                {b('সোনালী সঙ্ঘের নিরীক্ষিত অডিট রিপোর্ট প্রক্রিয়াধীন', 'Club Audited Accounts in Progress')}
+                {b('সোনালী সঙ্ঘের নতুন নিরীক্ষিত অডিট রিপোর্ট আপলোড হলে এখানে প্রকাশিত হবে।', 'New Sonali Sangha audit reports will be updated here once verified.')}
               </h3>
-              <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
-                {b(
-                  'বাৎসরিক অডিট ও সাধারণ সভার অনুমোদনের পর ক্লাবের আর্থিক রিপোর্ট এখানে ও স্বচ্ছতা পেজে আপলোড করা হবে।',
-                  'Audited accounts will be uploaded here and on the transparency portal following verification and AGM approval.'
-                )}
+              <p className="text-stone-500 text-xs sm:text-sm max-w-md mx-auto">
+                {b('হিসাব নিরীক্ষা প্রক্রিয়াধীন রয়েছে।', 'Accounts verification is in progress.')}
               </p>
               <div className="mt-4">
                 <Link

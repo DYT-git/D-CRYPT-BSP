@@ -17,9 +17,7 @@ export const DEFAULT_DATA = {
     { id: "g26-2", year: 2026, title: "নমুনা পুজো মণ্ডপ", src: "/assets/gallery/sample-pandal.svg" },
     { id: "g25-1", year: 2025, title: "2025 Sample Puja Memory", src: "/assets/gallery/sample-dhak.svg" }
   ],
-  finances: [
-    { id: "f26-1", year: 2026, title: "Sample Durga Puja Budget 2026", url: "/docs/sample-puja-programme-2026.pdf" }
-  ],
+  finances: [],
   settings: {
     siteName: "Bansdroni Sonali Park",
     location: "বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০",
