@@ -737,7 +737,7 @@ export default function HomePage() {
               {b('শ্রী শ্রী শারদীয়া দুর্গাপূজার সময় নির্ঘণ্ট', 'Official Sacred Rituals & Timetable')}
             </h2>
             <p className="text-xs sm:text-sm text-stone-500 font-serif mt-1">
-              {b('পরিচালনায় : সোনালী পার্ক অধিবাসীবৃন্দ • বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০০ ০৭০', 'Organized by : Sonali Park Adhibasibrinda • B/137, Sonali Park, Bansdroni, Kolkata - 700 070')}
+              {b('পরিচালনায় : সোনালী পার্ক অধিবাসীবৃন্দ • বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০০ ০৭০ • রেজি: SO067242', 'Organized by : Sonali Park Adhibasibrinda • B/137, Sonali Park, Kolkata - 700 070 • Reg: SO067242')}
             </p>
           </div>
           <Link

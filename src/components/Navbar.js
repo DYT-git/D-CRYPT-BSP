@@ -38,6 +38,16 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifDrawerOpen, setNotifDrawerOpen] = useState(false);
   const [unreadNotifs, setUnreadNotifs] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
 
   const isPuja = pathname === '/' || pathname === '/puja';
@@ -77,65 +87,73 @@ export default function Navbar() {
   return (
     <>
       {/* ═══ UNIFIED RESPONSIVE TOP BAR (Zero Overlap, Proportionate Scaling & Clean Spacing) ═══ */}
-      <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none w-full">
-        <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-4 md:px-6 pt-2.5 sm:pt-4 flex items-center justify-between gap-1.5 sm:gap-3">
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 pointer-events-none ${
+          isScrolled
+            ? 'bg-[#12070D]/95 backdrop-blur-xl border-b border-amber-400/25 shadow-[0_10px_35px_rgba(0,0,0,0.38)] py-2 sm:py-2.5'
+            : isHome
+            ? 'bg-gradient-to-b from-stone-950/80 via-stone-950/30 to-transparent pt-2.5 sm:pt-4 pb-3'
+            : 'bg-[#12070D]/90 backdrop-blur-lg border-b border-amber-400/20 shadow-md py-2.5 sm:pt-3.5 pb-2.5'
+        }`}
+      >
+        <div className="w-full max-w-7xl mx-auto px-2.5 sm:px-4 md:px-6 flex items-center justify-between gap-1.5 sm:gap-3">
 
           {/* ═══ LEFT: Contextual Identity Badge (Responsive Sizing, No Screen Overflow) ═══ */}
           <div className="pointer-events-auto min-w-0 flex items-center flex-1 max-w-[calc(100vw-170px)] sm:max-w-none">
             {isClub ? (
               /* Club Dedicated Brand Badge */
-              <Link href="/club" className="flex items-center gap-2 sm:gap-2.5 group min-w-0">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-amber-300 text-amber-600">
-                  <ClubCrestIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-amber-600" />
+              <Link
+                href="/club"
+                className="flex items-center gap-2 sm:gap-2.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full transition-all duration-300 group min-w-0 bg-white/10 hover:bg-white/15 border border-white/15 backdrop-blur-md shadow-xs hover:border-amber-400/40"
+              >
+                <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-md group-hover:scale-105 transition-all shrink-0 bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 border border-amber-200/80 text-stone-950">
+                  <ClubCrestIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-stone-950" />
                 </div>
                 <div className="flex flex-col min-w-0 leading-tight">
-                  <span className={`font-black uppercase tracking-tight sm:tracking-normal text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm transition-colors truncate ${
-                    hasDarkHero ? 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]' : 'text-stone-900'
-                  }`}>
+                  <span className="font-serif font-black uppercase tracking-tight sm:tracking-normal text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transition-colors truncate">
                     {b('সোনালী সঙ্ঘ ক্লাব', 'Sonali Sangha Club')}
                   </span>
-                  <span className={`text-[8.5px] xs:text-[9.5px] sm:text-[10px] md:text-[11px] font-bold tracking-wider transition-colors truncate ${
-                    hasDarkHero ? 'text-amber-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]' : 'text-amber-700'
-                  }`}>
-                    {b('ক্রীড়া ও যুব শাখা', 'Sports & Youth Wing')}
+                  <span className="text-[8.5px] xs:text-[9.5px] sm:text-[10px] md:text-[11px] font-mono font-bold tracking-wider text-amber-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] transition-colors truncate flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                    <span>{b('রেজি: SO067242', 'Reg: SO067242')}</span>
                   </span>
                 </div>
               </Link>
             ) : isSamiti ? (
               /* Samiti Dedicated Brand Badge */
-              <Link href="/samiti" className="flex items-center gap-2 sm:gap-2.5 group min-w-0">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-emerald-300 text-emerald-600">
-                  <SamitiEmblemIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-emerald-600" />
+              <Link
+                href="/samiti"
+                className="flex items-center gap-2 sm:gap-2.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full transition-all duration-300 group min-w-0 bg-white/10 hover:bg-white/15 border border-white/15 backdrop-blur-md shadow-xs hover:border-emerald-400/40"
+              >
+                <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-md group-hover:scale-105 transition-all shrink-0 bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-800 border border-emerald-300/80 text-emerald-100">
+                  <SamitiEmblemIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-emerald-100" />
                 </div>
                 <div className="flex flex-col min-w-0 leading-tight">
-                  <span className={`font-black uppercase tracking-tight sm:tracking-normal text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm transition-colors truncate ${
-                    hasDarkHero ? 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]' : 'text-stone-900'
-                  }`}>
+                  <span className="font-serif font-black uppercase tracking-tight sm:tracking-normal text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transition-colors truncate">
                     {b('উন্নয়ন সমিতি', 'Unnayan Samiti')}
                   </span>
-                  <span className={`text-[8.5px] xs:text-[9.5px] sm:text-[10px] md:text-[11px] font-bold tracking-wider transition-colors truncate ${
-                    hasDarkHero ? 'text-emerald-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]' : 'text-emerald-700'
-                  }`}>
-                    {b('নাগরিক কল্যাণ (RWA)', 'Civic Welfare & RWA')}
+                  <span className="text-[8.5px] xs:text-[9.5px] sm:text-[10px] md:text-[11px] font-mono font-bold tracking-wider text-emerald-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] transition-colors truncate flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                    <span>{b('রেজি: SO067242', 'Reg: SO067242')}</span>
                   </span>
                 </div>
               </Link>
             ) : (
               /* Original Sacred Durga Puja / Master Community Badge */
-              <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group min-w-0">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0 bg-white/95 backdrop-blur-md border border-brand-maroon/20 text-brand-maroon">
-                  <span className="text-sm sm:text-base md:text-lg font-black leading-none text-brand-maroon">ॐ</span>
+              <Link
+                href="/"
+                className="flex items-center gap-2 sm:gap-2.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full transition-all duration-300 group min-w-0 bg-white/10 hover:bg-white/15 border border-white/15 backdrop-blur-md shadow-xs hover:border-amber-400/40"
+              >
+                <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-md group-hover:scale-105 transition-all shrink-0 bg-gradient-to-br from-[#881337] via-brand-maroon to-[#580B1F] border border-amber-300/70 text-amber-200">
+                  <span className="text-sm sm:text-base md:text-lg font-black leading-none text-amber-200 drop-shadow-xs">ॐ</span>
                 </div>
                 <div className="flex flex-col min-w-0 leading-tight">
-                  <span className={`font-black uppercase tracking-tight sm:tracking-normal text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm transition-colors truncate ${
-                    hasDarkHero ? 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]' : 'text-stone-900'
-                  }`}>
+                  <span className="font-serif font-black uppercase tracking-tight sm:tracking-normal text-[10.5px] xs:text-[11.5px] sm:text-xs md:text-sm text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] transition-colors truncate">
                     {b('সোনালী পার্ক অধিবাসীবৃন্দ', 'Sonali Park Adhibasibrinda')}
                   </span>
-                  <span className={`text-[8.5px] xs:text-[9.5px] sm:text-[10px] md:text-[11px] font-bold tracking-wider transition-colors truncate ${
-                    hasDarkHero ? 'text-amber-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]' : 'text-brand-maroon'
-                  }`}>
-                    {b('শ্রী শ্রী দুর্গা পূজা ২০২৬', 'Sri Sri Durga Puja 2026')}
+                  <span className="text-[8.5px] xs:text-[9.5px] sm:text-[10px] md:text-[11px] font-mono font-bold tracking-wider text-amber-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] transition-colors truncate flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                    <span>{b('রেজি: SO067242', 'Reg: SO067242')}</span>
                   </span>
                 </div>
               </Link>
@@ -154,25 +172,25 @@ export default function Navbar() {
                   ? b(`${toDigits(unreadNotifs)}টি নতুন বিজ্ঞপ্তি`, `${unreadNotifs} new notifications`)
                   : b('বিজ্ঞপ্তি ও নোটিফিকেশন', 'Notifications')
               }
-              className="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-all active:scale-95 hover:scale-105 cursor-pointer bg-white/95 hover:bg-stone-50 backdrop-blur-md border border-stone-200/90 text-stone-700 hover:text-stone-900 shadow-[0_2px_8px_rgba(28,13,19,0.06),inset_0_1px_0_rgba(255,255,255,0.9)]"
+              className="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-all active:scale-95 hover:scale-105 cursor-pointer bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-rose-100 hover:text-white shadow-xs"
               aria-label="Notifications"
             >
-              <Bell className="w-4 h-4 text-stone-700 hover:text-stone-900 transition-colors" strokeWidth={2} />
+              <Bell className="w-4 h-4 text-rose-100 hover:text-white transition-colors" strokeWidth={2} />
               {unreadNotifs > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 bg-rose-600 text-white text-[9.5px] font-bold rounded-full flex items-center justify-center border-2 border-white shadow-xs leading-none">
+                <span className="absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 bg-rose-600 text-white text-[9.5px] font-bold rounded-full flex items-center justify-center border-2 border-[#12070D] shadow-xs leading-none">
                   {unreadNotifs > 9 ? '9+' : (lang === 'bn' ? toDigits(unreadNotifs) : unreadNotifs)}
                 </span>
               )}
             </button>
 
             {/* Language Switcher Pill (Tactile 3D container with bevel) */}
-            <div className="flex items-center p-0.5 rounded-full backdrop-blur-md text-[10px] sm:text-[11px] font-bold transition-all bg-white/95 border border-stone-200/90 shadow-[0_2px_8px_rgba(28,13,19,0.06),inset_0_1px_1px_rgba(255,255,255,0.85)] text-stone-700">
+            <div className="flex items-center p-0.5 rounded-full backdrop-blur-md text-[10px] sm:text-[11px] font-bold transition-all bg-white/10 border border-white/20 shadow-xs text-rose-100">
               <button
                 onClick={() => changeLanguage('bn')}
                 className={`px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full transition-all cursor-pointer ${
                   lang === 'bn'
-                    ? 'bg-gradient-to-b from-[#BE123C] to-[#881337] text-white shadow-[0_2px_6px_rgba(190,18,60,0.35),inset_0_1px_0_rgba(255,255,255,0.3)]'
-                    : 'text-stone-600 hover:text-stone-900 active:scale-95'
+                    ? 'bg-gradient-to-b from-[#BE123C] to-[#881337] text-white shadow-[0_2px_6px_rgba(190,18,60,0.4),inset_0_1px_0_rgba(255,255,255,0.3)]'
+                    : 'text-stone-300 hover:text-white active:scale-95'
                 }`}
               >
                 বাংলা
@@ -181,8 +199,8 @@ export default function Navbar() {
                 onClick={() => changeLanguage('en')}
                 className={`px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full transition-all cursor-pointer ${
                   lang === 'en'
-                    ? 'bg-gradient-to-b from-[#BE123C] to-[#881337] text-white shadow-[0_2px_6px_rgba(190,18,60,0.35),inset_0_1px_0_rgba(255,255,255,0.3)]'
-                    : 'text-stone-600 hover:text-stone-900 active:scale-95'
+                    ? 'bg-gradient-to-b from-[#BE123C] to-[#881337] text-white shadow-[0_2px_6px_rgba(190,18,60,0.4),inset_0_1px_0_rgba(255,255,255,0.3)]'
+                    : 'text-stone-300 hover:text-white active:scale-95'
                 }`}
               >
                 EN
@@ -193,10 +211,10 @@ export default function Navbar() {
             <button
               id="menu-btn"
               onClick={() => setMenuOpen(!menuOpen)}
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all active:scale-90 hover:scale-105 cursor-pointer bg-white/95 hover:bg-stone-50 backdrop-blur-md border border-stone-200/90 text-stone-800 hover:text-brand-maroon shadow-[0_2px_8px_rgba(28,13,19,0.06),inset_0_1px_0_rgba(255,255,255,0.9)]"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all active:scale-90 hover:scale-105 cursor-pointer bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-rose-100 hover:text-white shadow-xs"
               aria-label="Open menu"
             >
-              {menuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4 text-stone-800" />}
+              {menuOpen ? <X className="w-4 h-4 text-white" /> : <Menu className="w-4 h-4 text-white" />}
             </button>
           </div>
         </div>

@@ -52,7 +52,7 @@ export default function PujaSchedule() {
             <span className="font-semibold">{b('সোনালী পার্ক অধিবাসীবৃন্দ', 'Sonali Park Adhibasibrinda')}</span>
           </p>
           <p className="text-xs sm:text-sm text-stone-500 font-sans">
-            {b('বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০০ ০৭০', 'B/137, Sonali Park, Bansdroni, Kolkata - 700 070')}
+            {b('বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০০ ০৭০ • রেজি: SO067242', 'B/137, Sonali Park, Bansdroni, Kolkata - 700 070 • Reg: SO067242')}
           </p>
         </div>
 
@@ -191,7 +191,7 @@ export default function PujaSchedule() {
                 {b('শ্রী শ্রী শারদীয়া দুর্গাপূজার সময় নির্ঘণ্ট', 'Official Sacred Rituals & Timetable')}
               </h3>
               <p className="text-xs sm:text-sm text-stone-500 font-serif">
-                {b('পরিচালনায়: সোনালী পার্ক অধিবাসীবৃন্দ • বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০০ ০৭০', 'Organized by: Residents of Sonali Park • B/137, Sonali Park, Bansdroni, Kolkata - 700 070')}
+                {b('পরিচালনায়: সোনালী পার্ক অধিবাসীবৃন্দ • বি/১৩৭, সোনালী পার্ক, বাঁশদ্রোণী, কলকাতা - ৭০০ ০৭০ • রেজি: SO067242', 'Organized by: Residents of Sonali Park • B/137, Sonali Park, Kolkata - 700 070 • Reg: SO067242')}
               </p>
             </div>
           </div>

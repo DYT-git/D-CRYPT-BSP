@@ -294,7 +294,7 @@ export default function ClubPage() {
             {/* Club Registration / Identity Kicker */}
             <div className="inline-flex items-center justify-center gap-2.5 mb-3 text-amber-300 font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em]">
               <span className="w-5 h-0.5 bg-amber-400/50 rounded-full" />
-              <span>{b('ক্রীড়া, সংস্কৃতি ও যুবকল্যাণ পরিষদ', 'Sports, Cultural & Youth Wing')}</span>
+              <span>{b('রেজি: SO067242 • ক্রীড়া, সংস্কৃতি ও যুবকল্যাণ পরিষদ', 'Reg: SO067242 • Sports, Cultural & Youth Wing')}</span>
               <span className="w-5 h-0.5 bg-amber-400/50 rounded-full" />
             </div>
 

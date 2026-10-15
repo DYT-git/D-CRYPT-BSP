@@ -291,7 +291,7 @@ export default function SamitiPage() {
             {/* Samiti Registration / Identity Kicker */}
             <div className="inline-flex items-center justify-center gap-2.5 mb-3 text-emerald-300 font-serif text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em]">
               <span className="w-5 h-0.5 bg-emerald-400/50 rounded-full" />
-              <span>{b('নাগরিক কল্যাণ ও আবাসিক আরডব্লিউএ শাখা', 'Civic Development & Residents Welfare Association')}</span>
+              <span>{b('রেজি: SO067242 • নাগরিক কল্যাণ ও আবাসিক আরডব্লিউএ শাখা', 'Reg: SO067242 • Civic Development & Residents Welfare Association')}</span>
               <span className="w-5 h-0.5 bg-emerald-400/50 rounded-full" />
             </div>
 
